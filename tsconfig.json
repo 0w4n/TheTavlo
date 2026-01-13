@@ -1,0 +1,35 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "jsx": "react",
+    "isolatedModules": true,
+    "baseUrl": "./src",
+    "paths": {
+      "#components/*": ["components/*"],
+      "#features/*": ["features/*"],
+      "#core/*": ["core/*"],
+      "#shared/*": ["shared/*"],
+      "#pages/*": ["pages/*"],
+      "#elements/*": ["elements/*"],
+    },
+  },
+  "include": ["vite.config.ts"],
+  "exclude": ["node_modules"]
+}

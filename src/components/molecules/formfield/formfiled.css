@@ -1,0 +1,196 @@
+/* ============================================
+   FORM FIELD COMPONENT
+   Campo de formulario completo con label, validación y helper text
+   ============================================ */
+
+/* Wrapper */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  width: 100%;
+}
+
+/* Label */
+.form-field__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-1);
+}
+
+.form-field__label--required::after {
+  content: '*';
+  color: var(--color-error);
+  margin-left: var(--spacing-1);
+}
+
+/* ============================================
+   COMMON INPUT STYLES
+   ============================================ */
+
+.form-field__input,
+.form-field__textarea,
+.form-field__select {
+  padding: var(--spacing-3) var(--spacing-4);
+  
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  
+  outline: none;
+  transition: all var(--duration-fast) var(--easing-out);
+}
+
+/* Placeholder */
+.form-field__input::placeholder,
+.form-field__textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Hover State */
+.form-field__input:hover:not(:disabled),
+.form-field__textarea:hover:not(:disabled),
+.form-field__select:hover:not(:disabled) {
+  border-color: var(--color-accent-400);
+}
+
+/* Focus State */
+.form-field__input:focus,
+.form-field__textarea:focus,
+.form-field__select:focus {
+  border-color: var(--color-accent-500);
+  box-shadow: 0 0 0 3px rgba(107, 125, 246, 0.1);
+}
+
+/* Error State */
+.form-field--error .form-field__input,
+.form-field--error .form-field__textarea,
+.form-field--error .form-field__select {
+  border-color: var(--color-error);
+}
+
+.form-field--error .form-field__input:focus,
+.form-field--error .form-field__textarea:focus,
+.form-field--error .form-field__select:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Disabled State */
+.form-field__input:disabled,
+.form-field__textarea:disabled,
+.form-field__select:disabled {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-disabled);
+  border-color: var(--color-border-subtle);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================
+   TEXTAREA SPECIFIC
+   ============================================ */
+
+.form-field__textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-field__textarea--auto-resize {
+  resize: none;
+  overflow: hidden;
+}
+
+/* ============================================
+   SELECT SPECIFIC
+   ============================================ */
+
+.form-field__select {
+  cursor: pointer;
+  appearance: none;
+  
+  /* Custom arrow icon */
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23a0b3a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-3) center;
+  background-size: 12px;
+  
+  padding-right: var(--spacing-10);
+}
+
+.form-field__select:disabled {
+  cursor: not-allowed;
+}
+
+/* ============================================
+   HELPER AND ERROR TEXT
+   ============================================ */
+
+.form-field__helper-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-1);
+  line-height: var(--line-height-normal);
+}
+
+.form-field__error-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-1);
+  line-height: var(--line-height-normal);
+}
+
+.form-field__error-icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+}
+
+/* ============================================
+   FOCUS VISIBLE (ACCESSIBILITY)
+   ============================================ */
+
+.form-field__input:focus-visible,
+.form-field__textarea:focus-visible,
+.form-field__select:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   AUTOFILL STYLES
+   ============================================ */
+
+.form-field__input:-webkit-autofill,
+.form-field__input:-webkit-autofill:hover,
+.form-field__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text-primary);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-bg-surface) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .form-field__input,
+  .form-field__textarea,
+  .form-field__select {
+    font-size: var(--font-size-base);
+  }
+}

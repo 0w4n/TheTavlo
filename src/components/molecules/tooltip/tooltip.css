@@ -1,0 +1,151 @@
+/* ============================================
+   TOOLTIP COMPONENT
+   Información contextual flotante
+   ============================================ */
+
+/* Container */
+.tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Trigger */
+.tooltip__trigger {
+  cursor: help;
+}
+
+.tooltip__trigger:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Tooltip Content */
+.tooltip__content {
+  position: absolute;
+  z-index: var(--z-tooltip);
+  
+  max-width: 16rem;
+  padding: var(--spacing-2) var(--spacing-3);
+  
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  text-align: center;
+  color: var(--color-neutral-0);
+  
+  background-color: var(--color-neutral-800);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  
+  white-space: normal;
+  word-wrap: break-word;
+  
+  pointer-events: none;
+  
+  animation: fadeIn var(--duration-fast) var(--easing-out);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   ARROW
+   ============================================ */
+
+.tooltip__arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+/* ============================================
+   POSITIONS
+   ============================================ */
+
+/* Top */
+.tooltip__content--top {
+  bottom: calc(100% + var(--spacing-2));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip__content--top .tooltip__arrow {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-color: var(--color-neutral-800) transparent transparent transparent;
+}
+
+/* Right */
+.tooltip__content--right {
+  left: calc(100% + var(--spacing-2));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip__content--right .tooltip__arrow {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px 6px 6px 0;
+  border-color: transparent var(--color-neutral-800) transparent transparent;
+}
+
+/* Bottom */
+.tooltip__content--bottom {
+  top: calc(100% + var(--spacing-2));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip__content--bottom .tooltip__arrow {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-color: transparent transparent var(--color-neutral-800) transparent;
+}
+
+/* Left */
+.tooltip__content--left {
+  right: calc(100% + var(--spacing-2));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip__content--left .tooltip__arrow {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px 0 6px 6px;
+  border-color: transparent transparent transparent var(--color-neutral-800);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .tooltip__content {
+    max-width: 12rem;
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Asegurar que el tooltip sea visible para lectores de pantalla */
+.tooltip__content[role="tooltip"] {
+  /* Los estilos base ya están definidos */
+}

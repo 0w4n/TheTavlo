@@ -1,0 +1,250 @@
+/* ============================================
+   CHART COMPONENT
+   Gráficos con D3.js
+   ============================================ */
+
+/* Container */
+.chart {
+  width: 100%;
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+}
+
+/* Title */
+.chart__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+  text-align: center;
+}
+
+/* SVG Container */
+.chart__svg-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.chart__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ============================================
+   SIZES
+   ============================================ */
+
+.chart--sm {
+  height: 200px;
+}
+
+.chart--md {
+  height: 300px;
+}
+
+.chart--lg {
+  height: 400px;
+}
+
+/* ============================================
+   D3 ELEMENTS STYLING
+   ============================================ */
+
+/* Grid lines */
+.chart__grid line {
+  stroke: var(--color-divider);
+  stroke-dasharray: 2, 2;
+  shape-rendering: crispEdges;
+}
+
+.chart__grid path {
+  stroke-width: 0;
+}
+
+/* Axes */
+.chart__axis {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.chart__axis path,
+.chart__axis line {
+  stroke: var(--color-border);
+  shape-rendering: crispEdges;
+}
+
+.chart__axis text {
+  fill: var(--color-text-secondary);
+}
+
+/* Line chart */
+.chart__line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart__line--animated {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawLine 1.5s ease-out forwards;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chart__line-point {
+  fill: var(--color-bg-surface);
+  stroke-width: 2;
+  transition: all var(--duration-fast);
+}
+
+.chart__line-point:hover {
+  r: 6;
+  stroke-width: 3;
+}
+
+/* Bar chart */
+.chart__bar {
+  transition: all var(--duration-fast);
+}
+
+.chart__bar:hover {
+  opacity: 0.8;
+}
+
+.chart__bar--animated {
+  animation: growBar 0.8s ease-out;
+}
+
+@keyframes growBar {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Pie chart */
+.chart__pie-slice {
+  stroke: var(--color-bg-surface);
+  stroke-width: 2;
+  transition: all var(--duration-fast);
+  cursor: pointer;
+}
+
+.chart__pie-slice:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+  transform-origin: center;
+}
+
+.chart__pie-slice--animated {
+  animation: fadeIn var(--duration-slow) ease-out;
+}
+
+/* Labels */
+.chart__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  fill: var(--color-text-primary);
+  pointer-events: none;
+}
+
+.chart__value-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  fill: var(--color-text-primary);
+}
+
+/* Tooltip */
+.chart__tooltip {
+  position: absolute;
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--color-neutral-800);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-0);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-tooltip);
+}
+
+.chart__tooltip--visible {
+  opacity: 1;
+}
+
+/* ============================================
+   LEGEND
+   ============================================ */
+
+.chart__legend {
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: center;
+  margin-top: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.chart__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.chart__legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .chart--sm { height: 150px; }
+  .chart--md { height: 200px; }
+  .chart--lg { height: 250px; }
+  
+  .chart__axis {
+    font-size: 0.625rem;
+  }
+  
+  .chart__label {
+    font-size: 0.625rem;
+  }
+}
+
+/* ============================================
+   NO DATA STATE
+   ============================================ */
+
+.chart__no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-tertiary);
+}
+
+.chart__no-data-icon {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: var(--spacing-2);
+  opacity: 0.5;
+}

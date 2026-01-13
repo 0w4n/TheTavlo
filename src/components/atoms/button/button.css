@@ -1,0 +1,178 @@
+/* ======================================= */
+/* 0. BASE STYLES */
+/* ======================================= */
+.button {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+
+  /* Typography */
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+
+  /* Interaction */
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+
+  /* Transition */
+  /* Se recomienda simplificar: transition: all var(--duration-fast); */
+  transition: all var(--duration-fast) var(--easing-out);
+
+  /* Borders */
+  border: none;
+  border-radius: var(--radius-md);
+
+  /* Reset */
+  appearance: none;
+  background: none;
+  outline: none;
+}
+
+/* ======================================= */
+/* 1. SIZES */
+/* ======================================= */
+.button--sm {
+  height: 2rem;
+  padding: 0 var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
+.button--md {
+  height: 2.5rem;
+  padding: 0 var(--spacing-4);
+  font-size: var(--font-size-base);
+}
+
+.button--lg {
+  height: 3rem;
+  padding: 0 var(--spacing-6);
+  font-size: var(--font-size-lg);
+}
+
+/* ======================================= */
+/* 2. VARIANTS (USANDO VARIABLES DE ROL) */
+/* ======================================= */
+
+/* 2.1. Primary */
+.button--primary {
+  /* Definición de roles de color para la variante */
+  --button-bg: var(--color-primary);
+  --button-color: var(--color-onPrimary, #fff); /* Mejor usar onPrimary */
+  --button-hover-bg: var(--color-primary-dark); /* Usar el dark para el hover */
+  --button-active-bg: var(--color-primary-darker);
+
+  background-color: var(--button-bg);
+  color: var(--button-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.button--primary:hover:not(:disabled) {
+  background-color: var(--button-hover-bg);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.button--primary:active:not(:disabled) {
+  background-color: var(--button-active-bg);
+  transform: translateY(0);
+}
+
+/* 2.2. Secondary (Outline) */
+.button--secondary {
+  --button-border: var(--color-border);
+  --button-hover-border: var(--color-primary);
+
+  background-color: transparent;
+  color: var(--color-textPrimary);
+  border: 2px solid var(--button-border); /* Borde más fino */
+}
+
+.button--secondary:hover:not(:disabled) {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--button-hover-border);
+}
+
+.button--secondary:active:not(:disabled) {
+  background-color: var(--color-bg-secondary);
+}
+
+/* 2.3. Ghost */
+.button--ghost {
+  background-color: transparent;
+  color: var(--color-textPrimary);
+}
+
+.button--ghost:hover:not(:disabled) {
+  /* Usamos color-primary con transparencia en lugar de un color fijo */
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.button--ghost:active:not(:disabled) {
+  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+/* 2.4. Danger */
+.button--danger {
+  /* Define roles de color específicos de la variante */
+  --button-bg: var(--color-error);
+  --button-color: var(--color-onDanger, var(--color-neutral-0));
+  --button-hover-bg: var(--color-error-dark);
+
+  background-color: var(--button-bg);
+  color: var(--button-color);
+}
+
+.button--danger:hover:not(:disabled) {
+  background-color: var(--button-hover-bg);
+}
+
+/* 2.5. New Utility: Full Width */
+.button--full-width {
+  width: 100%;
+}
+
+/* ======================================= */
+/* 3. STATES (Accesibilidad) */
+/* ======================================= */
+.button:focus-visible {
+  outline: none;
+  /* Implementación de doble anillo de enfoque para mayor visibilidad */
+  box-shadow: 0 0 0 2px var(--color-bg-surface), 0 0 0 4px var(--color-focus);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  /* Eliminar interacción: pointer-events: none; ya estaba bien */
+  pointer-events: none;
+}
+
+.button--loading {
+  cursor: wait;
+  opacity: 0.7; /* Opacidad un poco más baja para destacar el estado de carga */
+}
+
+/* ======================================= */
+/* 4. ICONOGRAPHY */
+/* ======================================= */
+.button__icon {
+  display: inline-flex;
+  /* El tamaño se ajustará automáticamente con el font-size del .button */
+  font-size: 1em; /* Mantiene la proporción 1:1 con la altura de la letra */
+  line-height: 1; /* Para centrado vertical perfecto */
+  width: 1em; /* Ajusta el ancho para consistencia */
+  height: 1em;
+}
+
+/* Las clases de tamaño ya controlan la escala:
+   .button--sm tiene font-size: var(--font-size-sm); -> Icono pequeño
+   .button--lg tiene font-size: var(--font-size-lg); -> Icono grande
+*/
+/* Se eliminan las clases .button--sm .button__icon y .button--lg .button__icon
+   para simplificar y escalar automáticamente usando la unidad 'em' */

@@ -1,0 +1,1067 @@
+{
+  "metadata": {
+    "name": "Sistema de Diseño Aplicación",
+    "version": "1.0.0",
+    "lastUpdated": "2025-11-18",
+    "description": "Sistema de diseño completo para mantener consistencia visual y funcional en toda la aplicación"
+  },
+  
+  "tokens": {
+    "colors": {
+      "primary": {
+        "50": "#f0f9ff",
+        "100": "#e0f2fe",
+        "200": "#bae6fd",
+        "300": "#7dd3fc",
+        "400": "#38bdf8",
+        "500": "#0ea5e9",
+        "600": "#0284c7",
+        "700": "#0369a1",
+        "800": "#075985",
+        "900": "#0c4a6e",
+        "default": "#0ea5e9"
+      },
+      "secondary": {
+        "50": "#faf5ff",
+        "100": "#f3e8ff",
+        "200": "#e9d5ff",
+        "300": "#d8b4fe",
+        "400": "#c084fc",
+        "500": "#a855f7",
+        "600": "#9333ea",
+        "700": "#7e22ce",
+        "800": "#6b21a8",
+        "900": "#581c87",
+        "default": "#a855f7"
+      },
+      "neutral": {
+        "50": "#fafafa",
+        "100": "#f5f5f5",
+        "200": "#e5e5e5",
+        "300": "#d4d4d4",
+        "400": "#a3a3a3",
+        "500": "#737373",
+        "600": "#525252",
+        "700": "#404040",
+        "800": "#262626",
+        "900": "#171717",
+        "950": "#0a0a0a"
+      },
+      "semantic": {
+        "success": {
+          "light": "#86efac",
+          "main": "#22c55e",
+          "dark": "#15803d",
+          "bg": "#f0fdf4"
+        },
+        "error": {
+          "light": "#fca5a5",
+          "main": "#ef4444",
+          "dark": "#b91c1c",
+          "bg": "#fef2f2"
+        },
+        "warning": {
+          "light": "#fcd34d",
+          "main": "#f59e0b",
+          "dark": "#d97706",
+          "bg": "#fffbeb"
+        },
+        "info": {
+          "light": "#93c5fd",
+          "main": "#3b82f6",
+          "dark": "#1d4ed8",
+          "bg": "#eff6ff"
+        }
+      },
+      "background": {
+        "primary": "#ffffff",
+        "secondary": "#f9fafb",
+        "tertiary": "#f3f4f6",
+        "dark": "#111827",
+        "overlay": "rgba(0, 0, 0, 0.5)"
+      },
+      "text": {
+        "primary": "#111827",
+        "secondary": "#6b7280",
+        "tertiary": "#9ca3af",
+        "inverse": "#ffffff",
+        "disabled": "#d1d5db"
+      },
+      "border": {
+        "light": "#e5e7eb",
+        "medium": "#d1d5db",
+        "dark": "#9ca3af",
+        "focus": "#0ea5e9"
+      }
+    },
+    
+    "typography": {
+      "fontFamily": {
+        "primary": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        "mono": "'Courier New', Courier, monospace",
+        "heading": "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+      },
+      "fontSize": {
+        "xs": "0.75rem",
+        "sm": "0.875rem",
+        "base": "1rem",
+        "lg": "1.125rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem",
+        "5xl": "3rem"
+      },
+      "fontWeight": {
+        "light": 300,
+        "normal": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700,
+        "extrabold": 800
+      },
+      "lineHeight": {
+        "tight": 1.25,
+        "normal": 1.5,
+        "relaxed": 1.75,
+        "loose": 2
+      },
+      "letterSpacing": {
+        "tight": "-0.025em",
+        "normal": "0",
+        "wide": "0.025em",
+        "wider": "0.05em"
+      }
+    },
+    
+    "spacing": {
+      "0": "0",
+      "1": "0.25rem",
+      "2": "0.5rem",
+      "3": "0.75rem",
+      "4": "1rem",
+      "5": "1.25rem",
+      "6": "1.5rem",
+      "8": "2rem",
+      "10": "2.5rem",
+      "12": "3rem",
+      "16": "4rem",
+      "20": "5rem",
+      "24": "6rem"
+    },
+    
+    "borderRadius": {
+      "none": "0",
+      "sm": "0.25rem",
+      "md": "0.375rem",
+      "lg": "0.5rem",
+      "xl": "0.75rem",
+      "2xl": "1rem",
+      "3xl": "1.5rem",
+      "full": "9999px"
+    },
+    
+    "shadows": {
+      "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      "base": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)",
+      "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+      "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+      "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+      "2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+      "inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)"
+    },
+    
+    "transitions": {
+      "fast": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+      "base": "200ms cubic-bezier(0.4, 0, 0.2, 1)",
+      "slow": "300ms cubic-bezier(0.4, 0, 0.2, 1)",
+      "bounce": "500ms cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    },
+    
+    "breakpoints": {
+      "sm": "640px",
+      "md": "768px",
+      "lg": "1024px",
+      "xl": "1280px",
+      "2xl": "1536px"
+    },
+    
+    "zIndex": {
+      "dropdown": 1000,
+      "sticky": 1020,
+      "fixed": 1030,
+      "modalBackdrop": 1040,
+      "modal": 1050,
+      "popover": 1060,
+      "tooltip": 1070
+    }
+  },
+  
+  "components": {
+    "Button": {
+      "description": "Componente de botón con múltiples variantes y estados",
+      "variants": {
+        "primary": {
+          "default": {
+            "backgroundColor": "tokens.colors.primary.500",
+            "color": "tokens.colors.text.inverse",
+            "border": "none",
+            "padding": "tokens.spacing.3 tokens.spacing.6",
+            "borderRadius": "tokens.borderRadius.md",
+            "fontSize": "tokens.typography.fontSize.base",
+            "fontWeight": "tokens.typography.fontWeight.medium",
+            "cursor": "pointer",
+            "transition": "tokens.transitions.base",
+            "boxShadow": "tokens.shadows.sm"
+          },
+          "hover": {
+            "backgroundColor": "tokens.colors.primary.600",
+            "boxShadow": "tokens.shadows.md",
+            "transform": "translateY(-1px)"
+          },
+          "active": {
+            "backgroundColor": "tokens.colors.primary.700",
+            "transform": "translateY(0)"
+          },
+          "disabled": {
+            "backgroundColor": "tokens.colors.neutral.300",
+            "color": "tokens.colors.text.disabled",
+            "cursor": "not-allowed",
+            "opacity": "0.6"
+          },
+          "focus": {
+            "outline": "2px solid tokens.colors.primary.500",
+            "outlineOffset": "2px"
+          }
+        },
+        "secondary": {
+          "default": {
+            "backgroundColor": "transparent",
+            "color": "tokens.colors.primary.600",
+            "border": "2px solid tokens.colors.primary.500",
+            "padding": "tokens.spacing.3 tokens.spacing.6",
+            "borderRadius": "tokens.borderRadius.md",
+            "fontSize": "tokens.typography.fontSize.base",
+            "fontWeight": "tokens.typography.fontWeight.medium",
+            "cursor": "pointer",
+            "transition": "tokens.transitions.base"
+          },
+          "hover": {
+            "backgroundColor": "tokens.colors.primary.50",
+            "borderColor": "tokens.colors.primary.600"
+          },
+          "active": {
+            "backgroundColor": "tokens.colors.primary.100"
+          },
+          "disabled": {
+            "borderColor": "tokens.colors.neutral.300",
+            "color": "tokens.colors.text.disabled",
+            "cursor": "not-allowed",
+            "opacity": "0.6"
+          }
+        },
+        "ghost": {
+          "default": {
+            "backgroundColor": "transparent",
+            "color": "tokens.colors.text.primary",
+            "border": "none",
+            "padding": "tokens.spacing.3 tokens.spacing.6",
+            "borderRadius": "tokens.borderRadius.md",
+            "fontSize": "tokens.typography.fontSize.base",
+            "fontWeight": "tokens.typography.fontWeight.medium",
+            "cursor": "pointer",
+            "transition": "tokens.transitions.base"
+          },
+          "hover": {
+            "backgroundColor": "tokens.colors.neutral.100"
+          },
+          "active": {
+            "backgroundColor": "tokens.colors.neutral.200"
+          }
+        },
+        "danger": {
+          "default": {
+            "backgroundColor": "tokens.colors.semantic.error.main",
+            "color": "tokens.colors.text.inverse",
+            "border": "none",
+            "padding": "tokens.spacing.3 tokens.spacing.6",
+            "borderRadius": "tokens.borderRadius.md",
+            "fontSize": "tokens.typography.fontSize.base",
+            "fontWeight": "tokens.typography.fontWeight.medium",
+            "cursor": "pointer",
+            "transition": "tokens.transitions.base"
+          },
+          "hover": {
+            "backgroundColor": "tokens.colors.semantic.error.dark"
+          }
+        }
+      },
+      "sizes": {
+        "sm": {
+          "padding": "tokens.spacing.2 tokens.spacing.4",
+          "fontSize": "tokens.typography.fontSize.sm"
+        },
+        "md": {
+          "padding": "tokens.spacing.3 tokens.spacing.6",
+          "fontSize": "tokens.typography.fontSize.base"
+        },
+        "lg": {
+          "padding": "tokens.spacing.4 tokens.spacing.8",
+          "fontSize": "tokens.typography.fontSize.lg"
+        }
+      }
+    },
+    
+    "Input": {
+      "description": "Campo de entrada de texto con validación y estados",
+      "default": {
+        "width": "100%",
+        "padding": "tokens.spacing.3 tokens.spacing.4",
+        "fontSize": "tokens.typography.fontSize.base",
+        "lineHeight": "tokens.typography.lineHeight.normal",
+        "color": "tokens.colors.text.primary",
+        "backgroundColor": "tokens.colors.background.primary",
+        "border": "1px solid tokens.colors.border.medium",
+        "borderRadius": "tokens.borderRadius.md",
+        "transition": "tokens.transitions.base",
+        "outline": "none"
+      },
+      "states": {
+        "hover": {
+          "borderColor": "tokens.colors.border.dark"
+        },
+        "focus": {
+          "borderColor": "tokens.colors.border.focus",
+          "boxShadow": "0 0 0 3px rgba(14, 165, 233, 0.1)"
+        },
+        "error": {
+          "borderColor": "tokens.colors.semantic.error.main",
+          "boxShadow": "0 0 0 3px rgba(239, 68, 68, 0.1)"
+        },
+        "success": {
+          "borderColor": "tokens.colors.semantic.success.main",
+          "boxShadow": "0 0 0 3px rgba(34, 197, 94, 0.1)"
+        },
+        "disabled": {
+          "backgroundColor": "tokens.colors.neutral.100",
+          "color": "tokens.colors.text.disabled",
+          "cursor": "not-allowed",
+          "opacity": "0.6"
+        }
+      },
+      "variants": {
+        "outline": "default",
+        "filled": {
+          "backgroundColor": "tokens.colors.neutral.100",
+          "border": "1px solid transparent"
+        }
+      }
+    },
+    
+    "Card": {
+      "description": "Contenedor con elevación para agrupar contenido",
+      "default": {
+        "backgroundColor": "tokens.colors.background.primary",
+        "borderRadius": "tokens.borderRadius.lg",
+        "padding": "tokens.spacing.6",
+        "boxShadow": "tokens.shadows.base",
+        "border": "1px solid tokens.colors.border.light",
+        "transition": "tokens.transitions.base"
+      },
+      "variants": {
+        "elevated": {
+          "boxShadow": "tokens.shadows.lg",
+          "border": "none"
+        },
+        "outlined": {
+          "boxShadow": "none",
+          "border": "2px solid tokens.colors.border.medium"
+        },
+        "flat": {
+          "boxShadow": "none",
+          "border": "none",
+          "backgroundColor": "tokens.colors.background.secondary"
+        }
+      },
+      "states": {
+        "hover": {
+          "boxShadow": "tokens.shadows.md",
+          "transform": "translateY(-2px)"
+        }
+      }
+    },
+    
+    "Modal": {
+      "description": "Diálogo modal superpuesto",
+      "backdrop": {
+        "position": "fixed",
+        "inset": "0",
+        "backgroundColor": "tokens.colors.background.overlay",
+        "zIndex": "tokens.zIndex.modalBackdrop",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "animation": "fadeIn tokens.transitions.base"
+      },
+      "container": {
+        "backgroundColor": "tokens.colors.background.primary",
+        "borderRadius": "tokens.borderRadius.xl",
+        "padding": "tokens.spacing.8",
+        "maxWidth": "600px",
+        "width": "90%",
+        "maxHeight": "90vh",
+        "overflowY": "auto",
+        "boxShadow": "tokens.shadows.2xl",
+        "zIndex": "tokens.zIndex.modal",
+        "animation": "slideUp tokens.transitions.slow"
+      },
+      "header": {
+        "fontSize": "tokens.typography.fontSize.2xl",
+        "fontWeight": "tokens.typography.fontWeight.bold",
+        "marginBottom": "tokens.spacing.4",
+        "color": "tokens.colors.text.primary"
+      },
+      "body": {
+        "fontSize": "tokens.typography.fontSize.base",
+        "color": "tokens.colors.text.secondary",
+        "marginBottom": "tokens.spacing.6"
+      },
+      "footer": {
+        "display": "flex",
+        "gap": "tokens.spacing.3",
+        "justifyContent": "flex-end"
+      }
+    },
+    
+    "Alert": {
+      "description": "Componente para mensajes de notificación",
+      "base": {
+        "padding": "tokens.spacing.4",
+        "borderRadius": "tokens.borderRadius.lg",
+        "fontSize": "tokens.typography.fontSize.base",
+        "fontWeight": "tokens.typography.fontWeight.medium",
+        "display": "flex",
+        "alignItems": "flex-start",
+        "gap": "tokens.spacing.3"
+      },
+      "variants": {
+        "success": {
+          "backgroundColor": "tokens.colors.semantic.success.bg",
+          "color": "tokens.colors.semantic.success.dark",
+          "borderLeft": "4px solid tokens.colors.semantic.success.main"
+        },
+        "error": {
+          "backgroundColor": "tokens.colors.semantic.error.bg",
+          "color": "tokens.colors.semantic.error.dark",
+          "borderLeft": "4px solid tokens.colors.semantic.error.main"
+        },
+        "warning": {
+          "backgroundColor": "tokens.colors.semantic.warning.bg",
+          "color": "tokens.colors.semantic.warning.dark",
+          "borderLeft": "4px solid tokens.colors.semantic.warning.main"
+        },
+        "info": {
+          "backgroundColor": "tokens.colors.semantic.info.bg",
+          "color": "tokens.colors.semantic.info.dark",
+          "borderLeft": "4px solid tokens.colors.semantic.info.main"
+        }
+      }
+    },
+    
+    "Badge": {
+      "description": "Etiqueta pequeña para indicadores",
+      "base": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "padding": "tokens.spacing.1 tokens.spacing.3",
+        "fontSize": "tokens.typography.fontSize.xs",
+        "fontWeight": "tokens.typography.fontWeight.semibold",
+        "borderRadius": "tokens.borderRadius.full",
+        "textTransform": "uppercase",
+        "letterSpacing": "tokens.typography.letterSpacing.wide"
+      },
+      "variants": {
+        "primary": {
+          "backgroundColor": "tokens.colors.primary.100",
+          "color": "tokens.colors.primary.700"
+        },
+        "success": {
+          "backgroundColor": "tokens.colors.semantic.success.bg",
+          "color": "tokens.colors.semantic.success.dark"
+        },
+        "error": {
+          "backgroundColor": "tokens.colors.semantic.error.bg",
+          "color": "tokens.colors.semantic.error.dark"
+        },
+        "warning": {
+          "backgroundColor": "tokens.colors.semantic.warning.bg",
+          "color": "tokens.colors.semantic.warning.dark"
+        },
+        "neutral": {
+          "backgroundColor": "tokens.colors.neutral.200",
+          "color": "tokens.colors.neutral.700"
+        }
+      }
+    },
+    
+    "Tooltip": {
+      "description": "Información contextual al pasar el cursor",
+      "container": {
+        "backgroundColor": "tokens.colors.neutral.900",
+        "color": "tokens.colors.text.inverse",
+        "padding": "tokens.spacing.2 tokens.spacing.3",
+        "borderRadius": "tokens.borderRadius.md",
+        "fontSize": "tokens.typography.fontSize.sm",
+        "boxShadow": "tokens.shadows.lg",
+        "zIndex": "tokens.zIndex.tooltip",
+        "maxWidth": "300px",
+        "animation": "fadeIn tokens.transitions.fast"
+      }
+    },
+    
+    "Spinner": {
+      "description": "Indicador de carga",
+      "default": {
+        "width": "40px",
+        "height": "40px",
+        "border": "4px solid tokens.colors.neutral.200",
+        "borderTopColor": "tokens.colors.primary.500",
+        "borderRadius": "tokens.borderRadius.full",
+        "animation": "spin 1s linear infinite"
+      },
+      "sizes": {
+        "sm": {
+          "width": "20px",
+          "height": "20px",
+          "border": "2px solid"
+        },
+        "md": {
+          "width": "40px",
+          "height": "40px",
+          "border": "4px solid"
+        },
+        "lg": {
+          "width": "60px",
+          "height": "60px",
+          "border": "6px solid"
+        }
+      }
+    },
+    
+    "Checkbox": {
+      "description": "Casilla de verificación",
+      "container": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "gap": "tokens.spacing.2",
+        "cursor": "pointer"
+      },
+      "input": {
+        "width": "20px",
+        "height": "20px",
+        "border": "2px solid tokens.colors.border.medium",
+        "borderRadius": "tokens.borderRadius.sm",
+        "backgroundColor": "tokens.colors.background.primary",
+        "cursor": "pointer",
+        "transition": "tokens.transitions.base"
+      },
+      "states": {
+        "checked": {
+          "backgroundColor": "tokens.colors.primary.500",
+          "borderColor": "tokens.colors.primary.500"
+        },
+        "hover": {
+          "borderColor": "tokens.colors.primary.400"
+        },
+        "focus": {
+          "outline": "2px solid tokens.colors.primary.500",
+          "outlineOffset": "2px"
+        },
+        "disabled": {
+          "opacity": "0.5",
+          "cursor": "not-allowed"
+        }
+      }
+    },
+    
+    "Select": {
+      "description": "Menú desplegable de selección",
+      "container": {
+        "position": "relative",
+        "width": "100%"
+      },
+      "trigger": {
+        "width": "100%",
+        "padding": "tokens.spacing.3 tokens.spacing.4",
+        "fontSize": "tokens.typography.fontSize.base",
+        "color": "tokens.colors.text.primary",
+        "backgroundColor": "tokens.colors.background.primary",
+        "border": "1px solid tokens.colors.border.medium",
+        "borderRadius": "tokens.borderRadius.md",
+        "cursor": "pointer",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "space-between",
+        "transition": "tokens.transitions.base"
+      },
+      "dropdown": {
+        "position": "absolute",
+        "top": "calc(100% + 4px)",
+        "left": "0",
+        "right": "0",
+        "backgroundColor": "tokens.colors.background.primary",
+        "border": "1px solid tokens.colors.border.light",
+        "borderRadius": "tokens.borderRadius.md",
+        "boxShadow": "tokens.shadows.lg",
+        "maxHeight": "300px",
+        "overflowY": "auto",
+        "zIndex": "tokens.zIndex.dropdown"
+      },
+      "option": {
+        "padding": "tokens.spacing.3 tokens.spacing.4",
+        "cursor": "pointer",
+        "transition": "tokens.transitions.fast"
+      },
+      "optionHover": {
+        "backgroundColor": "tokens.colors.primary.50"
+      },
+      "optionSelected": {
+        "backgroundColor": "tokens.colors.primary.100",
+        "color": "tokens.colors.primary.700",
+        "fontWeight": "tokens.typography.fontWeight.medium"
+      }
+    }
+  },
+  
+  "patterns": {
+    "layout": {
+      "container": {
+        "maxWidth": "1280px",
+        "margin": "0 auto",
+        "padding": "0 tokens.spacing.4"
+      },
+      "grid": {
+        "display": "grid",
+        "gap": "tokens.spacing.6",
+        "gridTemplateColumns": {
+          "default": "1fr",
+          "sm": "repeat(2, 1fr)",
+          "md": "repeat(3, 1fr)",
+          "lg": "repeat(4, 1fr)"
+        }
+      },
+      "flex": {
+        "display": "flex",
+        "gap": "tokens.spacing.4"
+      },
+      "section": {
+        "padding": "tokens.spacing.16 0"
+      }
+    },
+    
+    "navigation": {
+      "header": {
+        "height": "64px",
+        "backgroundColor": "tokens.colors.background.primary",
+        "boxShadow": "tokens.shadows.sm",
+        "position": "sticky",
+        "top": "0",
+        "zIndex": "tokens.zIndex.sticky"
+      },
+      "sidebar": {
+        "width": "280px",
+        "backgroundColor": "tokens.colors.background.secondary",
+        "height": "100vh",
+        "position": "fixed",
+        "left": "0",
+        "top": "0",
+        "padding": "tokens.spacing.6",
+        "overflowY": "auto"
+      }
+    },
+    
+    "forms": {
+      "formGroup": {
+        "marginBottom": "tokens.spacing.6"
+      },
+      "label": {
+        "display": "block",
+        "marginBottom": "tokens.spacing.2",
+        "fontSize": "tokens.typography.fontSize.sm",
+        "fontWeight": "tokens.typography.fontWeight.medium",
+        "color": "tokens.colors.text.primary"
+      },
+      "helperText": {
+        "marginTop": "tokens.spacing.2",
+        "fontSize": "tokens.typography.fontSize.sm",
+        "color": "tokens.colors.text.secondary"
+      },
+      "errorText": {
+        "marginTop": "tokens.spacing.2",
+        "fontSize": "tokens.typography.fontSize.sm",
+        "color": "tokens.colors.semantic.error.main"
+      }
+    }
+  },
+  
+  "animations": {
+    "fadeIn": {
+      "keyframes": {
+        "0%": { "opacity": "0" },
+        "100%": { "opacity": "1" }
+      },
+      "duration": "tokens.transitions.base"
+    },
+    "fadeOut": {
+      "keyframes": {
+        "0%": { "opacity": "1" },
+        "100%": { "opacity": "0" }
+      },
+      "duration": "tokens.transitions.base"
+    },
+    "slideUp": {
+      "keyframes": {
+        "0%": { "transform": "translateY(20px)", "opacity": "0" },
+        "100%": { "transform": "translateY(0)", "opacity": "1" }
+      },
+      "duration": "tokens.transitions.slow"
+    },
+    "slideDown": {
+      "keyframes": {
+        "0%": { "transform": "translateY(-20px)", "opacity": "0" },
+        "100%": { "transform": "translateY(0)", "opacity": "1" }
+      },
+      "duration": "tokens.transitions.slow"
+    },
+    "spin": {
+      "keyframes": {
+        "0%": { "transform": "rotate(0deg)" },
+        "100%": { "transform": "rotate(360deg)" }
+      },
+      "duration": "1s",
+      "timingFunction": "linear",
+      "iterationCount": "infinite"
+    },
+    "bounce": {
+      "keyframes": {
+        "0%, 100%": { "transform": "translateY(0)" },
+        "50%": { "transform": "translateY(-10px)" }
+      },
+      "duration": "tokens.transitions.bounce"
+    }
+  },
+  
+  "guidelines": {
+    "accessibility": {
+      "description": "Directrices para garantizar accesibilidad WCAG 2.1 AA",
+      "rules": [
+        "Todos los elementos interactivos deben ser accesibles por teclado",
+        "Proporcionar texto alternativo para imágenes",
+        "Mantener ratio de contraste mínimo 4.5:1 para texto normal",
+        "Mantener ratio de contraste mínimo 3:1 para texto grande (18px+)",
+        "Usar etiquetas semánticas HTML apropiadas",
+        "Incluir atributos ARIA cuando sea necesario",
+        "Los estados de focus deben ser claramente visibles",
+        "Proporcionar mensajes de error claros y descriptivos",
+        "Asegurar que el contenido sea navegable con lectores de pantalla",
+        "No depender únicamente del color para transmitir información"
+      ],
+      "focusStates": {
+        "outline": "2px solid tokens.colors.border.focus",
+        "outlineOffset": "2px",
+        "borderRadius": "tokens.borderRadius.sm"
+      }
+    },
+    
+    "responsiveDesign": {
+      "description": "Principios para diseño responsive",
+      "approach": "mobile-first",
+      "rules": [
+        "Diseñar primero para móvil, luego escalar a escritorio",
+        "Usar unidades relativas (rem, em, %) en lugar de px cuando sea posible",
+        "Implementar puntos de ruptura consistentes definidos en tokens.breakpoints",
+        "Asegurar táctil mínimo de 44x44px para elementos interactivos en móvil",
+        "Optimizar imágenes para diferentes tamaños de pantalla",
+        "Usar CSS Grid y Flexbox para layouts flexibles",
+        "Probar en múltiples dispositivos y tamaños de pantalla",
+        "Considerar orientación de dispositivo (portrait/landscape)"
+      ],
+      "breakpointUsage": {
+        "sm": "Tablets pequeñas (640px+)",
+        "md": "Tablets y laptops pequeñas (768px+)",
+        "lg": "Laptops y monitores estándar (1024px+)",
+        "xl": "Monitores grandes (1280px+)",
+        "2xl": "Monitores extra grandes (1536px+)"
+      }
+    },
+    
+    "spacing": {
+      "description": "Sistema de espaciado consistente",
+      "rules": [
+        "Usar el sistema de espaciado definido en tokens para mantener consistencia",
+        "Aplicar espaciado de 8px como base (múltiplos de 8)",
+        "Usar espaciado generoso para mejorar legibilidad",
+        "Mantener jerarquía visual con espaciado apropiado",
+        "Espaciado entre secciones: tokens.spacing.16 o mayor",
+        "Espaciado entre elementos relacionados: tokens.spacing.4 a tokens.spacing.6",
+        "Espaciado interno de componentes: tokens.spacing.3 a tokens.spacing.4",
+        "Usar espaciado consistente en toda la aplicación"
+      ]
+    },
+    
+    "typography": {
+      "description": "Jerarquía y uso de tipografía",
+      "rules": [
+        "Establecer clara jerarquía visual con tamaños de fuente",
+        "Usar máximo 3-4 tamaños diferentes por vista",
+        "Mantener line-height apropiado para legibilidad (1.5 para texto normal)",
+        "Limitar ancho de línea a 60-80 caracteres para texto largo",
+        "Usar pesos de fuente para establecer importancia",
+        "Mantener contraste adecuado entre texto y fondo",
+        "Evitar usar solo mayúsculas en textos largos"
+      ],
+      "hierarchy": {
+        "h1": {
+          "fontSize": "tokens.typography.fontSize.4xl",
+          "fontWeight": "tokens.typography.fontWeight.bold",
+          "lineHeight": "tokens.typography.lineHeight.tight",
+          "marginBottom": "tokens.spacing.6"
+        },
+        "h2": {
+          "fontSize": "tokens.typography.fontSize.3xl",
+          "fontWeight": "tokens.typography.fontWeight.bold",
+          "lineHeight": "tokens.typography.lineHeight.tight",
+          "marginBottom": "tokens.spacing.5"
+        },
+        "h3": {
+          "fontSize": "tokens.typography.fontSize.2xl",
+          "fontWeight": "tokens.typography.fontWeight.semibold",
+          "lineHeight": "tokens.typography.lineHeight.tight",
+          "marginBottom": "tokens.spacing.4"
+        },
+        "h4": {
+          "fontSize": "tokens.typography.fontSize.xl",
+          "fontWeight": "tokens.typography.fontWeight.semibold",
+          "lineHeight": "tokens.typography.lineHeight.normal",
+          "marginBottom": "tokens.spacing.3"
+        },
+        "body": {
+          "fontSize": "tokens.typography.fontSize.base",
+          "fontWeight": "tokens.typography.fontWeight.normal",
+          "lineHeight": "tokens.typography.lineHeight.relaxed",
+          "color": "tokens.colors.text.primary"
+        },
+        "small": {
+          "fontSize": "tokens.typography.fontSize.sm",
+          "fontWeight": "tokens.typography.fontWeight.normal",
+          "lineHeight": "tokens.typography.lineHeight.normal",
+          "color": "tokens.colors.text.secondary"
+        }
+      }
+    },
+    
+    "colorUsage": {
+      "description": "Guía para uso apropiado del color",
+      "rules": [
+        "Usar colores primarios para acciones principales y elementos de marca",
+        "Usar colores secundarios para acciones secundarias y variedad",
+        "Aplicar colores semánticos de manera consistente (éxito=verde, error=rojo)",
+        "Usar colores neutrales para texto y fondos",
+        "Mantener ratio de contraste WCAG AA mínimo",
+        "Limitar paleta de colores a 3-4 colores principales por vista",
+        "Usar color para reforzar jerarquía, no como único indicador",
+        "Considerar accesibilidad para daltonismo"
+      ],
+      "semanticUsage": {
+        "success": "Confirmaciones, completados exitosos, mensajes positivos",
+        "error": "Errores, validaciones fallidas, acciones destructivas",
+        "warning": "Advertencias, precauciones, información importante",
+        "info": "Información neutral, ayuda, consejos"
+      }
+    },
+    
+    "interactions": {
+      "description": "Patrones de interacción y microanimaciones",
+      "rules": [
+        "Proporcionar feedback visual inmediato en todas las interacciones",
+        "Usar transiciones suaves (200-300ms) para cambios de estado",
+        "Implementar estados hover, active y focus en elementos interactivos",
+        "Mostrar indicadores de carga para operaciones que tomen >500ms",
+        "Usar animaciones sutiles para dirigir atención",
+        "Evitar animaciones que puedan causar mareo o distracción",
+        "Permitir que usuarios desactiven animaciones (prefers-reduced-motion)",
+        "Mantener consistencia en patrones de interacción similares"
+      ],
+      "feedbackPatterns": {
+        "buttonClick": "Cambio de color + ligera escala o movimiento",
+        "formSubmit": "Spinner + deshabilitar botón + mensaje de confirmación",
+        "itemAdd": "Animación de entrada + notificación temporal",
+        "itemDelete": "Confirmación + animación de salida",
+        "dataLoad": "Skeleton screens o spinners",
+        "error": "Alert con animación de shake o bounce"
+      }
+    },
+    
+    "performance": {
+      "description": "Consideraciones de rendimiento",
+      "rules": [
+        "Optimizar imágenes y usar formatos modernos (WebP, AVIF)",
+        "Implementar lazy loading para imágenes y componentes pesados",
+        "Minimizar animaciones complejas en dispositivos de gama baja",
+        "Usar CSS sobre JavaScript para animaciones cuando sea posible",
+        "Implementar debouncing/throttling en inputs de búsqueda",
+        "Cargar recursos críticos primero",
+        "Usar system fonts cuando sea posible para reducir carga",
+        "Considerar code-splitting para bundles grandes"
+      ]
+    },
+    
+    "contentStrategy": {
+      "description": "Estrategia para contenido y mensajes",
+      "rules": [
+        "Usar lenguaje claro y conciso",
+        "Escribir en voz activa",
+        "Evitar jerga técnica innecesaria",
+        "Proporcionar contexto suficiente en mensajes de error",
+        "Usar tono amigable y profesional",
+        "Mantener consistencia en terminología",
+        "Ofrecer soluciones en mensajes de error, no solo el problema",
+        "Localizar contenido apropiadamente para diferentes regiones"
+      ],
+      "microcopy": {
+        "buttons": {
+          "primary": "Verbos de acción claros (Guardar, Enviar, Crear)",
+          "cancel": "Usar 'Cancelar' o 'Volver', evitar 'No'",
+          "delete": "Ser explícito: 'Eliminar permanentemente'"
+        },
+        "errors": {
+          "pattern": "Qué pasó + Por qué + Cómo solucionarlo",
+          "examples": [
+            "No se pudo guardar. Verifica tu conexión e intenta nuevamente.",
+            "Correo inválido. Debe incluir @ y un dominio válido.",
+            "Contraseña débil. Usa al menos 8 caracteres, mayúsculas y números."
+          ]
+        },
+        "emptyStates": {
+          "pattern": "Explicar por qué está vacío + Sugerir acción",
+          "examples": [
+            "No hay tareas pendientes. ¡Crea tu primera tarea!",
+            "Tu carrito está vacío. Explora nuestros productos."
+          ]
+        }
+      }
+    }
+  },
+  
+  "bestPractices": {
+    "componentDevelopment": {
+      "description": "Mejores prácticas al crear componentes",
+      "rules": [
+        "Crear componentes reutilizables y modulares",
+        "Mantener componentes pequeños y enfocados (principio de responsabilidad única)",
+        "Usar props tipadas con TypeScript o PropTypes",
+        "Implementar valores por defecto razonables para props opcionales",
+        "Manejar estados de carga y error apropiadamente",
+        "Documentar props y uso del componente",
+        "Hacer componentes accesibles por defecto",
+        "Permitir personalización mediante props sin comprometer la API"
+      ]
+    },
+    
+    "stateManagement": {
+      "description": "Manejo de estado en la aplicación",
+      "rules": [
+        "Mantener estado lo más cerca posible de donde se usa",
+        "Evitar estado duplicado o derivado",
+        "Usar estado local para UI, estado global para datos compartidos",
+        "Implementar manejo de errores en todas las operaciones asíncronas",
+        "Considerar estados de carga, éxito, y error para operaciones async",
+        "Normalizar datos complejos para fácil acceso",
+        "Usar inmutabilidad al actualizar estado"
+      ]
+    },
+    
+    "errorHandling": {
+      "description": "Estrategias para manejo de errores",
+      "rules": [
+        "Nunca fallar silenciosamente - siempre informar al usuario",
+        "Proporcionar mensajes de error específicos y accionables",
+        "Implementar error boundaries en React",
+        "Registrar errores para debugging en producción",
+        "Ofrecer opciones de recuperación cuando sea posible",
+        "Validar inputs antes de procesarlos",
+        "Manejar errores de red graciosamente con reintentos",
+        "Mostrar estados de error de manera no disruptiva cuando sea apropiado"
+      ],
+      "errorTypes": {
+        "validation": "Mostrar inline cerca del campo afectado",
+        "network": "Mostrar alert con opción de reintentar",
+        "critical": "Mostrar modal bloqueante con instrucciones claras",
+        "minor": "Toast/notification temporal"
+      }
+    },
+    
+    "testing": {
+      "description": "Consideraciones para testing",
+      "rules": [
+        "Escribir tests para lógica crítica de negocio",
+        "Probar accesibilidad con herramientas automatizadas",
+        "Validar responsive design en múltiples tamaños",
+        "Probar con diferentes navegadores y dispositivos",
+        "Verificar estados de carga y error",
+        "Probar interacciones de teclado",
+        "Validar contraste de colores",
+        "Probar con lectores de pantalla"
+      ]
+    },
+    
+    "security": {
+      "description": "Consideraciones de seguridad",
+      "rules": [
+        "Nunca exponer tokens o claves API en el frontend",
+        "Validar y sanitizar todos los inputs del usuario",
+        "Implementar rate limiting en formularios",
+        "Usar HTTPS para todas las comunicaciones",
+        "Implementar CSRF protection",
+        "Validar datos tanto en cliente como servidor",
+        "No confiar únicamente en validación del cliente",
+        "Manejar datos sensibles con cuidado"
+      ]
+    }
+  },
+  
+  "designDecisions": {
+    "whenToUse": {
+      "modals": "Para acciones críticas que requieren atención completa del usuario, confirmaciones destructivas, o formularios complejos que no caben inline",
+      "toasts": "Para notificaciones temporales de éxito/error que no requieren acción del usuario",
+      "alerts": "Para información importante que debe permanecer visible pero no bloquear interacción",
+      "tooltips": "Para información contextual breve que ayuda a entender un elemento",
+      "badges": "Para indicadores de estado o contadores numéricos pequeños",
+      "cards": "Para agrupar contenido relacionado y hacerlo visualmente distinto",
+      "buttons": {
+        "primary": "Acción principal en el contexto (máximo 1 por sección)",
+        "secondary": "Acciones importantes pero no primarias",
+        "ghost": "Acciones terciarias o menos importantes",
+        "danger": "Acciones destructivas que requieren confirmación"
+      }
+    }
+  },
+  
+  "implementationNotes": {
+    "cssFramework": "Usar Tailwind CSS con clases utilitarias basadas en este sistema de diseño",
+    "componentLibrary": "Implementar componentes en React con TypeScript",
+    "storageNote": "NUNCA usar localStorage o sessionStorage en artifacts - usar React state",
+    "styleApproach": "Preferir clases de Tailwind sobre CSS custom, usar tokens definidos",
+    "fileStructure": "Organizar componentes por feature/dominio, no por tipo técnico",
+    "naming": "Usar PascalCase para componentes, camelCase para funciones y variables",
+    "documentation": "Documentar props, estados y comportamientos esperados de cada componente"
+  },
+  
+  "versionHistory": [
+    {
+      "version": "1.0.0",
+      "date": "2025-11-18",
+      "changes": "Sistema de diseño inicial con todos los tokens, componentes y directrices"
+    }
+  ]
+}

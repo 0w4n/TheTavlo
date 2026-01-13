@@ -1,0 +1,2151 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "name": "TheTavlo Design System",
+    "description": "Sistema de diseño completo para aplicación de gestión con arquitectura limpia y modelo atómico",
+    "lastUpdated": "2025-11-18"
+  },
+  
+  "principles": {
+    "philosophy": [
+      "Claridad sobre complejidad: cada elemento debe tener un propósito evidente",
+      "Coherencia visual: mantener patrones reconocibles en toda la aplicación",
+      "Jerarquía progresiva: guiar al usuario desde lo general hacia lo específico",
+      "Espacios respirables: priorizar el contenido con generoso uso del espacio negativo",
+      "Feedback inmediato: toda acción debe tener respuesta visual clara",
+      "Accesibilidad universal: WCAG 2.1 AAA como estándar mínimo"
+    ],
+    "coreValues": [
+      "Profesionalismo elegante",
+      "Eficiencia sin fricciones",
+      "Información clara y digerible",
+      "Interacciones intuitivas"
+    ]
+  },
+
+  "accessibility": {
+    "standards": {
+      "level": "WCAG 2.1 AAA",
+      "contrast": {
+        "normal": "7:1 mínimo",
+        "large": "4.5:1 mínimo",
+        "ui": "3:1 mínimo para componentes interactivos"
+      }
+    },
+    "requirements": {
+      "keyboard": {
+        "navigation": "Todos los elementos interactivos navegables con Tab",
+        "shortcuts": "Implementar atajos de teclado para acciones principales",
+        "focusVisible": "Indicador de foco visible con anillo de 3px y contraste adecuado",
+        "skipLinks": "Enlaces de salto para navegación rápida"
+      },
+      "screenReader": {
+        "ariaLabels": "Todos los elementos interactivos con labels descriptivos",
+        "ariaDescribedBy": "Descripciones contextuales para elementos complejos",
+        "ariaLive": "Regiones live para actualizaciones dinámicas",
+        "semanticHtml": "Uso correcto de elementos semánticos HTML5",
+        "landmarkRoles": "Roles ARIA para navegación (navigation, main, complementary, contentinfo)"
+      },
+      "motion": {
+        "prefersReducedMotion": "Respetar preferencia del usuario",
+        "fallback": "Alternativas sin animación para toda transición"
+      },
+      "content": {
+        "language": "Atributo lang en elementos según idioma",
+        "readingLevel": "Lenguaje claro y directo nivel B1-B2",
+        "errorMessages": "Mensajes de error descriptivos y accionables"
+      },
+      "forms": {
+        "labels": "Labels visibles y asociados correctamente",
+        "errors": "Errores identificables por más de solo color",
+        "help": "Textos de ayuda descriptivos",
+        "validation": "Validación en tiempo real con feedback claro"
+      }
+    }
+  },
+
+  "colors": {
+    "palette": {
+      "primary": {
+        "50": "#e6f5f0",
+        "100": "#b3e0d1",
+        "200": "#80ccb3",
+        "300": "#4db894",
+        "400": "#1aa376",
+        "500": "#0d8f5f",
+        "600": "#0a7049",
+        "700": "#085233",
+        "800": "#05331d",
+        "900": "#021507",
+        "base": "#0d8f5f",
+        "description": "Verde bosque profundo - transmite confianza, crecimiento y estabilidad"
+      },
+      "accent": {
+        "50": "#eff3ff",
+        "100": "#d6e0ff",
+        "200": "#adbdff",
+        "300": "#849aff",
+        "400": "#5b77ff",
+        "500": "#6b7df6",
+        "600": "#5563d9",
+        "700": "#4049bc",
+        "800": "#2a309f",
+        "900": "#151682",
+        "base": "#6b7df6",
+        "description": "Azul índigo vibrante - para acciones primarias y elementos destacados"
+      },
+      "neutral": {
+        "0": "#ffffff",
+        "50": "#f8faf9",
+        "100": "#f0f4f2",
+        "200": "#e1e8e4",
+        "300": "#c5d1cb",
+        "400": "#a0b3a8",
+        "500": "#7a9485",
+        "600": "#5c7568",
+        "700": "#3e564b",
+        "800": "#2a3d34",
+        "900": "#152419",
+        "950": "#0a120d",
+        "1000": "#000000",
+        "description": "Escala de grises con tinte verde para cohesión cromática"
+      },
+      "semantic": {
+        "success": {
+          "light": "#d1f4e0",
+          "base": "#10b981",
+          "dark": "#047857",
+          "contrast": "#ffffff"
+        },
+        "warning": {
+          "light": "#fef3c7",
+          "base": "#f59e0b",
+          "dark": "#d97706",
+          "contrast": "#000000"
+        },
+        "error": {
+          "light": "#fee2e2",
+          "base": "#ef4444",
+          "dark": "#dc2626",
+          "contrast": "#ffffff"
+        },
+        "info": {
+          "light": "#dbeafe",
+          "base": "#3b82f6",
+          "dark": "#1d4ed8",
+          "contrast": "#ffffff"
+        }
+      },
+      "functional": {
+        "overlay": "rgba(21, 36, 25, 0.7)",
+        "overlayLight": "rgba(21, 36, 25, 0.4)",
+        "backdrop": "rgba(0, 0, 0, 0.5)",
+        "scrim": "rgba(0, 0, 0, 0.32)",
+        "divider": "rgba(160, 179, 168, 0.2)",
+        "border": "#c5d1cb",
+        "borderSubtle": "#e1e8e4",
+        "focus": "#6b7df6",
+        "focusRing": "rgba(107, 125, 246, 0.25)"
+      }
+    },
+    "usage": {
+      "backgrounds": {
+        "primary": "neutral.950",
+        "secondary": "neutral.900",
+        "tertiary": "neutral.800",
+        "elevated": "neutral.800",
+        "surface": "neutral.900",
+        "overlay": "functional.overlay",
+        "inverse": "neutral.0"
+      },
+      "text": {
+        "primary": "neutral.0",
+        "secondary": "neutral.300",
+        "tertiary": "neutral.400",
+        "disabled": "neutral.600",
+        "inverse": "neutral.950",
+        "link": "accent.400",
+        "linkHover": "accent.300"
+      },
+      "interactive": {
+        "primary": "accent.500",
+        "primaryHover": "accent.400",
+        "primaryActive": "accent.600",
+        "primaryDisabled": "neutral.700",
+        "secondary": "transparent",
+        "secondaryHover": "neutral.800",
+        "secondaryActive": "neutral.700",
+        "ghost": "transparent",
+        "ghostHover": "rgba(107, 125, 246, 0.1)"
+      }
+    }
+  },
+
+  "typography": {
+    "fontFamilies": {
+      "sans": {
+        "stack": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
+        "description": "Familia principal para UI y contenido general",
+        "features": "font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11'"
+      },
+      "mono": {
+        "stack": "'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace",
+        "description": "Para código y datos técnicos"
+      }
+    },
+    "scale": {
+      "xs": {
+        "fontSize": "0.75rem",
+        "lineHeight": "1rem",
+        "letterSpacing": "0.01em",
+        "use": "Metadatos, badges, etiquetas pequeñas"
+      },
+      "sm": {
+        "fontSize": "0.875rem",
+        "lineHeight": "1.25rem",
+        "letterSpacing": "0.005em",
+        "use": "Texto secundario, subtítulos, helpers"
+      },
+      "base": {
+        "fontSize": "1rem",
+        "lineHeight": "1.5rem",
+        "letterSpacing": "0",
+        "use": "Texto principal, párrafos"
+      },
+      "lg": {
+        "fontSize": "1.125rem",
+        "lineHeight": "1.75rem",
+        "letterSpacing": "-0.005em",
+        "use": "Destacados, leads"
+      },
+      "xl": {
+        "fontSize": "1.25rem",
+        "lineHeight": "1.875rem",
+        "letterSpacing": "-0.01em",
+        "use": "Títulos de sección"
+      },
+      "2xl": {
+        "fontSize": "1.5rem",
+        "lineHeight": "2rem",
+        "letterSpacing": "-0.015em",
+        "use": "Títulos de página"
+      },
+      "3xl": {
+        "fontSize": "1.875rem",
+        "lineHeight": "2.25rem",
+        "letterSpacing": "-0.02em",
+        "use": "Headers principales"
+      },
+      "4xl": {
+        "fontSize": "2.25rem",
+        "lineHeight": "2.5rem",
+        "letterSpacing": "-0.025em",
+        "use": "Display, heros"
+      },
+      "5xl": {
+        "fontSize": "3rem",
+        "lineHeight": "1.1",
+        "letterSpacing": "-0.03em",
+        "use": "Display grande, landing"
+      }
+    },
+    "weights": {
+      "light": "300",
+      "normal": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700"
+    },
+    "semanticStyles": {
+      "heading1": {
+        "size": "3xl",
+        "weight": "bold",
+        "color": "text.primary",
+        "marginBottom": "spacing.6"
+      },
+      "heading2": {
+        "size": "2xl",
+        "weight": "semibold",
+        "color": "text.primary",
+        "marginBottom": "spacing.4"
+      },
+      "heading3": {
+        "size": "xl",
+        "weight": "semibold",
+        "color": "text.primary",
+        "marginBottom": "spacing.3"
+      },
+      "body": {
+        "size": "base",
+        "weight": "normal",
+        "color": "text.primary",
+        "lineHeight": "1.6"
+      },
+      "caption": {
+        "size": "sm",
+        "weight": "normal",
+        "color": "text.secondary"
+      },
+      "label": {
+        "size": "sm",
+        "weight": "medium",
+        "color": "text.primary",
+        "textTransform": "none"
+      },
+      "button": {
+        "size": "base",
+        "weight": "medium",
+        "letterSpacing": "0.01em"
+      }
+    }
+  },
+
+  "spacing": {
+    "scale": {
+      "0": "0",
+      "1": "0.25rem",
+      "2": "0.5rem",
+      "3": "0.75rem",
+      "4": "1rem",
+      "5": "1.25rem",
+      "6": "1.5rem",
+      "8": "2rem",
+      "10": "2.5rem",
+      "12": "3rem",
+      "16": "4rem",
+      "20": "5rem",
+      "24": "6rem",
+      "32": "8rem",
+      "40": "10rem",
+      "48": "12rem",
+      "56": "14rem",
+      "64": "16rem"
+    },
+    "semantic": {
+      "containerPadding": {
+        "mobile": "spacing.4",
+        "tablet": "spacing.6",
+        "desktop": "spacing.8"
+      },
+      "sectionGap": {
+        "small": "spacing.8",
+        "medium": "spacing.12",
+        "large": "spacing.16"
+      },
+      "componentGap": {
+        "tight": "spacing.2",
+        "normal": "spacing.4",
+        "relaxed": "spacing.6"
+      },
+      "stackGap": {
+        "xs": "spacing.1",
+        "sm": "spacing.2",
+        "md": "spacing.4",
+        "lg": "spacing.6",
+        "xl": "spacing.8"
+      }
+    }
+  },
+
+  "borderRadius": {
+    "none": "0",
+    "sm": "0.25rem",
+    "base": "0.5rem",
+    "md": "0.625rem",
+    "lg": "0.75rem",
+    "xl": "1rem",
+    "2xl": "1.25rem",
+    "3xl": "1.5rem",
+    "full": "9999px",
+    "semantic": {
+      "button": "md",
+      "card": "lg",
+      "modal": "xl",
+      "input": "md",
+      "badge": "full",
+      "avatar": "full",
+      "chip": "full"
+    }
+  },
+
+  "shadows": {
+    "xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "sm": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)",
+    "base": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+    "md": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+    "lg": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+    "xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    "2xl": "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
+    "inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)",
+    "semantic": {
+      "card": "base",
+      "cardHover": "lg",
+      "modal": "2xl",
+      "dropdown": "lg",
+      "floating": "xl",
+      "focus": "0 0 0 3px rgba(107, 125, 246, 0.25)"
+    }
+  },
+
+  "animation": {
+    "duration": {
+      "instant": "50ms",
+      "fast": "150ms",
+      "normal": "250ms",
+      "slow": "350ms",
+      "slower": "500ms"
+    },
+    "easing": {
+      "linear": "linear",
+      "easeIn": "cubic-bezier(0.4, 0, 1, 1)",
+      "easeOut": "cubic-bezier(0, 0, 0.2, 1)",
+      "easeInOut": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    },
+    "presets": {
+      "fadeIn": {
+        "duration": "normal",
+        "easing": "easeOut",
+        "keyframes": "opacity: 0 → 1"
+      },
+      "slideUp": {
+        "duration": "normal",
+        "easing": "easeOut",
+        "keyframes": "transform: translateY(10px) → translateY(0); opacity: 0 → 1"
+      },
+      "scaleIn": {
+        "duration": "fast",
+        "easing": "spring",
+        "keyframes": "transform: scale(0.95) → scale(1); opacity: 0 → 1"
+      },
+      "buttonPress": {
+        "duration": "fast",
+        "easing": "easeInOut",
+        "keyframes": "transform: scale(1) → scale(0.98)"
+      }
+    }
+  },
+
+  "breakpoints": {
+    "xs": "320px",
+    "sm": "640px",
+    "md": "768px",
+    "lg": "1024px",
+    "xl": "1280px",
+    "2xl": "1536px",
+    "3xl": "1920px"
+  },
+
+  "zIndex": {
+    "base": "0",
+    "dropdown": "1000",
+    "sticky": "1100",
+    "fixed": "1200",
+    "overlay": "1300",
+    "modal": "1400",
+    "popover": "1500",
+    "tooltip": "1600",
+    "notification": "1700"
+  },
+
+  "components": {
+    "atoms": {
+      "Button": {
+        "description": "Botón principal con variantes para diferentes contextos",
+        "variants": {
+          "primary": {
+            "background": "interactive.primary",
+            "color": "neutral.0",
+            "border": "none",
+            "hover": {
+              "background": "interactive.primaryHover",
+              "transform": "translateY(-1px)",
+              "shadow": "shadows.md"
+            },
+            "active": {
+              "background": "interactive.primaryActive",
+              "transform": "translateY(0)"
+            },
+            "disabled": {
+              "background": "interactive.primaryDisabled",
+              "color": "text.disabled",
+              "cursor": "not-allowed"
+            }
+          },
+          "secondary": {
+            "background": "interactive.secondary",
+            "color": "text.primary",
+            "border": "1px solid functional.border",
+            "hover": {
+              "background": "interactive.secondaryHover",
+              "borderColor": "accent.400"
+            }
+          },
+          "ghost": {
+            "background": "interactive.ghost",
+            "color": "text.primary",
+            "border": "none",
+            "hover": {
+              "background": "interactive.ghostHover"
+            }
+          },
+          "danger": {
+            "background": "semantic.error.base",
+            "color": "semantic.error.contrast",
+            "hover": {
+              "background": "semantic.error.dark"
+            }
+          }
+        },
+        "sizes": {
+          "sm": {
+            "height": "2rem",
+            "padding": "0 spacing.3",
+            "fontSize": "typography.scale.sm",
+            "iconSize": "1rem"
+          },
+          "md": {
+            "height": "2.5rem",
+            "padding": "0 spacing.4",
+            "fontSize": "typography.scale.base",
+            "iconSize": "1.25rem"
+          },
+          "lg": {
+            "height": "3rem",
+            "padding": "0 spacing.6",
+            "fontSize": "typography.scale.lg",
+            "iconSize": "1.5rem"
+          }
+        },
+        "states": {
+          "default": "cursor-pointer",
+          "hover": "transition duration-fast",
+          "focus": "ring-2 ring-accent-500 ring-offset-2 ring-offset-neutral-950",
+          "active": "transform scale-98",
+          "disabled": "opacity-50 cursor-not-allowed",
+          "loading": "cursor-wait opacity-80"
+        },
+        "accessibility": {
+          "role": "button",
+          "ariaLabel": "required if no text content",
+          "ariaPressed": "for toggle buttons",
+          "ariaDisabled": "true when disabled",
+          "tabIndex": "0",
+          "keyboardShortcut": "support Enter and Space"
+        }
+      },
+
+      "Input": {
+        "description": "Campo de entrada de texto con validación y estados",
+        "base": {
+          "height": "2.75rem",
+          "padding": "spacing.3 spacing.4",
+          "fontSize": "typography.scale.base",
+          "background": "neutral.900",
+          "border": "1px solid functional.border",
+          "borderRadius": "borderRadius.md",
+          "color": "text.primary",
+          "transition": "all duration-fast"
+        },
+        "states": {
+          "default": "border-functional-border",
+          "hover": "border-accent-400",
+          "focus": "border-accent-500 ring-2 ring-accent-500/25 outline-none",
+          "error": "border-semantic-error-base ring-2 ring-semantic-error-base/25",
+          "success": "border-semantic-success-base",
+          "disabled": "opacity-50 cursor-not-allowed bg-neutral-800"
+        },
+        "variants": {
+          "text": "default",
+          "email": "type=email with email validation",
+          "password": "type=password with toggle visibility icon",
+          "number": "type=number with step controls",
+          "search": "with search icon and clear button",
+          "textarea": "multi-line with auto-resize"
+        },
+        "accessibility": {
+          "ariaLabel": "required",
+          "ariaDescribedBy": "link to helper text or error",
+          "ariaInvalid": "true when error",
+          "ariaRequired": "true when required",
+          "autoComplete": "appropriate value for input type"
+        }
+      },
+
+      "Icon": {
+        "description": "Iconos vectoriales escalables con tamaños consistentes",
+        "sizes": {
+          "xs": "0.75rem",
+          "sm": "1rem",
+          "md": "1.25rem",
+          "lg": "1.5rem",
+          "xl": "2rem",
+          "2xl": "3rem"
+        },
+        "colors": {
+          "primary": "currentColor",
+          "secondary": "text.secondary",
+          "accent": "accent.500",
+          "success": "semantic.success.base",
+          "warning": "semantic.warning.base",
+          "error": "semantic.error.base"
+        },
+        "accessibility": {
+          "ariaHidden": "true for decorative icons",
+          "ariaLabel": "required for interactive icons",
+          "role": "img for meaningful icons",
+          "title": "provide context"
+        }
+      },
+
+      "Badge": {
+        "description": "Indicador pequeño para estado o categoría",
+        "base": {
+          "display": "inline-flex",
+          "alignItems": "center",
+          "padding": "spacing.1 spacing.2",
+          "fontSize": "typography.scale.xs",
+          "fontWeight": "typography.weights.medium",
+          "borderRadius": "borderRadius.full",
+          "textTransform": "uppercase",
+          "letterSpacing": "0.05em"
+        },
+        "variants": {
+          "neutral": {
+            "background": "neutral.700",
+            "color": "neutral.200"
+          },
+          "primary": {
+            "background": "primary.600/20",
+            "color": "primary.300",
+            "border": "1px solid primary.500/30"
+          },
+          "accent": {
+            "background": "accent.600/20",
+            "color": "accent.300",
+            "border": "1px solid accent.500/30"
+          },
+          "success": {
+            "background": "semantic.success.base/20",
+            "color": "semantic.success.light"
+          },
+          "warning": {
+            "background": "semantic.warning.base/20",
+            "color": "semantic.warning.light"
+          },
+          "error": {
+            "background": "semantic.error.base/20",
+            "color": "semantic.error.light"
+          }
+        }
+      },
+
+      "Avatar": {
+        "description": "Imagen de usuario circular con fallback a iniciales",
+        "sizes": {
+          "xs": "1.5rem",
+          "sm": "2rem",
+          "md": "2.5rem",
+          "lg": "3rem",
+          "xl": "4rem",
+          "2xl": "6rem"
+        },
+        "base": {
+          "borderRadius": "borderRadius.full",
+          "background": "accent.600",
+          "color": "neutral.0",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "fontWeight": "typography.weights.semibold"
+        },
+        "states": {
+          "online": "ring-2 ring-semantic-success-base",
+          "offline": "ring-2 ring-neutral-600",
+          "busy": "ring-2 ring-semantic-error-base"
+        }
+      },
+
+      "Switch": {
+        "description": "Toggle on/off para configuraciones binarias",
+        "base": {
+          "width": "2.75rem",
+          "height": "1.5rem",
+          "borderRadius": "borderRadius.full",
+          "transition": "all duration-normal",
+          "cursor": "pointer"
+        },
+        "states": {
+          "off": {
+            "background": "neutral.700",
+            "thumbPosition": "left: 2px"
+          },
+          "on": {
+            "background": "accent.500",
+            "thumbPosition": "right: 2px"
+          }
+        },
+        "thumb": {
+          "width": "1.25rem",
+          "height": "1.25rem",
+          "background": "neutral.0",
+          "borderRadius": "borderRadius.full",
+          "shadow": "shadows.sm"
+        },
+        "accessibility": {
+          "role": "switch",
+          "ariaChecked": "true/false",
+          "ariaLabel": "required",
+          "tabIndex": "0",
+          "keyboard": "Space and Enter to toggle"
+        }
+      },
+
+      "Checkbox": {
+        "description": "Selector múltiple con estado intermedio",
+        "base": {
+          "width": "1.25rem",
+          "height": "1.25rem",
+          "borderRadius": "borderRadius.sm",
+          "border": "2px solid functional.border",
+          "background": "neutral.900",
+          "transition": "all duration-fast"
+        },
+        "states": {
+          "unchecked": {
+            "border": "functional.border",
+            "background": "neutral.900"
+          },
+          "checked": {
+            "background": "accent.500",
+            "border": "accent.500",
+            "icon": "checkmark in neutral.0"
+          },
+          "indeterminate": {
+            "background": "accent.500",
+            "border": "accent.500",
+            "icon": "minus in neutral.0"
+          }
+        },
+        "accessibility": {
+          "role": "checkbox",
+          "ariaChecked": "true/false/mixed",
+          "ariaLabel": "required if no label element",
+          "tabIndex": "0"
+        }
+      },
+
+      "Radio": {
+        "description": "Selector único de opciones mutuamente excluyentes",
+        "base": {
+          "width": "1.25rem",
+          "height": "1.25rem",
+          "borderRadius": "borderRadius.full",
+          "border": "2px solid functional.border",
+          "background": "neutral.900"
+        },
+        "states": {
+          "unchecked": {
+            "border": "functional.border"
+          },
+          "checked": {
+            "border": "accent.500",
+            "dot": "width: 0.5rem, height: 0.5rem, background: accent.500"
+          }
+        },
+        "accessibility": {
+          "role": "radio",
+          "ariaChecked": "true/false",
+          "tabIndex": "0 for selected, -1 for others",
+          "keyboard": "arrow keys to navigate within group"
+        }
+      },
+
+      "Spinner": {
+        "description": "Indicador de carga animado",
+        "sizes": {
+          "sm": "1rem",
+          "md": "1.5rem",
+          "lg": "2rem",
+          "xl": "3rem"
+        },
+        "variants": {
+          "circle": {
+            "border": "2px solid functional.divider",
+            "borderTop": "2px solid accent.500",
+            "animation": "spin 0.6s linear infinite"
+          },
+          "dots": {
+            "dots": "3 dots with sequential fade animation"
+          }
+        },
+        "accessibility": {
+          "role": "status",
+          "ariaLabel": "Loading",
+          "ariaLive": "polite"
+        }
+      },
+
+      "Divider": {
+        "description": "Separador visual entre secciones",
+        "variants": {
+          "horizontal": {
+            "width": "100%",
+            "height": "1px",
+            "background": "functional.divider",
+            "margin": "spacing.4 0"
+          },
+          "vertical": {
+            "width": "1px",
+            "height": "100%",
+            "background": "functional.divider",
+            "margin": "0 spacing.4"
+          }
+        },
+        "styles": {
+          "solid": "background: functional.divider",
+          "dashed": "border-top: 1px dashed functional.divider",
+          "dotted": "border-top: 1px dotted functional.divider"
+        }
+      }
+    },
+
+    "molecules": {
+      "Card": {
+        "description": "Contenedor elevado para agrupar contenido relacionado",
+        "base": {
+          "background": "backgrounds.surface",
+          "borderRadius": "borderRadius.lg",
+          "padding": "spacing.6",
+          "border": "1px solid functional.borderSubtle",
+          "shadow": "shadows.card",
+          "transition": "all duration-normal"
+        },
+        "variants": {
+          "default": {
+            "hover": "shadow: shadows.cardHover, transform: translateY(-2px)"
+          },
+          "interactive": {
+            "cursor": "pointer",
+            "hover": "border-color: accent.400"
+          },
+          "outlined": {
+            "background": "transparent",
+            "border": "1px solid functional.border"
+          },
+          "flat": {
+            "background": "neutral.800",
+            "shadow": "none",
+            "border": "none"
+          }
+        },
+        "sections": {
+          "header": {
+            "marginBottom": "spacing.4",
+            "paddingBottom": "spacing.4",
+            "borderBottom": "1px solid functional.divider"
+          },
+          "body": {
+            "padding": "spacing.4 0"
+          },
+          "footer": {
+            "marginTop": "spacing.4",
+            "paddingTop": "spacing.4",
+            "borderTop": "1px solid functional.divider"
+          }
+        },
+        "accessibility": {
+          "role": "article or region",
+          "ariaLabel": "descriptive label for card content",
+          "tabIndex": "0 if interactive"
+        }
+      },
+
+      "Modal": {
+        "description": "Diálogo modal para contenido que requiere atención inmediata",
+        "overlay": {
+          "background": "functional.backdrop",
+          "backdropFilter": "blur(4px)",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "zIndex": "zIndex.modal",
+          "animation": "fadeIn duration-normal"
+        },
+        "container": {
+          "background": "backgrounds.elevated",
+          "borderRadius": "borderRadius.xl",
+          "shadow": "shadows.modal",
+          "maxWidth": "90vw",
+          "maxHeight": "90vh",
+          "overflow": "auto",
+          "animation": "scaleIn duration-normal"
+        },
+        "sizes": {
+          "sm": "max-width: 400px",
+          "md": "max-width: 600px",
+          "lg": "max-width: 800px",
+          "xl": "max-width: 1000px",
+          "full": "max-width: 95vw"
+        },
+        "sections": {
+          "header": {
+            "padding": "spacing.6",
+            "borderBottom": "1px solid functional.divider",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "space-between"
+          },
+          "body": {
+            "padding": "spacing.6",
+            "overflowY": "auto"
+          },
+          "footer": {
+            "padding": "spacing.6",
+            "borderTop": "1px solid functional.divider",
+            "display": "flex",
+            "gap": "spacing.3",
+            "justifyContent": "flex-end"
+          }
+        },
+        "accessibility": {
+          "role": "dialog",
+          "ariaModal": "true",
+          "ariaLabelledBy": "id of title element",
+          "ariaDescribedBy": "id of description element",
+          "focusTrap": "true - keep focus within modal",
+          "closeOnEscape": "true",
+          "closeOnBackdrop": "optional",
+          "returnFocus": "return to trigger element on close"
+        }
+      },
+
+      "Dropdown": {
+        "description": "Menú desplegable para acciones u opciones",
+        "trigger": {
+          "cursor": "pointer",
+          "ariaHaspopup": "true",
+          "ariaExpanded": "true/false"
+        },
+        "menu": {
+          "background": "backgrounds.elevated",
+          "borderRadius": "borderRadius.lg",
+          "shadow": "shadows.dropdown",
+          "border": "1px solid functional.border",
+          "padding": "spacing.2",
+          "minWidth": "12rem",
+          "maxHeight": "20rem",
+          "overflowY": "auto",
+          "zIndex": "zIndex.dropdown",
+          "animation": "slideUp duration-fast"
+        },
+        "item": {
+          "padding": "spacing.2 spacing.3",
+          "borderRadius": "borderRadius.sm",
+          "cursor": "pointer",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.2",
+          "transition": "all duration-fast",
+          "states": {
+            "default": "color: text.primary",
+            "hover": "background: neutral.800",
+            "active": "background: neutral.700",
+            "disabled": "opacity: 0.5, cursor: not-allowed",
+            "danger": "color: semantic.error.base, hover background: semantic.error.base/10"
+          }
+        },
+        "divider": {
+          "margin": "spacing.2 0",
+          "height": "1px",
+          "background": "functional.divider"
+        },
+        "accessibility": {
+          "role": "menu",
+          "ariaOrientation": "vertical",
+          "itemRole": "menuitem",
+          "keyboard": "arrow keys navigation, Enter to select, Escape to close",
+          "typeahead": "support typing to filter/jump to items"
+        }
+      },
+
+      "Tooltip": {
+        "description": "Información contextual flotante",
+        "container": {
+          "background": "neutral.800",
+          "color": "text.primary",
+          "padding": "spacing.2 spacing.3",
+          "borderRadius": "borderRadius.md",
+          "fontSize": "typography.scale.sm",
+          "maxWidth": "16rem",
+          "zIndex": "zIndex.tooltip",
+          "shadow": "shadows.lg",
+          "animation": "fadeIn duration-fast",
+          "whiteSpace": "normal"
+        },
+        "arrow": {
+          "size": "6px",
+          "color": "neutral.800"
+        },
+        "positions": ["top", "right", "bottom", "left"],
+        "accessibility": {
+          "role": "tooltip",
+          "ariaDescribedBy": "link tooltip id to trigger",
+          "showOnFocus": "true",
+          "showOnHover": "true",
+          "delay": "500ms for hover"
+        }
+      },
+
+      "Alert": {
+        "description": "Mensaje de notificación contextual",
+        "base": {
+          "padding": "spacing.4",
+          "borderRadius": "borderRadius.lg",
+          "display": "flex",
+          "gap": "spacing.3",
+          "border": "1px solid"
+        },
+        "variants": {
+          "info": {
+            "background": "semantic.info.base/10",
+            "borderColor": "semantic.info.base/30",
+            "color": "semantic.info.light",
+            "icon": "info-circle"
+          },
+          "success": {
+            "background": "semantic.success.base/10",
+            "borderColor": "semantic.success.base/30",
+            "color": "semantic.success.light",
+            "icon": "check-circle"
+          },
+          "warning": {
+            "background": "semantic.warning.base/10",
+            "borderColor": "semantic.warning.base/30",
+            "color": "semantic.warning.light",
+            "icon": "alert-triangle"
+          },
+          "error": {
+            "background": "semantic.error.base/10",
+            "borderColor": "semantic.error.base/30",
+            "color": "semantic.error.light",
+            "icon": "x-circle"
+          }
+        },
+        "dismissible": {
+          "closeButton": "position: absolute, top-right",
+          "animation": "fadeOut on close"
+        },
+        "accessibility": {
+          "role": "alert for urgent, status for non-urgent",
+          "ariaLive": "assertive for alert, polite for status",
+          "ariaAtomic": "true"
+        }
+      },
+
+      "Toast": {
+        "description": "Notificación temporal no intrusiva",
+        "container": {
+          "position": "fixed",
+          "zIndex": "zIndex.notification",
+          "positions": {
+            "topRight": "top: spacing.4, right: spacing.4",
+            "topLeft": "top: spacing.4, left: spacing.4",
+            "bottomRight": "bottom: spacing.4, right: spacing.4",
+            "bottomLeft": "bottom: spacing.4, left: spacing.4",
+            "topCenter": "top: spacing.4, left: 50%, transform: translateX(-50%)",
+            "bottomCenter": "bottom: spacing.4, left: 50%, transform: translateX(-50%)"
+          }
+        },
+        "toast": {
+          "background": "backgrounds.elevated",
+          "padding": "spacing.4",
+          "borderRadius": "borderRadius.lg",
+          "shadow": "shadows.xl",
+          "minWidth": "300px",
+          "maxWidth": "500px",
+          "animation": "slideUp + fadeIn duration-normal",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.3"
+        },
+        "duration": {
+          "short": "3000ms",
+          "medium": "5000ms",
+          "long": "7000ms",
+          "persistent": "no auto-dismiss"
+        },
+        "accessibility": {
+          "role": "status",
+          "ariaLive": "polite",
+          "ariaAtomic": "true"
+        }
+      },
+
+      "Tabs": {
+        "description": "Navegación entre contenido relacionado",
+        "container": {
+          "borderBottom": "1px solid functional.divider"
+        },
+        "tabList": {
+          "display": "flex",
+          "gap": "spacing.1",
+          "role": "tablist"
+        },
+        "tab": {
+          "padding": "spacing.3 spacing.4",
+          "cursor": "pointer",
+          "borderBottom": "2px solid transparent",
+          "transition": "all duration-fast",
+          "fontWeight": "typography.weights.medium",
+          "states": {
+            "default": {
+              "color": "text.secondary",
+              "hover": "color: text.primary, background: neutral.800/50"
+            },
+            "active": {
+              "color": "accent.400",
+              "borderBottomColor": "accent.500"
+            },
+            "disabled": {
+              "opacity": "0.5",
+              "cursor": "not-allowed"
+            }
+          }
+        },
+        "panel": {
+          "padding": "spacing.6 0",
+          "role": "tabpanel",
+          "animation": "fadeIn duration-fast"
+        },
+        "accessibility": {
+          "ariaSelected": "true for active tab",
+          "ariaControls": "link tab to panel",
+          "tabIndex": "0 for selected, -1 for others",
+          "keyboard": "arrow keys to navigate, Home/End for first/last"
+        }
+      },
+
+      "Accordion": {
+        "description": "Panel colapsable para contenido extenso",
+        "item": {
+          "borderBottom": "1px solid functional.divider"
+        },
+        "trigger": {
+          "width": "100%",
+          "padding": "spacing.4 spacing.6",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "cursor": "pointer",
+          "transition": "all duration-fast",
+          "hover": "background: neutral.800/50",
+          "fontWeight": "typography.weights.medium"
+        },
+        "icon": {
+          "transition": "transform duration-normal",
+          "states": {
+            "closed": "transform: rotate(0deg)",
+            "open": "transform: rotate(180deg)"
+          }
+        },
+        "content": {
+          "padding": "0 spacing.6 spacing.4 spacing.6",
+          "animation": "slideDown + fadeIn duration-normal",
+          "overflow": "hidden"
+        },
+        "variants": {
+          "single": "only one item open at a time",
+          "multiple": "multiple items can be open"
+        },
+        "accessibility": {
+          "triggerRole": "button",
+          "ariaExpanded": "true/false",
+          "ariaControls": "link to content panel",
+          "regionRole": "region for content",
+          "ariaLabelledBy": "link to trigger"
+        }
+      },
+
+      "Breadcrumb": {
+        "description": "Navegación jerárquica de ubicación",
+        "container": {
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.2",
+          "fontSize": "typography.scale.sm",
+          "color": "text.secondary"
+        },
+        "item": {
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.2"
+        },
+        "link": {
+          "color": "text.secondary",
+          "hover": "color: text.primary, textDecoration: underline",
+          "transition": "all duration-fast"
+        },
+        "separator": {
+          "color": "text.tertiary",
+          "icon": "chevron-right or slash"
+        },
+        "current": {
+          "color": "text.primary",
+          "fontWeight": "typography.weights.medium",
+          "ariaCurrentPage": "true"
+        },
+        "accessibility": {
+          "nav": "role: navigation",
+          "ariaLabel": "Breadcrumb",
+          "list": "use ordered list <ol>",
+          "currentPage": "aria-current='page'"
+        }
+      },
+
+      "Pagination": {
+        "description": "Navegación entre páginas de contenido",
+        "container": {
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.2",
+          "justifyContent": "center"
+        },
+        "button": {
+          "width": "2.5rem",
+          "height": "2.5rem",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "borderRadius": "borderRadius.md",
+          "cursor": "pointer",
+          "transition": "all duration-fast",
+          "states": {
+            "default": {
+              "color": "text.primary",
+              "hover": "background: neutral.800"
+            },
+            "active": {
+              "background": "accent.500",
+              "color": "neutral.0",
+              "fontWeight": "typography.weights.semibold"
+            },
+            "disabled": {
+              "opacity": "0.5",
+              "cursor": "not-allowed"
+            }
+          }
+        },
+        "ellipsis": {
+          "color": "text.tertiary",
+          "padding": "0 spacing.2"
+        },
+        "accessibility": {
+          "nav": "role: navigation",
+          "ariaLabel": "Pagination",
+          "ariaCurrent": "page for current page",
+          "ariaLabel": "descriptive label for each button (Page 1, Next page, etc.)"
+        }
+      },
+
+      "FormField": {
+        "description": "Campo de formulario completo con label, input y mensajes",
+        "container": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "spacing.2"
+        },
+        "label": {
+          "fontSize": "typography.scale.sm",
+          "fontWeight": "typography.weights.medium",
+          "color": "text.primary",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.1"
+        },
+        "required": {
+          "color": "semantic.error.base",
+          "content": "*"
+        },
+        "helper": {
+          "fontSize": "typography.scale.sm",
+          "color": "text.secondary",
+          "marginTop": "spacing.1"
+        },
+        "error": {
+          "fontSize": "typography.scale.sm",
+          "color": "semantic.error.base",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.1",
+          "marginTop": "spacing.1"
+        },
+        "success": {
+          "fontSize": "typography.scale.sm",
+          "color": "semantic.success.base",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.1",
+          "marginTop": "spacing.1"
+        },
+        "accessibility": {
+          "labelFor": "associate label with input using for/id",
+          "ariaDescribedBy": "link to helper text",
+          "ariaInvalid": "true when error",
+          "ariaRequired": "true when required"
+        }
+      },
+
+      "SearchBar": {
+        "description": "Campo de búsqueda con sugerencias",
+        "container": {
+          "position": "relative",
+          "width": "100%"
+        },
+        "input": {
+          "paddingLeft": "spacing.10",
+          "paddingRight": "spacing.10",
+          "height": "2.75rem"
+        },
+        "iconLeft": {
+          "position": "absolute",
+          "left": "spacing.3",
+          "top": "50%",
+          "transform": "translateY(-50%)",
+          "color": "text.tertiary"
+        },
+        "clearButton": {
+          "position": "absolute",
+          "right": "spacing.3",
+          "top": "50%",
+          "transform": "translateY(-50%)",
+          "cursor": "pointer",
+          "color": "text.tertiary",
+          "hover": "color: text.primary"
+        },
+        "suggestions": {
+          "position": "absolute",
+          "top": "calc(100% + spacing.2)",
+          "width": "100%",
+          "background": "backgrounds.elevated",
+          "borderRadius": "borderRadius.lg",
+          "shadow": "shadows.dropdown",
+          "border": "1px solid functional.border",
+          "maxHeight": "300px",
+          "overflowY": "auto",
+          "zIndex": "zIndex.dropdown"
+        },
+        "accessibility": {
+          "role": "combobox",
+          "ariaExpanded": "true when suggestions shown",
+          "ariaControls": "id of suggestions list",
+          "ariaAutocomplete": "list",
+          "keyboard": "arrow keys to navigate suggestions"
+        }
+      },
+
+      "EmptyState": {
+        "description": "Estado visual para contenido vacío",
+        "container": {
+          "display": "flex",
+          "flexDirection": "column",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "padding": "spacing.16 spacing.8",
+          "textAlign": "center"
+        },
+        "icon": {
+          "fontSize": "4rem",
+          "color": "text.tertiary",
+          "marginBottom": "spacing.4"
+        },
+        "title": {
+          "fontSize": "typography.scale.xl",
+          "fontWeight": "typography.weights.semibold",
+          "color": "text.primary",
+          "marginBottom": "spacing.2"
+        },
+        "description": {
+          "fontSize": "typography.scale.base",
+          "color": "text.secondary",
+          "maxWidth": "400px",
+          "marginBottom": "spacing.6"
+        },
+        "action": {
+          "marginTop": "spacing.4"
+        }
+      }
+    },
+
+    "organisms": {
+      "Header": {
+        "description": "Barra de navegación principal",
+        "container": {
+          "height": "4rem",
+          "background": "backgrounds.primary",
+          "borderBottom": "1px solid functional.divider",
+          "padding": "0 spacing.6",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "position": "sticky",
+          "top": "0",
+          "zIndex": "zIndex.sticky"
+        },
+        "logo": {
+          "fontSize": "typography.scale.xl",
+          "fontWeight": "typography.weights.bold",
+          "color": "text.primary"
+        },
+        "actions": {
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.3"
+        },
+        "responsive": {
+          "mobile": "show hamburger menu",
+          "desktop": "show full navigation"
+        }
+      },
+
+      "Sidebar": {
+        "description": "Panel lateral de navegación",
+        "container": {
+          "width": "16rem",
+          "background": "backgrounds.secondary",
+          "borderRight": "1px solid functional.divider",
+          "height": "100vh",
+          "overflowY": "auto",
+          "padding": "spacing.6 spacing.4"
+        },
+        "section": {
+          "marginBottom": "spacing.6"
+        },
+        "sectionTitle": {
+          "fontSize": "typography.scale.xs",
+          "fontWeight": "typography.weights.semibold",
+          "color": "text.tertiary",
+          "textTransform": "uppercase",
+          "letterSpacing": "0.05em",
+          "marginBottom": "spacing.2",
+          "padding": "0 spacing.3"
+        },
+        "navItem": {
+          "padding": "spacing.2 spacing.3",
+          "borderRadius": "borderRadius.md",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.3",
+          "cursor": "pointer",
+          "transition": "all duration-fast",
+          "states": {
+            "default": {
+              "color": "text.secondary",
+              "hover": "background: neutral.800, color: text.primary"
+            },
+            "active": {
+              "background": "accent.500/15",
+              "color": "accent.400",
+              "fontWeight": "typography.weights.medium"
+            }
+          }
+        },
+        "responsive": {
+          "mobile": "overlay sidebar with backdrop",
+          "tablet": "collapsible sidebar",
+          "desktop": "persistent sidebar"
+        }
+      },
+
+      "Dashboard": {
+        "description": "Panel principal vacío con mensaje de bienvenida",
+        "container": {
+          "minHeight": "100vh",
+          "background": "backgrounds.primary",
+          "display": "flex",
+          "flexDirection": "column",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "padding": "spacing.8"
+        },
+        "emptyState": {
+          "maxWidth": "600px",
+          "textAlign": "center"
+        },
+        "icon": {
+          "width": "6rem",
+          "height": "6rem",
+          "margin": "0 auto spacing.6",
+          "color": "neutral.700"
+        },
+        "title": {
+          "fontSize": "typography.scale.3xl",
+          "fontWeight": "typography.weights.bold",
+          "color": "text.primary",
+          "marginBottom": "spacing.4"
+        },
+        "description": {
+          "fontSize": "typography.scale.lg",
+          "color": "text.secondary",
+          "marginBottom": "spacing.8"
+        },
+        "cta": {
+          "size": "lg"
+        }
+      },
+
+      "DataTable": {
+        "description": "Tabla de datos con ordenamiento y filtros",
+        "container": {
+          "background": "backgrounds.surface",
+          "borderRadius": "borderRadius.lg",
+          "border": "1px solid functional.borderSubtle",
+          "overflow": "hidden"
+        },
+        "header": {
+          "background": "neutral.800",
+          "borderBottom": "1px solid functional.divider"
+        },
+        "headerCell": {
+          "padding": "spacing.3 spacing.4",
+          "fontSize": "typography.scale.sm",
+          "fontWeight": "typography.weights.semibold",
+          "color": "text.primary",
+          "textTransform": "uppercase",
+          "letterSpacing": "0.05em"
+        },
+        "row": {
+          "borderBottom": "1px solid functional.divider",
+          "transition": "background duration-fast",
+          "states": {
+            "default": "background: transparent",
+            "hover": "background: neutral.800/50",
+            "selected": "background: accent.500/10"
+          }
+        },
+        "cell": {
+          "padding": "spacing.4",
+          "fontSize": "typography.scale.base",
+          "color": "text.primary"
+        },
+        "sortable": {
+          "cursor": "pointer",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "spacing.2",
+          "icon": "arrow-up or arrow-down"
+        },
+        "empty": {
+          "padding": "spacing.12",
+          "textAlign": "center",
+          "color": "text.secondary"
+        },
+        "accessibility": {
+          "table": "role: table or grid",
+          "caption": "provide table description",
+          "sortButton": "aria-sort: ascending/descending/none",
+          "columnHeaders": "scope: col",
+          "rowHeaders": "scope: row"
+        }
+      },
+
+      "FilterPanel": {
+        "description": "Panel de filtros para búsqueda avanzada",
+        "container": {
+          "background": "backgrounds.surface",
+          "borderRadius": "borderRadius.lg",
+          "padding": "spacing.6",
+          "border": "1px solid functional.borderSubtle"
+        },
+        "section": {
+          "marginBottom": "spacing.6"
+        },
+        "sectionTitle": {
+          "fontSize": "typography.scale.sm",
+          "fontWeight": "typography.weights.semibold",
+          "marginBottom": "spacing.3"
+        },
+        "actions": {
+          "display": "flex",
+          "gap": "spacing.3",
+          "marginTop": "spacing.6",
+          "paddingTop": "spacing.6",
+          "borderTop": "1px solid functional.divider"
+        }
+      },
+
+      "WidgetGrid": {
+        "description": "Cuadrícula de widgets para dashboard personalizable",
+        "container": {
+          "display": "grid",
+          "gridTemplateColumns": {
+            "mobile": "1fr",
+            "tablet": "repeat(2, 1fr)",
+            "desktop": "repeat(3, 1fr)",
+            "wide": "repeat(4, 1fr)"
+          },
+          "gap": "spacing.6",
+          "padding": "spacing.6"
+        },
+        "widget": {
+          "background": "backgrounds.surface",
+          "borderRadius": "borderRadius.lg",
+          "padding": "spacing.6",
+          "border": "1px solid functional.borderSubtle",
+          "minHeight": "200px"
+        },
+        "widgetHeader": {
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between",
+          "marginBottom": "spacing.4"
+        },
+        "widgetTitle": {
+          "fontSize": "typography.scale.lg",
+          "fontWeight": "typography.weights.semibold"
+        },
+        "widgetActions": {
+          "display": "flex",
+          "gap": "spacing.2"
+        }
+      }
+    }
+  },
+
+  "patterns": {
+    "loading": {
+      "skeleton": {
+        "background": "linear-gradient(90deg, neutral.800 25%, neutral.700 50%, neutral.800 75%)",
+        "backgroundSize": "200% 100%",
+        "animation": "shimmer 1.5s infinite",
+        "borderRadius": "borderRadius.md"
+      },
+      "spinner": {
+        "placement": "center of container",
+        "withOverlay": "use semi-transparent backdrop"
+      },
+      "progressive": {
+        "pattern": "show skeleton → load data → animate in",
+        "duration": "stagger animations by 50-100ms"
+      }
+    },
+    "errors": {
+      "inline": {
+        "placement": "below input field",
+        "icon": "error icon",
+        "color": "semantic.error"
+      },
+      "banner": {
+        "placement": "top of page or section",
+        "dismissible": "true",
+        "persistent": "until user action or success"
+      },
+      "modal": {
+        "use": "for critical errors requiring acknowledgment",
+        "actions": "clear primary action to resolve"
+      },
+      "toast": {
+        "use": "for non-critical errors",
+        "duration": "longer than success messages"
+      }
+    },
+    "feedback": {
+      "success": {
+        "toast": "brief confirmation message",
+        "inline": "checkmark + green color",
+        "animation": "subtle celebration (scale bounce)"
+      },
+      "optimisticUI": {
+        "pattern": "show result immediately → revert if fails",
+        "indicator": "subtle loading state on element"
+      }
+    },
+    "navigation": {
+      "breadcrumbs": {
+        "use": "for deep hierarchies (3+ levels)",
+        "placement": "below header, above content"
+      },
+      "tabs": {
+        "use": "for related content sections",
+        "maxTabs": "5-7 for optimal UX"
+      },
+      "wizard": {
+        "steps": "show progress indicator",
+        "navigation": "back/next buttons + step labels",
+        "validation": "validate before allowing next step"
+      }
+    },
+    "dataVisualization": {
+      "charts": {
+        "colorPalette": ["primary.500", "accent.500", "semantic.success.base", "semantic.warning.base", "semantic.info.base"],
+        "accessibility": "provide data table alternative",
+        "tooltips": "show on hover with formatted values"
+      },
+      "stats": {
+        "layout": "icon + value + label + trend",
+        "emphasis": "large value, smaller context",
+        "trend": "arrow + percentage + color indicator"
+      }
+    },
+    "forms": {
+      "layout": {
+        "singleColumn": "for better mobile experience",
+        "grouping": "related fields together with spacing",
+        "spacing": "spacing.6 between field groups"
+      },
+      "validation": {
+        "timing": "on blur for individual fields, on submit for form",
+        "display": "inline errors below each field",
+        "success": "optional subtle confirmation"
+      },
+      "submission": {
+        "loading": "disable submit + show spinner",
+        "success": "toast notification + redirect or reset",
+        "error": "show errors + keep form data"
+      }
+    }
+  },
+
+  "responsive": {
+    "approach": "mobile-first with progressive enhancement",
+    "breakpoints": {
+      "mobile": "320px - 639px",
+      "tablet": "640px - 1023px",
+      "desktop": "1024px - 1279px",
+      "wide": "1280px+"
+    },
+    "guidelines": {
+      "mobile": {
+        "navigation": "hamburger menu",
+        "layout": "single column stack",
+        "spacing": "reduced padding (spacing.4)",
+        "typography": "slightly smaller for space",
+        "touch": "min 44x44px touch targets"
+      },
+      "tablet": {
+        "navigation": "collapsible sidebar or tabs",
+        "layout": "2-column grid where appropriate",
+        "spacing": "standard (spacing.6)"
+      },
+      "desktop": {
+        "navigation": "persistent sidebar",
+        "layout": "multi-column grids",
+        "spacing": "generous (spacing.8)",
+        "hover": "full hover states active"
+      }
+    }
+  },
+
+  "implementation": {
+    "architecture": {
+      "atomic": "atoms → molecules → organisms → templates → pages",
+      "layers": {
+        "domain": {
+          "purpose": "lógica de negocio pura, sin dependencias externas",
+          "entities": "Task, User, Widget, etc.",
+          "rules": "TaskRules, validaciones de negocio",
+          "noUI": "sin referencias a React o DOM"
+        },
+        "application": {
+          "purpose": "casos de uso y orquestación",
+          "services": "TasksService, AuthService, WidgetService",
+          "interfaces": "TaskRepository, StorageRepository",
+          "useCases": "createTask, updateTask, deleteTask, filterTasks"
+        },
+        "infrastructure": {
+          "purpose": "implementaciones concretas",
+          "repositories": "HttpTaskRepository, LocalTaskRepository",
+          "adapters": "API clients, localStorage wrappers",
+          "external": "integraciones con servicios externos"
+        },
+        "presentation": {
+          "purpose": "UI y state management",
+          "components": "React components siguiendo atomic design",
+          "hooks": "useTasks, useTaskFilters, useWidgets",
+          "context": "TaskContext, ThemeContext, AuthContext",
+          "state": "reducer patterns para state complejo"
+        }
+      }
+    },
+    "naming": {
+      "components": {
+        "atoms": "Button, Input, Icon, Badge, Avatar",
+        "molecules": "FormField, SearchBar, Card, Alert",
+        "organisms": "Header, Sidebar, DataTable, Dashboard",
+        "convention": "PascalCase, descriptive, single responsibility"
+      },
+      "files": {
+        "component": "ComponentName.tsx",
+        "styles": "ComponentName.module.css o styled with Tailwind",
+        "tests": "ComponentName.test.tsx",
+        "stories": "ComponentName.stories.tsx",
+        "types": "ComponentName.types.ts"
+      },
+      "props": {
+        "boolean": "is/has prefix (isLoading, hasError)",
+        "handlers": "on prefix (onClick, onChange, onSubmit)",
+        "render": "render prefix (renderItem, renderHeader)"
+      },
+      "states": {
+        "convention": "descriptive constants",
+        "examples": "isLoading, isError, isSuccess, isEmpty"
+      }
+    },
+    "styling": {
+      "approach": "Tailwind utility-first con variables CSS para theming",
+      "tokens": {
+        "cssVariables": "usar CSS custom properties para colors, spacing",
+        "naming": "--color-primary-500, --spacing-4",
+        "darkMode": "usar clase 'dark' en root para switching"
+      },
+      "organization": {
+        "global": "global.css con resets y variables",
+        "components": "Tailwind classes directamente en JSX",
+        "complex": "styled-components o CSS modules para casos complejos",
+        "utilities": "custom Tailwind utilities para patterns repetidos"
+      }
+    },
+    "stateManagement": {
+      "local": {
+        "simple": "useState para state simple de componente",
+        "complex": "useReducer para state complejo con múltiples acciones"
+      },
+      "global": {
+        "context": "React Context + useReducer para state compartido",
+        "pattern": "Provider → Consumer via hooks",
+        "structure": {
+          "state": "interface defining state shape",
+          "actions": "type-safe action creators",
+          "reducer": "pure function handling state updates",
+          "context": "createContext with state + dispatch",
+          "provider": "component wrapping children",
+          "hook": "custom hook for easy consumption"
+        }
+      },
+      "server": {
+        "cache": "considerar React Query o SWR para server state",
+        "optimistic": "optimistic updates para mejor UX"
+      }
+    },
+    "dataFlow": {
+      "architecture": "unidirectional data flow",
+      "pattern": "User Action → Service → Repository → State Update → UI Render",
+      "example": {
+        "create": "onClick → TasksService.create → HttpTaskRepository → dispatch → re-render",
+        "read": "useEffect → TasksService.getAll → HttpTaskRepository → dispatch → render list",
+        "update": "onChange → optimistic update → TasksService.update → dispatch → confirm",
+        "delete": "onClick → confirm modal → TasksService.delete → dispatch → remove from UI"
+      }
+    },
+    "performance": {
+      "optimization": {
+        "memoization": "React.memo for expensive components",
+        "callbacks": "useCallback for stable function references",
+        "values": "useMemo for expensive computations",
+        "lazy": "React.lazy + Suspense for code splitting",
+        "virtualization": "react-window for large lists"
+      },
+      "loading": {
+        "suspense": "use React Suspense boundaries",
+        "skeleton": "show skeleton screens during load",
+        "progressive": "load critical content first"
+      },
+      "images": {
+        "lazy": "native lazy loading",
+        "optimize": "use appropriate formats (WebP, AVIF)",
+        "responsive": "srcset for different viewport sizes"
+      }
+    },
+    "testing": {
+      "unit": {
+        "framework": "Jest + React Testing Library",
+        "coverage": "aim for 80%+ on business logic",
+        "focus": "test behavior, not implementation"
+      },
+      "integration": {
+        "approach": "test component interactions",
+        "mocks": "mock external dependencies",
+        "scenarios": "test user workflows"
+      },
+      "e2e": {
+        "tool": "Playwright or Cypress",
+        "critical": "test critical user paths",
+        "ci": "run in CI/CD pipeline"
+      },
+      "accessibility": {
+        "tool": "jest-axe for automated testing",
+        "manual": "manual testing with screen readers",
+        "checklist": "WCAG 2.1 AAA compliance"
+      }
+    },
+    "documentation": {
+      "components": {
+        "storybook": "Storybook for component showcase",
+        "props": "JSDoc comments for prop documentation",
+        "examples": "usage examples in stories",
+        "variants": "show all variants and states"
+      },
+      "code": {
+        "comments": "explain 'why', not 'what'",
+        "jsdoc": "for public APIs and complex functions",
+        "readme": "README.md for each major feature",
+        "architecture": "ADRs for architectural decisions"
+      }
+    }
+  },
+
+  "designTokens": {
+    "export": {
+      "format": "CSS custom properties, JSON, TypeScript",
+      "tools": "Style Dictionary for multi-platform export"
+    },
+    "usage": {
+      "css": {
+        "example": "color: var(--color-primary-500);",
+        "fallback": "provide fallback values"
+      },
+      "javascript": {
+        "import": "import { colors } from './tokens';",
+        "usage": "style={{ color: colors.primary[500] }}"
+      },
+      "tailwind": {
+        "extend": "extend Tailwind config with design tokens",
+        "example": "text-primary-500, bg-neutral-900"
+      }
+    }
+  },
+
+  "examples": {
+    "emptyDashboard": {
+      "description": "Implementación del dashboard vacío de la captura",
+      "structure": {
+        "layout": "full viewport height con centering vertical y horizontal",
+        "icon": "grid 2x2 icon en neutral.700, tamaño 6rem",
+        "title": "'Dashboard Vacío' en typography.3xl bold",
+        "subtitle": "'Comienza agregando widgets para personalizar tu panel' en typography.lg secondary",
+        "cta": "Button primary large con icon: 'Añade tu primer widget'"
+      },
+      "colors": {
+        "background": "backgrounds.primary (neutral.950)",
+        "icon": "neutral.700",
+        "title": "text.primary (neutral.0)",
+        "subtitle": "text.secondary (neutral.300)",
+        "button": "accent.500 con hover effect"
+      },
+      "spacing": {
+        "container": "padding: spacing.8",
+        "iconToTitle": "spacing.6",
+        "titleToSubtitle": "spacing.4",
+        "subtitleToButton": "spacing.8"
+      },
+      "code": "Ver sección de código de ejemplo"
+    },
+    "header": {
+      "description": "Barra de navegación superior con logo y acciones",
+      "structure": {
+        "logo": "'TheTavlo' en typography.xl bold",
+        "actions": "4 icon buttons circulares (wand, palette, edit, user)",
+        "spacing": "gap: spacing.3 entre acciones",
+        "colors": "background: neutral.900, iconButtons: background green-600/10"
+      }
+    },
+    "addWidgetButton": {
+      "description": "Botón principal para añadir widgets",
+      "structure": {
+        "variant": "primary",
+        "size": "lg",
+        "icon": "grid plus icon a la izquierda",
+        "text": "'Añade tu primer widget'",
+        "state": "hover: elevación + accent-400 background"
+      }
+    }
+  },
+
+  "codeExamples": {
+    "emptyDashboardComponent": {
+      "language": "typescript",
+      "description": "Implementación completa del dashboard vacío",
+      "code": "// Dashboard.tsx\nimport React from 'react';\nimport { Button } from '../atoms/Button';\nimport { Icon } from '../atoms/Icon';\n\nexport const Dashboard: React.FC = () => {\n  const handleAddWidget = () => {\n    // Lógica para añadir widget\n  };\n\n  return (\n    <div className=\"min-h-screen bg-neutral-950 flex flex-col items-center justify-center p-8\">\n      <div className=\"max-w-2xl text-center\">\n        {/* Icon */}\n        <div className=\"mb-6\">\n          <Icon \n            name=\"grid\" \n            size=\"6rem\" \n            className=\"text-neutral-700 mx-auto\"\n            aria-hidden=\"true\"\n          />\n        </div>\n        \n        {/* Title */}\n        <h1 className=\"text-3xl font-bold text-neutral-0 mb-4\">\n          Dashboard Vacío\n        </h1>\n        \n        {/* Description */}\n        <p className=\"text-lg text-neutral-300 mb-8\">\n          Comienza agregando widgets para personalizar tu panel\n        </p>\n        \n        {/* CTA Button */}\n        <Button\n          variant=\"primary\"\n          size=\"lg\"\n          onClick={handleAddWidget}\n          icon={<Icon name=\"grid-plus\" size=\"1.5rem\" />}\n        >\n          Añade tu primer widget\n        </Button>\n      </div>\n    </div>\n  );\n};"
+    },
+    "buttonComponent": {
+      "language": "typescript",
+      "code": "// Button.tsx\nimport React from 'react';\nimport { cn } from '../../utils/classnames';\n\ninterface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';\n  size?: 'sm' | 'md' | 'lg';\n  icon?: React.ReactNode;\n  isLoading?: boolean;\n}\n\nexport const Button: React.FC<ButtonProps> = ({\n  children,\n  variant = 'primary',\n  size = 'md',\n  icon,\n  isLoading,\n  className,\n  disabled,\n  ...props\n}) => {\n  const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium rounded-md transition-all duration-150 focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-neutral-950 disabled:opacity-50 disabled:cursor-not-allowed';\n  \n  const variants = {\n    primary: 'bg-accent-500 text-neutral-0 hover:bg-accent-400 active:bg-accent-600 hover:-translate-y-0.5 shadow-md hover:shadow-lg',\n    secondary: 'bg-transparent text-neutral-0 border border-neutral-600 hover:bg-neutral-800 hover:border-accent-400',\n    ghost: 'bg-transparent text-neutral-0 hover:bg-accent-500/10',\n    danger: 'bg-red-500 text-white hover:bg-red-600'\n  };\n  \n  const sizes = {\n    sm: 'h-8 px-3 text-sm',\n    md: 'h-10 px-4 text-base',\n    lg: 'h-12 px-6 text-lg'\n  };\n  \n  return (\n    <button\n      className={cn(baseStyles, variants[variant], sizes[size], className)}\n      disabled={disabled || isLoading}\n      {...props}\n    >\n      {isLoading ? <Spinner size={size} /> : icon}\n      {children}\n    </button>\n  );\n};"
+    },
+    "themeProvider": {
+      "language": "typescript",
+      "code": "// ThemeProvider.tsx\nimport React, { createContext, useContext, useEffect, useState } from 'react';\n\ntype Theme = 'light' | 'dark';\n\ninterface ThemeContextType {\n  theme: Theme;\n  toggleTheme: () => void;\n}\n\nconst ThemeContext = createContext<ThemeContextType | undefined>(undefined);\n\nexport const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {\n  const [theme, setTheme] = useState<Theme>('dark');\n  \n  useEffect(() => {\n    const root = window.document.documentElement;\n    root.classList.remove('light', 'dark');\n    root.classList.add(theme);\n  }, [theme]);\n  \n  const toggleTheme = () => {\n    setTheme(prev => prev === 'light' ? 'dark' : 'light');\n  };\n  \n  return (\n    <ThemeContext.Provider value={{ theme, toggleTheme }}>\n      {children}\n    </ThemeContext.Provider>\n  );\n};\n\nexport const useTheme = () => {\n  const context = useContext(ThemeContext);\n  if (!context) throw new Error('useTheme must be used within ThemeProvider');\n  return context;\n};"
+    },
+    "cssVariables": {
+      "language": "css",
+      "code": "/* global.css */\n:root {\n  /* Colors - Primary */\n  --color-primary-500: #0d8f5f;\n  --color-primary-600: #0a7049;\n  --color-primary-700: #085233;\n  \n  /* Colors - Accent */\n  --color-accent-400: #849aff;\n  --color-accent-500: #6b7df6;\n  --color-accent-600: #5563d9;\n  \n  /* Colors - Neutral */\n  --color-neutral-0: #ffffff;\n  --color-neutral-300: #c5d1cb;\n  --color-neutral-600: #5c7568;\n  --color-neutral-700: #3e564b;\n  --color-neutral-800: #2a3d34;\n  --color-neutral-900: #152419;\n  --color-neutral-950: #0a120d;\n  \n  /* Colors - Semantic */\n  --color-success: #10b981;\n  --color-warning: #f59e0b;\n  --color-error: #ef4444;\n  --color-info: #3b82f6;\n  \n  /* Spacing */\n  --spacing-1: 0.25rem;\n  --spacing-2: 0.5rem;\n  --spacing-3: 0.75rem;\n  --spacing-4: 1rem;\n  --spacing-6: 1.5rem;\n  --spacing-8: 2rem;\n  --spacing-12: 3rem;\n  --spacing-16: 4rem;\n  \n  /* Border Radius */\n  --radius-sm: 0.25rem;\n  --radius-md: 0.625rem;\n  --radius-lg: 0.75rem;\n  --radius-xl: 1rem;\n  --radius-full: 9999px;\n  \n  /* Shadows */\n  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);\n  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);\n  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);\n  \n  /* Animation */\n  --duration-fast: 150ms;\n  --duration-normal: 250ms;\n  --duration-slow: 350ms;\n  \n  /* Z-index */\n  --z-dropdown: 1000;\n  --z-sticky: 1100;\n  --z-fixed: 1200;\n  --z-modal: 1400;\n  --z-tooltip: 1600;\n}\n\n/* Reset and base styles */\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nbody {\n  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\n  background-color: var(--color-neutral-950);\n  color: var(--color-neutral-0);\n  line-height: 1.5;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n/* Focus visible styles */\n*:focus-visible {\n  outline: 3px solid var(--color-accent-500);\n  outline-offset: 2px;\n}\n\n/* Reduced motion */\n@media (prefers-reduced-motion: reduce) {\n  *,\n  *::before,\n  *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}"
+    },
+    "tailwindConfig": {
+      "language": "javascript",
+      "code": "// tailwind.config.js\nmodule.exports = {\n  content: ['./src/**/*.{js,jsx,ts,tsx}'],\n  darkMode: 'class',\n  theme: {\n    extend: {\n      colors: {\n        primary: {\n          500: '#0d8f5f',\n          600: '#0a7049',\n          700: '#085233',\n        },\n        accent: {\n          400: '#849aff',\n          500: '#6b7df6',\n          600: '#5563d9',\n        },\n        neutral: {\n          0: '#ffffff',\n          300: '#c5d1cb',\n          600: '#5c7568',\n          700: '#3e564b',\n          800: '#2a3d34',\n          900: '#152419',\n          950: '#0a120d',\n        },\n        semantic: {\n          success: '#10b981',\n          warning: '#f59e0b',\n          error: '#ef4444',\n          info: '#3b82f6',\n        },\n      },\n      spacing: {\n        1: '0.25rem',\n        2: '0.5rem',\n        3: '0.75rem',\n        4: '1rem',\n        6: '1.5rem',\n        8: '2rem',\n        12: '3rem',\n        16: '4rem',\n      },\n      borderRadius: {\n        sm: '0.25rem',\n        md: '0.625rem',\n        lg: '0.75rem',\n        xl: '1rem',\n      },\n      boxShadow: {\n        sm: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',\n        md: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',\n        lg: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',\n        xl: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',\n      },\n      transitionDuration: {\n        fast: '150ms',\n        normal: '250ms',\n        slow: '350ms',\n      },\n    },\n  },\n  plugins: [],\n};"
+    }
+  },
+
+  "accessibility_checklist": {
+    "keyboard": [
+      "Todos los elementos interactivos son accesibles por teclado",
+      "Orden de tabulación lógico y predecible",
+      "Indicador de foco claramente visible (3px outline)",
+      "Atajos de teclado para acciones principales",
+      "Skip links para navegación rápida",
+      "Escape cierra modales y dropdowns",
+      "Enter/Space activan botones",
+      "Arrow keys navegan en listas y menús"
+    ],
+    "screenReader": [
+      "Estructura semántica HTML5 correcta",
+      "ARIA labels en todos los elementos interactivos",
+      "ARIA live regions para contenido dinámico",
+      "Alt text descriptivo en imágenes",
+      "Form labels asociados correctamente",
+      "Mensajes de error anunciados",
+      "Estado de carga comunicado",
+      "Landmarks ARIA para navegación"
+    ],
+    "visual": [
+      "Contraste 7:1 para texto normal",
+      "Contraste 4.5:1 para texto grande",
+      "Contraste 3:1 para componentes UI",
+      "No usar solo color para comunicar información",
+      "Tamaño de texto mínimo 16px",
+      "Targets táctiles mínimo 44x44px",
+      "Zoom hasta 200% sin pérdida de contenido"
+    ],
+    "content": [
+      "Lenguaje claro y simple (B1-B2)",
+      "Headings jerárquicos correctos (h1-h6)",
+      "Listas para contenido secuencial",
+      "Tablas con headers apropiados",
+      "Links descriptivos (evitar 'click aquí')",
+      "Atributo lang en elementos multilingües"
+    ],
+    "motion": [
+      "Respetar prefers-reduced-motion",
+      "Alternativas sin animación disponibles",
+      "No usar animaciones automáticas >5s",
+      "Permitir pausar animaciones"
+    ],
+    "testing": [
+      "Validar con WAVE o axe DevTools",
+      "Probar con lector de pantalla (NVDA/JAWS/VoiceOver)",
+      "Navegar solo con teclado",
+      "Verificar con 200% zoom",
+      "Probar con alto contraste",
+      "Validar HTML semántico"
+    ]
+  },
+
+  "fileStructure": {
+    "recommended": {
+      "src": {
+        "components": {
+          "atoms": ["Button", "Input", "Icon", "Badge", "Avatar", "Switch", "Checkbox", "Radio", "Spinner", "Divider"],
+          "molecules": ["Card", "Modal", "Dropdown", "Tooltip", "Alert", "Toast", "Tabs", "Accordion", "Breadcrumb", "Pagination", "FormField", "SearchBar", "EmptyState"],
+          "organisms": ["Header", "Sidebar", "Dashboard", "DataTable", "FilterPanel", "WidgetGrid"],
+          "templates": ["MainLayout", "AuthLayout", "DashboardLayout"],
+          "pages": ["HomePage", "DashboardPage", "SettingsPage"]
+        },
+        "domain": {
+          "entities": ["Task.ts", "User.ts", "Widget.ts"],
+          "rules": ["TaskRules.ts", "ValidationRules.ts"]
+        },
+        "application": {
+          "services": ["TasksService.ts", "AuthService.ts", "WidgetService.ts"],
+          "interfaces": ["TaskRepository.ts", "StorageRepository.ts"]
+        },
+        "infrastructure": {
+          "repositories": ["HttpTaskRepository.ts", "LocalTaskRepository.ts"],
+          "api": ["apiClient.ts", "endpoints.ts"]
+        },
+        "presentation": {
+          "contexts": ["TaskContext.tsx", "ThemeContext.tsx", "AuthContext.tsx"],
+          "hooks": ["useTasks.ts", "useTaskFilters.ts", "useWidgets.ts", "useTheme.ts"],
+          "reducers": ["taskReducer.ts", "widgetReducer.ts"]
+        },
+        "styles": {
+          "files": ["global.css", "tokens.css", "utilities.css"]
+        },
+        "utils": {
+          "files": ["classnames.ts", "formatters.ts", "validators.ts", "constants.ts"]
+        },
+        "types": {
+          "files": ["common.ts", "api.ts", "components.ts"]
+        }
+      }
+    }
+  },
+
+  "usageGuidelines": {
+    "forDevelopers": [
+      "Importar design tokens desde './tokens' en lugar de hardcodear valores",
+      "Usar componentes atómicos como building blocks",
+      "Seguir la arquitectura de capas estrictamente",
+      "Mantener componentes pequeños y enfocados (single responsibility)",
+      "Preferir composición sobre herencia",
+      "Escribir tests para cada componente",
+      "Documentar props con JSDoc",
+      "Seguir naming conventions establecidas",
+      "Usar TypeScript para type safety",
+      "Implementar error boundaries para componentes complejos"
+    ],
+    "forDesigners": [
+      "Referirse a este archivo para tokens exactos",
+      "Usar Figma/Sketch con design tokens sincronizados",
+      "Mantener consistencia con componentes existentes",
+      "Considerar todos los estados (default, hover, active, disabled, error)",
+      "Diseñar mobile-first",
+      "Incluir estados de loading y empty",
+      "Pensar en accesibilidad desde el diseño",
+      "Documentar flujos de usuario",
+      "Especificar animaciones y transiciones",
+      "Proveer specs para spacing y sizing"
+    ],
+    "forAI": [
+      "Este archivo es la fuente de verdad para todos los estilos",
+      "Replicar exactamente los valores especificados",
+      "Mantener consistencia en toda la aplicación",
+      "Seguir la jerarquía de componentes (atoms → molecules → organisms)",
+      "Implementar accesibilidad según las guías",
+      "Usar las clases de Tailwind especificadas",
+      "Respetar la arquitectura de capas en código generado",
+      "Incluir tipos TypeScript apropiados",
+      "Generar tests junto con componentes",
+      "Documentar código generado con comentarios útiles"
+    ]
+  },
+
+  "changelog": {
+    "1.0.0": {
+      "date": "2025-11-18",
+      "changes": [
+        "Versión inicial del sistema de diseño",
+        "Definición completa de tokens de diseño",
+        "Especificación de componentes atómicos",
+        "Guías de accesibilidad WCAG 2.1 AAA",
+        "Arquitectura de código basada en clean architecture",
+        "Ejemplos de implementación",
+        "Documentación de patrones y prácticas"
+      ]
+    }
+  },
+
+  "roadmap": {
+    "future": [
+      "Implementación de modo claro (light mode)",
+      "Sistema de temas personalizables",
+      "Más variantes de componentes",
+      "Biblioteca de iconos expandida",
+      "Animaciones más complejas y micro-interacciones",
+      "Componentes para data visualization",
+      "Componentes de IA integrados",
+      "Sistema de notificaciones avanzado",
+      "Builder de dashboards drag-and-drop",
+      "Internacionalización (i18n) completa"
+    ]
+  }
+}

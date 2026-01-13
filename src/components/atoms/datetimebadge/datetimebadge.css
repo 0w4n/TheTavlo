@@ -1,0 +1,249 @@
+/* ============================================
+   DATETIME BADGE COMPONENT
+   Badge que muestra fecha y hora actual
+   ============================================ */
+
+/* Base */
+.datetime-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  
+  padding: var(--spacing-3) var(--spacing-4);
+  
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+  
+  transition: all var(--duration-fast) var(--easing-out);
+}
+
+.datetime-badge--interactive {
+  cursor: pointer;
+}
+
+.datetime-badge--interactive:hover {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-accent-400);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.datetime-badge--interactive:active {
+  transform: translateY(0);
+}
+
+.datetime-badge--interactive:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* Default */
+.datetime-badge--default {
+  flex-direction: row;
+}
+
+/* Compact */
+.datetime-badge--compact {
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2) var(--spacing-3);
+  min-width: auto;
+}
+
+/* Detailed */
+.datetime-badge--detailed {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-5);
+  min-width: 220px;
+}
+
+/* ============================================
+   ICON
+   ============================================ */
+
+.datetime-badge__icon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-accent-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datetime-badge--compact .datetime-badge__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.datetime-badge__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================
+   CONTENT
+   ============================================ */
+
+.datetime-badge__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  flex: 1;
+}
+
+.datetime-badge--default .datetime-badge__content {
+  align-items: center;
+  flex-direction: row;
+  gap: var(--spacing-3);
+}
+
+.datetime-badge--compact .datetime-badge__content {
+  align-items: center;
+  gap: 0;
+}
+
+/* Date */
+.datetime-badge__date {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.datetime-badge--compact .datetime-badge__date {
+  font-size: var(--font-size-sm);
+}
+
+.datetime-badge--detailed .datetime-badge__date {
+  font-size: var(--font-size-lg);
+}
+
+/* Time */
+.datetime-badge__time {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.datetime-badge--compact .datetime-badge__time {
+  font-size: var(--font-size-xs);
+}
+
+.datetime-badge--detailed .datetime-badge__time {
+  font-size: var(--font-size-base);
+}
+
+/* Day of Week */
+.datetime-badge__day {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* ============================================
+   EVENT INDICATOR
+   ============================================ */
+
+.datetime-badge__event-indicator {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 var(--spacing-1);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background-color: var(--color-error);
+  color: var(--color-neutral-0);
+  
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-bg-primary);
+  
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+
+.datetime-badge__divider {
+  width: 1px;
+  height: 1.5rem;
+  background-color: var(--color-divider);
+}
+
+.datetime-badge--compact .datetime-badge__divider {
+  display: none;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .datetime-badge--default {
+    min-width: 160px;
+  }
+  
+  .datetime-badge--detailed {
+    min-width: 180px;
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+  
+  .datetime-badge__date {
+    font-size: var(--font-size-sm);
+  }
+  
+  .datetime-badge__time {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.datetime-badge--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.datetime-badge--loading .datetime-badge__time {
+  animation: pulse 1.5s ease-in-out infinite;
+}

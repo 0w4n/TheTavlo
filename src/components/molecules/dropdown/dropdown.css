@@ -1,0 +1,240 @@
+/* ============================================
+   DROPDOWN COMPONENT
+   Menú desplegable para acciones y opciones
+   ============================================ */
+
+/* Container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger */
+.dropdown__trigger {
+  cursor: pointer;
+}
+
+.dropdown__trigger:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.dropdown--disabled .dropdown__trigger {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Menu */
+.dropdown__menu {
+  position: absolute;
+  z-index: var(--z-dropdown);
+
+  min-width: 12rem;
+  max-height: 20rem;
+  overflow-y: auto;
+
+  background-color: var(--color-backgroundSecondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+
+  padding: var(--spacing-2);
+
+  animation: slideDown var(--duration-fast) var(--easing-out);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar */
+.dropdown__menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown__menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown__menu::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-600);
+  border-radius: var(--radius-full);
+}
+
+.dropdown__menu::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-500);
+}
+
+/* ============================================
+   POSITIONS
+   ============================================ */
+
+.dropdown__menu--bottom-start {
+  top: calc(100% + var(--spacing-2));
+  left: 0;
+}
+
+.dropdown__menu--bottom-end {
+  top: calc(100% + var(--spacing-2));
+  right: 0;
+}
+
+.dropdown__menu--top-start {
+  bottom: calc(100% + var(--spacing-2));
+  left: 0;
+}
+
+.dropdown__menu--top-end {
+  bottom: calc(100% + var(--spacing-2));
+  right: 0;
+}
+
+/* ============================================
+   DROPDOWN ITEM
+   ============================================ */
+
+.dropdown__item {
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  text-align: left;
+  white-space: nowrap;
+
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-out);
+}
+
+.dropdown__item:hover:not(:disabled) {
+  background-color: var(--color-bg-tertiary);
+}
+
+.dropdown__item:active:not(:disabled) {
+  background-color: var(--color-neutral-700);
+}
+
+.dropdown__item:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+
+.dropdown__item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Icon */
+.dropdown__item-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.dropdown__item:hover:not(:disabled) .dropdown__item-icon {
+  color: var(--color-text-primary);
+}
+
+.dropdown__item-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Danger variant */
+.dropdown__item--danger {
+  color: var(--color-error);
+}
+
+.dropdown__item--danger:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
+.dropdown__item--danger .dropdown__item-icon {
+  color: var(--color-error);
+}
+
+/* ============================================
+   DROPDOWN DIVIDER
+   ============================================ */
+
+.dropdown__divider {
+  height: 1px;
+  margin: var(--spacing-2) 0;
+  background-color: var(--color-divider);
+}
+
+.dropdown__divider--with-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  height: auto;
+  margin: var(--spacing-3) 0 var(--spacing-2);
+  background-color: transparent;
+}
+
+.dropdown__divider--with-label::before,
+.dropdown__divider--with-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-divider);
+}
+
+.dropdown__divider-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  padding: 0 var(--spacing-2);
+}
+
+/* ============================================
+   BACKDROP (para cerrar al hacer click fuera)
+   ============================================ */
+
+.dropdown__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-dropdown) - 1);
+  background: transparent;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .dropdown__menu {
+    min-width: 10rem;
+    max-height: 50vh;
+  }
+
+  .dropdown__item {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+  }
+}

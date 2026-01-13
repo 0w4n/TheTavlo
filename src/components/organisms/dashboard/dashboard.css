@@ -1,0 +1,111 @@
+/* ============================================
+   DASHBOARD COMPONENT
+   Pantalla principal de la aplicación
+   ============================================ */
+
+/* Container */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ============================================
+   EMPTY STATE VARIANT
+   ============================================ */
+
+.dashboard.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8);
+}
+
+/* ============================================
+   CONTENT VARIANT
+   ============================================ */
+
+.dashboard.content {
+  padding: var(--spacing-6);
+}
+
+/* ============================================
+   GRID LAYOUT (para widgets futuros)
+   ============================================ */
+
+.dashboard.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-flow: dense;
+  gap: var(--spacing-6);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .dashboar.grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-4);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboar.empty {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .dashboar.content {
+    padding: var(--spacing-4);
+  }
+
+  .dashboar.grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboar.empty {
+    padding: var(--spacing-4) var(--spacing-3);
+  }
+
+  .dashboar.content {
+    padding: var(--spacing-3);
+  }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.dashboard--loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.dashboard--loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
