@@ -7,7 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-docs
+docs/*
 node_modules
 dev-dist
 dist
@@ -26,4 +26,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.zip
 meeting
