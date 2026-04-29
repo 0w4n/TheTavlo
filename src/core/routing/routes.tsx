@@ -4,7 +4,6 @@ import HomePage from "#components/pages/HomePage";
 import LoginPage from "#components/pages/LoginPage";
 import CommingPage from "#components/pages/Comming";
 import PanelsPage from "#components/pages/PanelsPage";
-import { Navigate } from "react-router-dom";
 
 export const routes = [
   {
@@ -29,7 +28,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <Navigate to="/home" />,
+    element: <CommingPage />,
   },
   {
     path: "*",
