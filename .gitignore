@@ -28,5 +28,5 @@ dist-ssr
 *.sw?
 *.zip
 
-calendar/*
-marketplace/*
+src\features\calendar/*
+src\features\marketplace/*
