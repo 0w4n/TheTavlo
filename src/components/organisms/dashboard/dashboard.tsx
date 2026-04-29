@@ -99,7 +99,7 @@ type Props = {
   editMode: boolean;
 };
 
-export default function Dashboard({ widgetList, editMode }: Props) {
+export function Dashboard({ widgetList, editMode }: Props) {
   const { width, containerRef, mounted } = useContainerWidth();
   const { updateLayouts } = useWidgets();
 

@@ -1,2 +1,2 @@
-export Dashboard from "./dashboard.tsx";
+export { Dashboard } from "./dashboard";
 export type { DashboardProps } from "./dashboard.types";
