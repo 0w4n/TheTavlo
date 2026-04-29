@@ -6,9 +6,9 @@ import WidgetContent from "../content/WidgetContent";
 import { getIconWidgetType } from "./utils";
 import { Dropdown } from "#components/molecules/dropdown";
 import BreadCrumb from "#components/molecules/breadcrumb/breadcrumb";
-
-import "./widgetcontainer.css";
 import AddShared from "#components/templates/dialog/modShared/addShared";
+
+import "./widgetContainer.css";
 
 const actionTrigers = {
   iconTrigger: "IconDotsVertical",
