@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import type { Widget } from "#features/widgets/domain/widget.entity";
 import PanelsWidget from "../../panels/panelsWidget";
-import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
 import { ExamsTimelineWidget } from "../../examsTimeline/ExamsTimelineWidget";
 import { Timestamp } from "firebase/firestore";
@@ -32,8 +31,6 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
 
     loadSubPanels();
   }, [state.currentPanel]);
-
-  const panelId = useGlobalContext().state.panel.panelId;
 
   switch (widget.type) {
     // case "task-list":

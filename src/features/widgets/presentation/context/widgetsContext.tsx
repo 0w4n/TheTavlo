@@ -109,7 +109,7 @@ export function WidgetsProvider({
     async (widgetId: string) => {
       if (!userId) return;
 
-      await widgetService.removeWidget(userId, panelId, widgetId);
+      await widgetService.removeWidget(widgetId);
 
       dispatch({
         type: "REMOVE_WIDGET",

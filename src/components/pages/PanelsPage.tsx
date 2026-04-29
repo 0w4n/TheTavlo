@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from "react";
 import type { Panel } from "#features/panels/domain/panel.entity";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
 import { Header } from "#components/organisms/header";
-import { ThemeSettingsDialog } from "#components/ThemeSettingsDialog";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import useAuth from "#core/auth/presentation/hooks/useAuth";

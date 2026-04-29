@@ -95,8 +95,6 @@ export class WidgetService {
   }
 
   async removeWidget(
-    userId: string,
-    panelId: string,
     widgetId: string,
   ): Promise<void> {
     await this.repository.delete(widgetId);
