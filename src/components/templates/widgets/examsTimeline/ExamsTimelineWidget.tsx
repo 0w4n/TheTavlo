@@ -3,7 +3,7 @@ import type { Timestamp } from "firebase/firestore";
 import type {
   ExamsTimelineWidgetProps,
   ExamTimelineItemProps,
-} from "./ExamsTimelineWidget.type";
+} from "./examsTimelineWidget.types";
 
 import "./examsTimelineWidget.css";
 

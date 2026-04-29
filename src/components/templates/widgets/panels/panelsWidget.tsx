@@ -1,7 +1,8 @@
 import Icon from "#shared/ui/atoms/icons";
-import "./panelsWidget.css";
 import type { Panel } from "#features/panels/domain/panel.entity";
 import { Link } from "react-router-dom";
+
+import "./panelsWidget.css";
 
 export default function PanelsWidget({ items }: { items: Panel[] }) {
   console.info("Items: ", items);
