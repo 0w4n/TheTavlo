@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import type { Widget } from "#features/widgets/domain/widget.entity";
 import PanelsWidget from "../../panels/panelsWidget";
 import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
-import { ExamsTimelineWidget } from "../../examsTimeline/examsTimelineWidget";
+import { ExamsTimelineWidget } from "../../examsTimeline/ExamsTimelineWidget";
 import { Timestamp } from "firebase/firestore";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import type { Panel } from "#features/panels/domain/panel.entity";
