@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
     "target": "ESNext",
@@ -27,8 +27,8 @@
       "#core/*": ["core/*"],
       "#shared/*": ["shared/*"],
       "#pages/*": ["pages/*"],
-      "#elements/*": ["elements/*"],
-    },
+      "#elements/*": ["elements/*"]
+    }
   },
   "include": ["vite.config.ts"],
   "exclude": ["node_modules"]

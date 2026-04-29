@@ -36,6 +36,9 @@
     ".vscode/PanelDialog.tsx",
     ".vscode/TaskList.tsx",
     "src/components/ThemeSettingsDialog.tsx",
-    "src/components/ThemeToggleButton.tsx"
-, ".vscode/breakpoint", ".vscode/desing-page.tsx", ".vscode/desing.tsx"]
+    "src/components/ThemeToggleButton.tsx",
+    ".vscode/breakpoint",
+    ".vscode/desing-page.tsx",
+    ".vscode/desing.tsx"
+  ]
 }
