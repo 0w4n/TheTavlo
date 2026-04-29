@@ -1,6 +1,6 @@
 import React from "react";
 import type { InputProps } from "./input.types";
-import "./Input.css";
+import "./input.css";
 import Icon from "#shared/ui/atoms/icons";
 
 export function Input({
