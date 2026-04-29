@@ -2,7 +2,7 @@ import React from "react";
 import type { HeaderProps, HeaderAction } from "./header.types";
 import "./header.css";
 import { Button } from "#components/atoms/button";
-import ModalPortal from "#components/molecules/modal/modalPortal";
+import ModalPortal from "#components/molecules/modal/portal";
 import Icon from "#shared/ui/atoms/icons";
 import { Dropdown } from "#components/molecules/dropdown";
 
@@ -66,9 +66,9 @@ function HeaderActionRenderer({ action }: { action: HeaderAction }) {
           variant="primary"
           disabled={action.disabled}
           onClick={action.onClick}
-        >
-          <Icon name={action.icon} size={24} />
-        </Button>
+          icon={action.icon}
+          iconSize={16}
+        ></Button>
       );
 
     case "dialog":
@@ -85,8 +85,7 @@ function HeaderActionRenderer({ action }: { action: HeaderAction }) {
       return (
         <Dropdown
           trigger={
-            <Button variant="primary">
-              <Icon name={action.iconTrigger || "IconHelp"} size={24} />
+            <Button variant="primary" icon={action.iconTrigger || "IconHelp"} iconSize={16}>
             </Button>
           }
         >

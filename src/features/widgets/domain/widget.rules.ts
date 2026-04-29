@@ -1,39 +1,46 @@
-import type { Widget, WidgetLayout, WidgetType } from "./widget.entity";
+import type { LayoutItem } from "react-grid-layout";
+import type { ResponsiveLayout, Widget, WidgetType } from "./widget.entity";
 
 export class WidgetRules {
   static readonly GRID_COLUMNS = 12;
-  static readonly ROW_HEIGHT = 80; // pixels
+  static readonly ROW_HEIGHT = 30; // pixels
   static readonly GRID_GAP = 16; // pixels
 
-  static getDefaultLayout(type: WidgetType): WidgetLayout {
-    const defaults: Record<WidgetType, WidgetLayout> = {
-      "task-list": { x: 0, y: 0, w: 6, h: 4, minW: 3, minH: 3 },
-      "panels-list": { x: 0, y: 0, w: 6, h: 4, minW: 3, minH: 3 },
-      "event-calendar": { x: 0, y: 0, w: 8, h: 5, minW: 6, minH: 4 },
-      "event-list": { x: 0, y: 0, w: 4, h: 4, minW: 3, minH: 3 },
-      "exam-timeline": { x: 0, y: 0, w: 12, h: 3, minW: 6, minH: 2 },
-      "exam-countdown": {
-        x: 0,
-        y: 0,
-        w: 3,
-        h: 2,
-        minW: 2,
-        minH: 2,
-        maxW: 4,
-        maxH: 3,
+  static getDefaultLayout(type: WidgetType): ResponsiveLayout {
+    const defaults: Record<WidgetType, ResponsiveLayout> = {
+      "task-list": {
+        lg: this.createLayoutItem(2, 4),
+        md: this.createLayoutItem(3, 2),
+        sm: this.createLayoutItem(2, 1),
       },
-      statistics: { x: 0, y: 0, w: 4, h: 3, minW: 3, minH: 2 },
-      "quick-add": { x: 0, y: 0, w: 4, h: 2, minW: 3, minH: 2, maxH: 3 },
-      "recent-activity": { x: 0, y: 0, w: 4, h: 4, minW: 3, minH: 3 },
-      "upcoming-deadlines": { x: 0, y: 0, w: 4, h: 3, minW: 3, minH: 2 },
-      "productivity-chart": { x: 0, y: 0, w: 6, h: 4, minW: 4, minH: 3 },
-      notes: { x: 0, y: 0, w: 4, h: 4, minW: 3, minH: 3 },
-      custom: { x: 0, y: 0, w: 4, h: 3, minW: 2, minH: 2 },
+      "panels-list": {
+        lg: this.createLayoutItem(2, 4),
+        md: this.createLayoutItem(2, 4),
+        sm: this.createLayoutItem(2, 4),
+        xs: this.createLayoutItem(2, 4),
+        xxs: this.createLayoutItem(2, 4),
+      },
+      "event-calendar": { lg: { x: 0, y: 0, w: 8, h: 5 } }, // w: 8, h: 5
+      "event-list": { lg: { x: 0, y: 0, w: 4, h: 4 } }, // w: 4, h: 4
+      "exam-timeline": { lg: { x: 0, y: 0, w: 12, h: 3 } }, // w: 12, h: 3
+      "exam-countdown": { lg: { x: 0, y: 0, w: 3, h: 2 } }, // w: 3, h: 2
+      statistics: { lg: { x: 0, y: 0, w: 4, h: 3 } }, // w: 4, h: 3
+      "quick-add": { lg: { x: 0, y: 0, w: 4, h: 2 } }, // w: 4, h: 2
+      "recent-activity": { lg: { x: 0, y: 0, w: 4, h: 4 } }, //
+      "upcoming-deadlines": { lg: { x: 0, y: 0, w: 4, h: 3 } }, //
+      "productivity-chart": { lg: { x: 0, y: 0, w: 6, h: 4 } }, //
+      notes: { lg: { x: 0, y: 0, w: 4, h: 4 } }, //
+      custom: { lg: { x: 0, y: 0, w: 4, h: 3 } }, //
     };
+
     return defaults[type];
   }
 
-  static validateLayout(layout: WidgetLayout): string | null {
+  static createLayoutItem(w: number, h: number): Omit<LayoutItem, "i"> {
+    return { x: 0, y: 0, w, h };
+  }
+
+  static validateLayout(layout: Omit<LayoutItem, "i">): string | null {
     if (layout.x < 0 || layout.y < 0) {
       return "La posición no puede ser negativa";
     }
@@ -54,16 +61,16 @@ export class WidgetRules {
 
   static findNextAvailablePosition(
     existingWidgets: Widget[],
-    newWidgetLayout: WidgetLayout
-  ): WidgetLayout {
+    newLayout: LayoutItem,
+  ): LayoutItem {
     // Algoritmo simple: buscar la primera posición disponible
     let y = 0;
     let found = false;
 
     while (!found && y < 100) {
       // Límite de seguridad
-      for (let x = 0; x <= this.GRID_COLUMNS - newWidgetLayout.w; x++) {
-        const testLayout = { ...newWidgetLayout, x, y };
+      for (let x = 0; x <= this.GRID_COLUMNS - newLayout.w; x++) {
+        const testLayout = { ...newLayout, x, y };
         if (!this.hasCollision(testLayout, existingWidgets)) {
           return testLayout;
         }
@@ -74,12 +81,12 @@ export class WidgetRules {
     // Si no encuentra espacio, colocar al final
     const maxY = Math.max(
       ...existingWidgets.map((w) => w.layout.y + w.layout.h),
-      0
+      0,
     );
-    return { ...newWidgetLayout, x: 0, y: maxY };
+    return { ...newLayout, x: 0, y: maxY };
   }
 
-  static hasCollision(layout: WidgetLayout, widgets: Widget[]): boolean {
+  static hasCollision(layout: LayoutItem, widgets: Widget[]): boolean {
     return widgets.some((widget) => {
       const w = widget.layout;
       return !(

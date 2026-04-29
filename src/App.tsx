@@ -4,7 +4,7 @@ import { FirebaseAuthRepository } from "#core/auth/infraestructure/authRepositor
 import { FirebaseMigrationRepository } from "#core/auth/infraestructure/migrationRepository.firebase";
 import { AuthProvider } from "#core/auth/presentation/context/authContext";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
-import LoadingPage from "#pages/LoadingPage";
+import LoadingPage from "#components/pages/LoadingPage";
 import { useMemo } from "react";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
 import { PanelsProvider } from "#features/panels/presentation/context/panelsContext";
@@ -17,14 +17,17 @@ import { RouterProvider, Navigate, Outlet } from "react-router-dom";
 import { appRouter } from "#core/routing/appRouter";
 import { ThemeProvider } from "#shared/themes/presentation/context/themeContext";
 import { FirebaseThemeRepository } from "#shared/themes/infraestructure/themeRepository.firebase";
-import useGlobalContext from "#core/globalContext/useGlobalContext";
-import GlobalContextProvider from "#core/globalContext/globalContext";
-import ComposeProviders from "#core/providers/composeProviders";
+import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
+import { GlobalContextProvider } from "#core/globalContext/context/globalContext";
+import { InvitationService } from "#features/invitations/app/invitation.service";
+import { FirebaseInvitationRepository } from "#features/invitations/infraestructure/invitationRepository.firebase";
+import { InvitationProvider } from "#features/invitations/presentation/context/invitationContext";
+// import ComposeProviders from "#core/providers/composeProviders";
 
 export default function App() {
   const authRepository = new FirebaseAuthRepository(firebaseService.auth);
   const migrationRepository = new FirebaseMigrationRepository(
-    firebaseService.firestore
+    firebaseService.firestore,
   );
   const authService = new AuthService(authRepository, migrationRepository);
 
@@ -61,61 +64,76 @@ export function ProtectedLayout() {
     return <Navigate to="/login" replace />;
   }
 
+  const user = state.user;
+
+  if (!user) return;
+
   // Usuario autenticado
-  const themeRepository = new FirebaseThemeRepository(
+  // const themeRepository = new FirebaseThemeRepository(
+  //   firebaseService.firestore,
+  //   () => user,
+  // );
+
+  // Panels
+  const panelsRepository = new FirebasePanelsRepository(
     firebaseService.firestore,
-    () => state.user
+    () => user,
   );
 
+  const panelsService = new PanelsService(panelsRepository);
+
   return (
-    <ThemeProvider themeRepository={themeRepository}>
-      <GlobalContextProvider>
-        <ProviderApp />
-      </GlobalContextProvider>
-    </ThemeProvider>
+    <>
+      {/* <ThemeProvider themeRepository={themeRepository}> */}
+      <PanelsProvider panelsService={panelsService}>
+        <GlobalContextProvider>
+          <ProviderApp />
+        </GlobalContextProvider>
+      </PanelsProvider>
+      {/* </ThemeProvider> */}
+    </>
   );
 }
 
 function ProviderApp() {
-  console.log("Pre-provider");
   const globalContext = useGlobalContext();
-  console.log("AuthenticatedApp: ", globalContext);
-
-  // Panels
-  const panelsRepository = useMemo(() => {
-    return new FirebasePanelsRepository(
-      firebaseService.firestore,
-      () => globalContext
-    );
-  }, [globalContext]);
-
-  const panelsService = useMemo(() => {
-    console.log("[VERBOSE] panelsService");
-    return new PanelsService(panelsRepository);
-  }, [panelsRepository]);
+  console.log("ProviderApp: ", globalContext);
 
   // Widgets
   const widgetRepository = useMemo(() => {
     return new FirebaseWidgetRepository(
       firebaseService.firestore,
-      () => globalContext
+      () => globalContext,
     );
   }, [globalContext]);
 
   const widgetService = useMemo(() => {
-    console.log("[VERBOSE] panelsService");
+    console.log("[VERBOSE] widgetService");
     return new WidgetService(widgetRepository);
   }, [widgetRepository]);
+
+  const invitationRepository = useMemo(() => {
+    console.log("[VERBOSE] invaitationRepository");
+    return new FirebaseInvitationRepository(
+      firebaseService.firestore,
+      () => globalContext,
+    );
+  }, [globalContext]);
+
+  const invitationService = useMemo(() => {
+    console.log("[VERBOSE] invitationService");
+    return new InvitationService(invitationRepository);
+  }, [invitationRepository]);
 
   return (
     <>
       {/* <EventsProvider>
               <ExamsProvider> */}
-      <PanelsProvider panelsService={panelsService}>
+      <InvitationProvider invitationService={invitationService}>
         <WidgetsProvider widgetService={widgetService}>
           <Outlet />
         </WidgetsProvider>
-      </PanelsProvider>
+      </InvitationProvider>
       {/* </ExamsProvider>
             </EventsProvider> */}
     </>

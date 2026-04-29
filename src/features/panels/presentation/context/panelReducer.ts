@@ -1,11 +1,18 @@
-import { type Panel } from "../../domain/panel.entity"
+import { type Panel } from "../../domain/panel.entity";
 
+/**
+ * @param subPanelsId Los paneles que se encuentran en la base de datos
+ * @param selectedPanel El panel que se encuentra seleccionado
+ * @param currentPanel Panel que en el que te encuentres
+ * @param isLoading Si se encuentra cargando o no
+ * @param error Error que devuelve
+ */
 export type PanelsState = {
-  panels: Panel[];
-  panelId: string | null;
-  selectedPanel: Panel | null;
-  loading: boolean;
-  error: string | null;
+  subPanelsId: string[];
+  selectedPanel?: Panel;
+  currentPanel?: Panel;
+  isLoading: boolean;
+  error?: string;
 };
 
 type PanelsAction =
@@ -15,93 +22,73 @@ type PanelsAction =
   | { type: "CREATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
-  | { type: "SELECT_PANEL"; payload: Panel | null }
-  | {
-      type: "UPDATE_PANEL_STATS";
-      payload: { panelId: string; stats: Panel["stats"] };
-    }
-  | { type: "REORDER_PANELS"; payload: Panel[] }
+  | { type: "SELECT_PANEL"; payload: Panel }
+  | { type: "FETCH_SUB_PANELS"; payload: string[] }
   | { type: "CLEAR_ERROR" };
 
 export const initialPanelsState: PanelsState = {
-  panels: [],
-  panelId: null,
-  selectedPanel: null,
-  loading: false,
-  error: null,
+  subPanelsId: [],
+  selectedPanel: undefined,
+  currentPanel: undefined,
+  isLoading: false,
+  error: undefined,
 };
 
 export function panelsReducer(
   state: PanelsState,
-  action: PanelsAction
+  action: PanelsAction,
 ): PanelsState {
   switch (action.type) {
     case "FETCH_PANELS_START":
-      return { ...state, loading: true, error: null };
+      return { ...state, isLoading: true, error: undefined };
 
     case "FETCH_PANELS_SUCCESS":
       return {
         ...state,
-        loading: false,
-        panels: action.payload,
-        selectedPanel: state.selectedPanel || action.payload[0] || null,
+        isLoading: false,
+        currentPanel: state.currentPanel || action.payload[0],
       };
 
     case "FETCH_PANELS_ERROR":
-      return { ...state, loading: false, error: action.payload };
+      return { ...state, isLoading: false, error: action.payload };
 
     case "CREATE_PANEL_SUCCESS":
       return {
         ...state,
-        panels: [...state.panels, action.payload],
-        error: null,
+        error: undefined,
       };
 
     case "UPDATE_PANEL_SUCCESS":
       return {
         ...state,
-        panels: state.panels.map((panel) =>
-          panel.id === action.payload.id ? action.payload : panel
-        ),
         selectedPanel:
           state.selectedPanel?.id === action.payload.id
             ? action.payload
             : state.selectedPanel,
-        error: null,
+        error: undefined,
       };
 
     case "DELETE_PANEL_SUCCESS":
-      const newPanels = state.panels.filter(
-        (panel) => panel.id !== action.payload
-      );
       return {
         ...state,
-        panels: newPanels,
-        selectedPanel:
-          state.selectedPanel?.id === action.payload
-            ? newPanels[0] || null
-            : state.selectedPanel,
-        error: null,
+        error: undefined,
       };
 
     case "SELECT_PANEL":
-      return { ...state, selectedPanel: action.payload };
-
-    case "UPDATE_PANEL_STATS":
       return {
         ...state,
-        panels: state.panels.map((panel) =>
-          panel.id === action.payload.panelId
-            ? { ...panel, stats: action.payload.stats }
-            : panel
-        ),
+        currentPanel: action.payload,
+        selectedPanel: undefined,
       };
 
-    case "REORDER_PANELS":
-      return { ...state, panels: action.payload };
+    case "FETCH_SUB_PANELS":
+      return {
+        ...state,
+        subPanelsId: action.payload,
+      };
 
     case "CLEAR_ERROR":
-      return { ...state, error: null };
+      return { ...state, error: undefined };
 
     default:
       return state;

@@ -74,12 +74,12 @@ export default class AuthService {
     return this.migrationRepository.migrateData(decision);
   }
 
-  getCurrentUser(): User | undefined {
+  getCurrentUser(): User | null {
     
     return this.authRepository.getCurrentUser();
   }
 
-  onAuthStateChanged(callback: (user: User | undefined) => void): () => void {
+  onAuthStateChanged(callback: (user: User | null) => void): () => void {
     return this.authRepository.onAuthStateChanged(callback);
   }
 

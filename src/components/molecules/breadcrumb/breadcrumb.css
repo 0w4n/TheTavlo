@@ -1,0 +1,16 @@
+.breadcrumb {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+}
+
+.breadcrumb__segment {
+  display: flex;
+  flex-direction: row;
+}
+
+.breadcrumb__segment:hover {
+  background-color: var(--color-surface);
+  border-radius: 4px;
+}

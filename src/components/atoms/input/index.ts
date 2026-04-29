@@ -1,4 +1,4 @@
-// import Input from "./input";
+import Input from "./input";
 
-// export Input from "./input";
-// export type { InputProps, InputVariant, InputSize } from "./input.types";
+export Input from "./input";
+export type { InputProps, InputVariant, InputSize } from "./input.types";

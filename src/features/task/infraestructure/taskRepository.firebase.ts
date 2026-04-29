@@ -15,29 +15,29 @@ import {
 } from "firebase/firestore";
 import type { CreateTaskDTO, Task, UpdateTaskDTO } from "../domain/task.entity";
 import type { TaskRepository } from "../app/taskRepository.interface";
-import type { GlobalContextValue } from "#core/globalContext/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 
 export class FirebaseTaskRepository implements TaskRepository {
   constructor(
     private firestore: Firestore,
     private getCurrentContext: () => GlobalContextValue
   ) {}
-  
+
   private getCollectionPath(): string {
     const { userId, accountType } = this.getContext().state.user;
     return `${accountType}/${userId}/tasks`;
   }
-  
+
   private getContext(): GlobalContextValue {
-      const ctx = this.getCurrentContext();
-      if (!ctx) {
-        throw new Error("GlobalContext no disponible");
-      }
-      return ctx;
+    const ctx = this.getCurrentContext();
+    if (!ctx) {
+      throw new Error("GlobalContext no disponible");
     }
-  
-  private mapDocumentToTask(id: string, data:DocumentData): Task {
-    const task: any = {...data};
+    return ctx;
+  }
+
+  private mapDocumentToTask(id: string, data: DocumentData): Task {
+    const task: any = { ...data };
 
     return {
       id: id,
@@ -81,7 +81,7 @@ export class FirebaseTaskRepository implements TaskRepository {
 
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) =>
-      this.mapDocumentToTask(doc.id, {...doc})
+      this.mapDocumentToTask(doc.id, { ...doc })
     );
   }
 
@@ -95,7 +95,7 @@ export class FirebaseTaskRepository implements TaskRepository {
       return null;
     }
 
-    const task = this.mapDocumentToTask(docSnap.id, {...docSnap});
+    const task = this.mapDocumentToTask(docSnap.id, { ...docSnap });
 
     return task;
   }
@@ -114,7 +114,7 @@ export class FirebaseTaskRepository implements TaskRepository {
       taskData
     );
 
-    return this.mapDocumentToTask(docRef.id, {...docRef});
+    return this.mapDocumentToTask(docRef.id, { ...docRef });
   }
 
   async update(id: string, data: UpdateTaskDTO): Promise<Task> {

@@ -1,0 +1,22 @@
+.panelsPage__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.panelsPage__content {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.panelsPage__content--item {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}

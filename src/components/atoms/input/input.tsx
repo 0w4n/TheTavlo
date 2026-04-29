@@ -1,6 +1,7 @@
 import React, { forwardRef } from "react";
 import type { InputProps } from "./input.types";
 import "./Input.css";
+import Icon from "#shared/ui/atoms/icons";
 
 function InputFn(
   {
@@ -56,9 +57,7 @@ function InputFn(
       {/* Input container */}
       <div className="input-container">
         {leftIcon && (
-          <span className="input__icon input__icon--left" aria-hidden="true">
-            {leftIcon}
-          </span>
+          <Icon name={leftIcon} className="input__icon input__icon--left" aria-hidden="true" />
         )}
 
         <input
@@ -79,9 +78,7 @@ function InputFn(
         />
 
         {rightIcon && (
-          <span className="input__icon input__icon--right" aria-hidden="true">
-            {rightIcon}
-          </span>
+          <Icon name={rightIcon} className="input__icon input__icon--right" aria-hidden="true" />
         )}
       </div>
 

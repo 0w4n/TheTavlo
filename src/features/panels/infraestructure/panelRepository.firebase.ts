@@ -3,15 +3,17 @@ import {
   doc,
   getDocs,
   getDoc,
-  addDoc,
   updateDoc,
   deleteDoc,
   query,
-  where,
-  writeBatch,
   Timestamp,
   type DocumentData,
+  DocumentReference,
   Firestore,
+  writeBatch,
+  arrayUnion,
+  collectionGroup,
+  where,
 } from "firebase/firestore";
 import type { PanelRepository } from "../app/panelsRepository.interface";
 import type {
@@ -19,26 +21,40 @@ import type {
   Panel,
   UpdatePanelDTO,
 } from "../domain/panel.entity";
-import PanelRules from "../domain/panel.rules";
-import type { GlobalContextValue } from "#core/globalContext/globalContext";
+import type { User } from "#core/auth/domain/user.entity";
 
 export class FirebasePanelsRepository implements PanelRepository {
   constructor(
     private firestore: Firestore,
-    private getCurrentContext: () => GlobalContextValue
+    private getCurrentUser: () => User | undefined,
   ) {}
 
   private getCollectionPath(): string {
-    const { userId, accountType } = this.getContext().state.user;
-    return `${accountType}/${userId}/panels`;
+    const { accountType, id } = this.getUser();
+    return `${accountType}/${id}/panels`;
   }
 
-  private getContext(): GlobalContextValue {
-    const ctx = this.getCurrentContext();
+  private getUser(): User {
+    const ctx = this.getCurrentUser();
     if (!ctx) {
-      throw new Error("GlobalContext no disponible");
+      throw new Error("panelUserContext no disponible");
     }
     return ctx;
+  }
+
+  private setPanelDefault(): CreatePanelDTO {
+    const defaultPanel: CreatePanelDTO = {
+      name: "home",
+      color: 0,
+      icon: "",
+      isDefault: true,
+      subPanelsId: [],
+      sharedWith: "",
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    return defaultPanel;
   }
 
   /**
@@ -46,18 +62,24 @@ export class FirebasePanelsRepository implements PanelRepository {
    * Se devuelve createdAt/updatedAt como Date | undefined y se incluye id.
    */
   private mapDocumentToPanel(id: string, data: DocumentData): Panel {
-    const createdAtField = data.createdAt;
-    const updatedAtField = data.updatedAt;
-
     return {
       id,
+      parentId: data.parentId || "root",
       name: data.name,
       icon: data.icon,
       color: data.color,
       isDefault: !!data.isDefault,
-      createdAt: createdAtField,
-      updatedAt: updatedAtField,
-      stats: data.stats ?? undefined,
+      subPanelsId: (data.subPanelsId ?? Array<string>()).map(
+        (ref: DocumentReference | string) => {
+          if (ref instanceof DocumentReference) return ref.id;
+          if (typeof ref === "string" && ref.includes("/"))
+            return ref.split("/").pop()!;
+          return ref;
+        },
+      ),
+      sharedWith: data.sharedWith ?? "",
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     };
   }
 
@@ -66,7 +88,7 @@ export class FirebasePanelsRepository implements PanelRepository {
    * Soporta createdAt/updatedAt como Date o Timestamp. Elimina campos locales no persistibles.
    */
   private mapPanelToDocument(
-    panel: Partial<Panel> | Partial<CreatePanelDTO>
+    panel: Partial<Panel> | Partial<CreatePanelDTO>,
   ): DocumentData {
     const data: any = { ...panel };
 
@@ -91,33 +113,48 @@ export class FirebasePanelsRepository implements PanelRepository {
 
     // Limpiar campos que no pertenecen al documento
     delete data.id;
-    delete data.stats;
+
+    console.log("Panel data:", data);
 
     return data as DocumentData;
   }
 
   // *C* = Crear
-  async create(data: CreatePanelDTO): Promise<Panel> {
-    const { userId } = this.getContext().state.user;
+  async create(data: CreatePanelDTO, parentId: string): Promise<Panel> {
     const collectionPath = this.getCollectionPath();
 
-    // Componer el objeto que persistiremos
+    // 1. Verificar que el padre existe antes de abrir el batch
+    const parentRef = doc(this.firestore, collectionPath, parentId);
+    const parentSnap = await getDoc(parentRef);
+    if (!parentSnap.exists()) {
+      throw new Error(`Panel padre con id "${parentId}" no encontrado`);
+    }
+
+    // 2. Preparar el nuevo documento hijo con una ref generada en cliente
+    const childRef = doc(collection(this.firestore, collectionPath));
+
     const rawDoc = {
       ...data,
-      userId,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
-
     const panelDoc = this.mapPanelToDocument(rawDoc);
 
-    const docRef = await addDoc(
-      collection(this.firestore, collectionPath),
-      panelDoc
-    );
+    // 3. Batch: set del hijo + arrayUnion del ref en el padre (atómico)
+    const batch = writeBatch(this.firestore);
 
-    // Recuperar el documento recién creado para devolver la entidad con tipos correctos
-    const createdSnap = await getDoc(docRef);
+    batch.set(childRef, panelDoc);
+
+    batch.update(parentRef, {
+      // arrayUnion evita duplicados y es más seguro que leer-modificar-escribir
+      subPanelsId: arrayUnion(childRef.id),
+      updatedAt: Timestamp.now(),
+    });
+
+    await batch.commit();
+
+    // 4. Leer el hijo recién creado para devolver la entidad completa
+    const createdSnap = await getDoc(childRef);
     if (!createdSnap.exists()) {
       throw new Error("No se pudo recuperar el panel recién creado");
     }
@@ -125,49 +162,76 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   // *R* = Leer
-  async findAll(): Promise<Panel[]> {
-    const collectionPath = this.getCollectionPath();
-
+  async findHomePanel(): Promise<Panel> {
     const q = query(
-      collection(this.firestore, collectionPath)
+      collectionGroup(this.firestore, "panels"),
+      where("isDefault", "==", true),
+      where("id", "<=", `/users/${this.getUser().id}_`),
     );
 
     const querySnapshot = await getDocs(q);
-    const panels = querySnapshot.docs.map((docSnap) =>
-      this.mapDocumentToPanel(docSnap.id, docSnap.data())
-    );
 
-    // Si no hay paneles, crear el panel por defecto
-    if (panels.length === 0) {
-      const defaultPanel = PanelRules.getDefaultPanel();
-      const created = await this.create({
-        name: defaultPanel.name,
-        icon: defaultPanel.icon,
-        isDefault: true,
-
-        color: "blue",
-      });
-      return [created];
+    if (querySnapshot.empty) {
+      console.info("No tienes nada, pero se está creando uno por defecto");
+      return this.create(this.setPanelDefault(), "root");
     }
 
-    console.log("panels: ", panels)
+    if (querySnapshot.size > 1) {
+      console.warn(
+        `Se encontraron ${querySnapshot.size} paneles por defecto. Debería haber solo uno. Devolviendo el primero encontrado.`,
+      );
+    }
+
+    // TODO(Hacer dialog para decidir cual de ellos poner y el resto ponerlos en false directamente)
+    // devolver el primero (caso normal o con warning)
+    return this.mapDocumentToPanel(
+      querySnapshot.docs[0].id,
+      querySnapshot.docs[0].data(),
+    );
+  }
+
+  async findAll(): Promise<Panel[]> {
+    const collectionPath = this.getCollectionPath();
+
+    const q = query(collection(this.firestore, collectionPath));
+
+    const querySnapshot = await getDocs(q);
+    const panels = querySnapshot.docs.map((docSnap) =>
+      this.mapDocumentToPanel(docSnap.id, docSnap.data()),
+    );
+
+    console.log("panels: ", panels);
     return panels;
   }
 
-  async findById(id: string): Promise<Panel | null> {
+  async findById(id: string): Promise<Panel | undefined> {
     const collectionPath = this.getCollectionPath();
 
     const docRef = doc(this.firestore, collectionPath, id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
-      return null;
+      return undefined;
     }
 
     return this.mapDocumentToPanel(docSnap.id, docSnap.data());
   }
 
-    // *U* = Actualizar
+  async findByRef(ref: DocumentReference): Promise<Panel | undefined> {
+    const collectionPath = this.getCollectionPath();
+
+    const docRef = doc(this.firestore, collectionPath, ref.id);
+    console.log("Ref:", ref, "ref:", ref.id, "docRef: ", docRef);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return this.mapDocumentToPanel(docSnap.id, docSnap.data());
+    }
+
+    return undefined;
+  }
+
+  // *U* = Actualizar
   async update(id: string, data: UpdatePanelDTO): Promise<Panel> {
     const collectionPath = this.getCollectionPath();
 
@@ -209,73 +273,5 @@ export class FirebasePanelsRepository implements PanelRepository {
 
     // TODO: Aquí deberías manejar qué hacer con las tareas/eventos/exámenes del panel
     // Opciones: moverlos a otro panel, eliminarlos, etc.
-  }
-
-  async reorder(panelIds: string[]): Promise<void> {
-    const collectionPath = this.getCollectionPath();
-
-    const batch = writeBatch(this.firestore);
-
-    panelIds.forEach((panelId, index) => {
-      const docRef = doc(this.firestore, collectionPath, panelId);
-      batch.update(docRef, {
-        order: index,
-        updatedAt: Timestamp.fromDate(new Date()),
-      });
-    });
-
-    await batch.commit();
-  }
-
-  async getStats(panelId: string): Promise<Panel["stats"]> {
-    const { userId, accountType } = this.getContext().state.user;
-    const basePath = accountType === "guests" ? "guests" : "users";
-
-    // Contar tareas
-    const tasksQuery = query(
-      collection(this.firestore, `${basePath}/${userId}/tasks`),
-      where("panelId", "==", panelId)
-    );
-    const tasksSnapshot = await getDocs(tasksQuery);
-    const totalTasks = tasksSnapshot.size;
-    const completedTasks = tasksSnapshot.docs.filter(
-      (docSnap) => !!docSnap.data().completed === true
-    ).length;
-
-    // Contar eventos
-    const eventsQuery = query(
-      collection(this.firestore, `${basePath}/${userId}/events`),
-      where("panelId", "==", panelId)
-    );
-    const eventsSnapshot = await getDocs(eventsQuery);
-    const totalEvents = eventsSnapshot.size;
-
-    // Contar exámenes
-    const examsQuery = query(
-      collection(this.firestore, `${basePath}/${userId}/exams`),
-      where("panelId", "==", panelId)
-    );
-    const examsSnapshot = await getDocs(examsQuery);
-    const totalExams = examsSnapshot.size;
-
-    const now = new Date();
-    const upcomingExams = examsSnapshot.docs.filter((docSnap) => {
-      const examDateField = docSnap.data().examDate;
-      const examDate =
-        examDateField instanceof Timestamp
-          ? examDateField.toDate()
-          : examDateField instanceof Date
-          ? examDateField
-          : null;
-      return examDate ? examDate > now : false;
-    }).length;
-
-    return {
-      totalTasks,
-      completedTasks,
-      totalEvents,
-      totalExams,
-      upcomingExams,
-    };
   }
 }

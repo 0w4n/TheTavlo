@@ -1,3 +1,4 @@
+import type { Widget } from "#features/widgets/domain/widget.entity";
 import type { HTMLAttributes } from "react";
 
 export interface DashboardProps extends HTMLAttributes<HTMLDivElement> {
@@ -8,12 +9,9 @@ export interface DashboardProps extends HTMLAttributes<HTMLDivElement> {
   isEmpty?: boolean;
 
   /**
-   * Custom empty state content
-   */
-  emptyState?: React.ReactNode;
-
-  /**
    * Dashboard content (when not empty)
    */
-  children?: React.ReactNode;
+  widgetList: Widget[];
+
+  editMode: boolean;
 }

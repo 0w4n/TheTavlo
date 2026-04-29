@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useState, type SVGProps } from "react";
-
 import iconsMap from "./iconsMap";
-import iconNameToFile from "./utils";
+import { pascalToKebab, extractSvgContent } from "./utils";
 
 type IconProps = {
   name: string;
@@ -12,11 +11,21 @@ type IconProps = {
 const svgCache = new Map<string, string>();
 
 const Icon = forwardRef<SVGSVGElement, IconProps>(
-  ({ name, size = 24, stroke, ...props }, ref) => {
+  (
+    {
+      name,
+      size = 24,
+      stroke = 1.5,
+      className,
+      color = "var(--color-iconColor)",
+      ...props
+    },
+    ref,
+  ) => {
     const [svg, setSvg] = useState<string | null>(null);
 
     useEffect(() => {
-      const file = iconNameToFile(name);
+      const file = pascalToKebab(name); 
       const path = `/node_modules/@tabler/icons/icons/outline/${file}.svg`;
 
       if (svgCache.has(path)) {
@@ -27,9 +36,7 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
       const loader = iconsMap[path];
 
       if (!loader) {
-        console.error(`Tabler icon "${name}" not found, "${file}"`);
-        console.info(path);
-        console.info(iconsMap);
+        console.error(`Tabler icon "${name}" not found → "${file}"`);
         return;
       }
 
@@ -41,20 +48,27 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
 
     if (!svg) return null;
 
+    const content = extractSvgContent(svg);
+
     return (
       <svg
+        xmlns="http://www.w3.org/2000/svg"
         ref={ref}
+        className={className}
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        viewBox="0 0 24 24"
         width={size}
         height={size}
-        stroke={stroke}
-        viewBox="0 0 24 24"
+        strokeWidth={stroke}
+        color={color}
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        dangerouslySetInnerHTML={{ __html: svg }}
+        stroke="currentColor"
+        dangerouslySetInnerHTML={{ __html: content }}
         {...props}
       />
     );
-  }
+  },
 );
 
 Icon.displayName = "Icon";

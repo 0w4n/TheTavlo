@@ -23,7 +23,7 @@ export interface RiseItem {
 export interface RiseSection {
   title: string;
   items: RiseItem[];
-  icon?: React.ReactNode;
+  icon?: string;
   color?: string;
 }
 

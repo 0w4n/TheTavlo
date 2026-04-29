@@ -1,6 +1,5 @@
 import type {
   AccountType,
-  GuestUser,
   User,
 } from "#core/auth/domain/user.entity";
 import {
@@ -24,18 +23,14 @@ export class FirebaseThemeRepository {
   ) {}
 
   private getDocPath(userId: string, accountType: AccountType): string {
-    const basePath = accountType === "guests" ? "guests" : "users";
-    return `${basePath}/${userId}/settings/theme`;
+    return `${accountType}/${userId}/settings/theme`;
   }
 
   private getUser(): { userId: string; accountType: AccountType } {
     const user = this.getCurrentUser();
     if (!user) throw new Error("Usuario no autenticado");
 
-    const userId =
-      user.accountType === "guests" ? (user as GuestUser).guestId : user.id;
-
-    return { userId, accountType: user.accountType };
+    return { userId: user.id, accountType: user.accountType };
   }
 
   async getThemeConfig(): Promise<ThemeConfig | null> {
@@ -50,7 +45,6 @@ export class FirebaseThemeRepository {
     const data = docSnap.data();
     return {
       id: docSnap.id,
-      userId,
       mode: data.mode,
       preset: data.preset,
       customColors: data.customColors,
@@ -68,9 +62,8 @@ export class FirebaseThemeRepository {
 
     const themeData = {
       ...config,
-      userId,
-      createdAt: Timestamp.fromDate(new Date()),
-      updatedAt: Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     };
 
     const docRef = doc(this.firestore, docPath);
@@ -79,8 +72,8 @@ export class FirebaseThemeRepository {
     return {
       id: docRef.id,
       ...themeData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     };
   }
 

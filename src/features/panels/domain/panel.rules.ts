@@ -1,14 +1,16 @@
 import { Timestamp } from "firebase/firestore";
-import { type Panel } from "./panel.entity";
+import { type CreatePanelDTO, type Panel } from "./panel.entity";
 
 export default class PanelRules {
   static validateName(name: string): string | null {
     if (!name || name.trim().length === 0) {
       return "El nombre del panel es requerido";
     }
-    if (name.length > 50) {
+
+    if (name.length > 15) {
       return "El nombre no puede exceder 50 caracteres";
     }
+
     return null;
   }
 
@@ -17,13 +19,14 @@ export default class PanelRules {
     return !panel.isDefault;
   }
 
-  static getDefaultPanel(): Panel {
+  static getDefaultPanel(isDefault: boolean): CreatePanelDTO {
     return {
-      id: "default",
-      name: "Panel Principal",
-      color: "blue",
-      icon: "IconHome",
-      isDefault: true,
+      name: "home",
+      color: 0,
+      icon: "IconHelp",
+      isDefault: isDefault,
+      subPanelsId: [],
+      sharedWith: "",
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };

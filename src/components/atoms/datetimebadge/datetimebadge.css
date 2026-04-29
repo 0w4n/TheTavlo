@@ -5,24 +5,22 @@
 
 /* Base */
 .datetime-badge {
-  position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  
-  padding: var(--spacing-3) var(--spacing-4);
-  
+
+  padding: var(--spacing-3) var(--spacing-5);
+
   background-color: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  
+
   font-family: var(--font-sans);
   color: var(--color-text-primary);
-  
+
   cursor: default;
   -webkit-user-select: none;
   user-select: none;
-  
+
   transition: all var(--duration-fast) var(--easing-out);
 }
 
@@ -33,8 +31,6 @@
 .datetime-badge--interactive:hover {
   background-color: var(--color-bg-tertiary);
   border-color: var(--color-accent-400);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .datetime-badge--interactive:active {
@@ -104,13 +100,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
-  flex: 1;
 }
 
 .datetime-badge--default .datetime-badge__content {
   align-items: center;
   flex-direction: row;
-  gap: var(--spacing-3);
+  gap: var(--spacing-2);
 }
 
 .datetime-badge--compact .datetime-badge__content {
@@ -120,10 +115,11 @@
 
 /* Date */
 .datetime-badge__date {
-  font-size: var(--font-size-base);
+  font-size: clamp(1rem, 3dvw, 2.45rem);
+  text-align: justify;
+  text-transform: capitalize;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  white-space: nowrap;
+  color: var(--color-textPrimary);
 }
 
 .datetime-badge--compact .datetime-badge__date {
@@ -136,11 +132,10 @@
 
 /* Time */
 .datetime-badge__time {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+  color: var(--color-textSecondary);
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 .datetime-badge--compact .datetime-badge__time {
@@ -157,7 +152,6 @@
   font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
 }
 
 /* ============================================
@@ -168,29 +162,30 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  
+
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 var(--spacing-1);
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   background-color: var(--color-error);
   color: var(--color-neutral-0);
-  
+
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  
+
   border-radius: var(--radius-full);
   border: 2px solid var(--color-bg-primary);
-  
+
   animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -220,16 +215,16 @@
   .datetime-badge--default {
     min-width: 160px;
   }
-  
+
   .datetime-badge--detailed {
     min-width: 180px;
     padding: var(--spacing-3) var(--spacing-4);
   }
-  
+
   .datetime-badge__date {
     font-size: var(--font-size-sm);
   }
-  
+
   .datetime-badge__time {
     font-size: var(--font-size-xs);
   }

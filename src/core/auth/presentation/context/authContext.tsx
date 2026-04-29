@@ -13,8 +13,8 @@ import {
 } from "react";
 
 type AuthState = {
-  user: User | undefined;
-  loading: boolean;
+  user: User | null;
+  isLoading: boolean;
   error: string | null;
   initialized: boolean;
   migrationPending: boolean;
@@ -26,7 +26,7 @@ type AuthState = {
 };
 
 type AuthAction =
-  | { type: "AUTH_STATE_CHANGED"; payload: User | undefined }
+  | { type: "AUTH_STATE_CHANGED"; payload: User | null }
   | { type: "AUTH_LOADING"; payload: boolean }
   | { type: "AUTH_ERROR"; payload: string }
   | {
@@ -41,8 +41,8 @@ type AuthAction =
   | { type: "CLEAR_ERROR" };
 
 const initialAuthState: AuthState = {
-  user: undefined,
-  loading: true,
+  user: null,
+  isLoading: true,
   error: null,
   initialized: false,
   migrationPending: false,
@@ -55,13 +55,13 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return {
         ...state,
         user: action.payload,
-        loading: false,
+        isLoading: false,
         initialized: true,
       };
     case "AUTH_LOADING":
-      return { ...state, loading: action.payload };
+      return { ...state, isLoading: action.payload };
     case "AUTH_ERROR":
-      return { ...state, error: action.payload, loading: false };
+      return { ...state, error: action.payload, isLoading: false };
     case "MIGRATION_PENDING":
       return {
         ...state,
@@ -71,7 +71,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
           googleUser: action.payload.googleUser,
           guestId: action.payload.guestId,
         },
-        loading: false,
+        isLoading: false,
       };
     case "MIGRATION_COMPLETED":
       return {

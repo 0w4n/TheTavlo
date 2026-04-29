@@ -1,3 +1,4 @@
+import type { DocumentReference } from "firebase/firestore";
 import type {
   CreatePanelDTO,
   Panel,
@@ -22,20 +23,28 @@ export class PanelsService {
     return panels;
   }
 
-  async getPanelById(id: string): Promise<Panel | null> {
+  async getHomePanel(): Promise<Panel> {
+    return this.repository.findHomePanel();
+  }
+
+  async getPanelById(id: string): Promise<Panel | undefined> {
     return this.repository.findById(id);
   }
 
+  async getPanelByRef(ref: DocumentReference): Promise<Panel | undefined> {
+    return this.repository.findByRef(ref);
+  }
+
   async createPanel(
-    data: CreatePanelDTO
+    data: CreatePanelDTO,
+    parentId: string = "root"
   ): Promise<{ panel?: Panel; error?: string }> {
     const nameError = PanelRules.validateName(data.name);
-    if (nameError) {
-      return { error: nameError };
-    }
+    if (nameError) return { error: nameError };
 
     try {
-      const panel = await this.repository.create(data);
+      const panel =  await this.repository.create(data, parentId);
+
       return { panel };
     } catch (error) {
       return { error: "Error al crear el panel" };
@@ -44,7 +53,7 @@ export class PanelsService {
 
   async updatePanel(
     id: string,
-    data: UpdatePanelDTO
+    data: UpdatePanelDTO,
   ): Promise<{ panel?: Panel; error?: string }> {
     if (data.name) {
       const nameError = PanelRules.validateName(data.name);
@@ -78,25 +87,6 @@ export class PanelsService {
       return { success: true };
     } catch (error) {
       return { success: false, error: "Error al eliminar el panel" };
-    }
-  }
-
-  async reorderPanels(
-    panelIds: string[]
-  ): Promise<{ success: boolean; error?: string }> {
-    try {
-      await this.repository.reorder(panelIds);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: "Error al reordenar paneles" };
-    }
-  }
-
-  async getPanelStats(panelId: string): Promise<Panel["stats"] | null> {
-    try {
-      return await this.repository.getStats(panelId);
-    } catch (error) {
-      return null;
     }
   }
 

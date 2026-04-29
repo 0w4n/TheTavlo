@@ -1,22 +1,33 @@
-import type { PanelsItemProps, PanelsWidgetProps } from "./panelsWidget.type";
 import Icon from "#shared/ui/atoms/icons";
+import "./panelsWidget.css";
+import type { Panel } from "#features/panels/domain/panel.entity";
+import { Link } from "react-router-dom";
 
-export default function PanelsWidget({ items }: PanelsWidgetProps) {
+export default function PanelsWidget({ items }: { items: Panel[] }) {
+  console.info("Items: ", items);
 
-
-  return (
-    <>{items.map((item) => panelsItem(item))}</>
-  );
+  return <>{items.map((item) => panelsItem(item))}</>;
 }
 
-function panelsItem({ panelId, icon, color }: PanelsItemProps) {
+function panelsItem(panel: Panel) {
+  const { id, name, icon, color } = panel;
+  const lightColor = `hsl(${color}, 100%, 70%)`;
+  const darkColor = `hsl(${color}, 100%, 20%)`;
+
   return (
-    <div
-      key={panelId}
-      className="panels-widget-item"
-      style={{ backgroundColor: color }}
+    <Link
+      to={`${id}`}
+      key={id}
+      className="panels__widget--item"
+      style={{ "--panels__widget--color": color} as React.CSSProperties}
     >
-      <Icon name={icon} color={color}/>
-    </div>
+      <div className="panels__widget--item__icon">
+        <Icon name={icon} color={darkColor} size={32} />
+      </div>
+      <div className="panels__widget--item__name">
+        <span>{name}</span>
+        <Icon name="IconArrowNarrowRightDashed" color={lightColor} size={32} />
+      </div>
+    </Link>
   );
 }

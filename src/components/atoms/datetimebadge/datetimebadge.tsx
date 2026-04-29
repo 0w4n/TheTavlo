@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import type { DateTimeBadgeProps } from "./datetimebadge.types";
 import "./datetimebadge.css";
-import { createPortal } from "react-dom";
-import { Rise } from "#components/molecules/rise";
+import { Button } from "../button";
 
 /**
- * DateTimeBadge component - muestra fecha y hora actual
+ * DateTimeBadge component - muestra fecha y hora actual.
  * Al hacer click, abre el componente Rise
  *
  * @example
@@ -25,10 +24,10 @@ export const DateTimeBadge: React.FC<DateTimeBadgeProps> = ({
   interactive = true,
   eventCount,
   className = "",
+  onClick,
   ...props
 }) => {
   const [currentDate, setCurrentDate] = useState(initialDate || new Date());
-  const [isOpen, setOpen] = useState(false);
 
   // Update time every second if showLiveTime is true
   useEffect(() => {
@@ -50,7 +49,7 @@ export const DateTimeBadge: React.FC<DateTimeBadgeProps> = ({
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString("es-ES", {
       weekday: "short",
-      year: "2-digit",
+      day: "2-digit"
     });
   };
 
@@ -74,25 +73,12 @@ export const DateTimeBadge: React.FC<DateTimeBadgeProps> = ({
 
   return (
     <>
-      <button
+      <Button
         className={classes}
-        onClick={() => setOpen(true)}
-        type="button"
-        aria-label={`Fecha y hora: ${formatDate(currentDate)} ${formatTime(
-          currentDate
-        )}${eventCount ? `, ${eventCount} eventos pendientes` : ""}`}
+        onClick={onClick}
+        variant="primary"
         {...props}
       >
-        {/* Event Indicator */}
-        {eventCount && eventCount > 0 && (
-          <span
-            className="datetime-badge__event-indicator"
-            aria-label={`${eventCount} eventos`}
-          >
-            {eventCount}
-          </span>
-        )}
-
         {/* Content */}
         <div className="datetime-badge__content">
           <span className="datetime-badge__date">
@@ -103,13 +89,7 @@ export const DateTimeBadge: React.FC<DateTimeBadgeProps> = ({
             {formatTime(currentDate)}
           </span>
         </div>
-      </button>
-      
-      {isOpen &&
-        createPortal(
-          <Rise isOpen={isOpen} onClose={() => setOpen(false)} sections={[]} />,
-          document.body
-        )}
+      </Button>
     </>
   );
 };

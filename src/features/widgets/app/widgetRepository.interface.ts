@@ -1,8 +1,8 @@
+import type { ResponsiveLayouts } from "react-grid-layout";
 import type {
   CreateWidgetDTO,
   UpdateWidgetDTO,
-  Widget,
-  WidgetLayout,
+  Widget
 } from "../domain/widget.entity";
 
 export interface WidgetRepository {
@@ -10,9 +10,10 @@ export interface WidgetRepository {
   findById(id: string, panelId: string): Promise<Widget | null>;
   create(data: CreateWidgetDTO): Promise<Widget>;
   update(id: string, data: UpdateWidgetDTO): Promise<Widget>;
-  updateLayout(id: string, layout: WidgetLayout): Promise<Widget>;
-  updateBulkLayouts(
-    updates: Array<{ id: string; layout: WidgetLayout }>
-  ): Promise<void>;
+  updateLayout(layout: ResponsiveLayouts): Promise<Widget>;
+  updateBulkLayouts(updates: {
+    layout: ResponsiveLayouts;
+    panelId: string;
+  }): Promise<void>;
   delete(id: string): Promise<void>;
 }

@@ -28,32 +28,3 @@ export interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
    */
   children: React.ReactNode;
 }
-
-export interface DropdownItemProps extends HTMLAttributes<Element> {
-  /**
-   * Icon to display before the text
-   */
-  icon?: React.ReactNode;
-
-  /**
-   * Whether the item is disabled
-   */
-  disabled?: boolean;
-
-  /**
-   * Whether the item represents a dangerous action
-   */
-  danger?: boolean;
-
-  /**
-   * Content of the item
-   */
-  children: React.ReactNode;
-}
-
-export interface DropdownDividerProps {
-  /**
-   * Optional label for the divider
-   */
-  label?: string;
-}

@@ -22,21 +22,18 @@
 .badge--sm {
   padding: var(--spacing-1) var(--spacing-2);
   font-size: 0.625rem; /* 10px */
-  letter-spacing: 0.05em;
   height: 1.25rem;
 }
 
 .badge--md {
   padding: var(--spacing-1) var(--spacing-3);
   font-size: var(--font-size-xs);
-  letter-spacing: var(--letter-spacing-wide);
   height: 1.5rem;
 }
 
 .badge--lg {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--font-size-sm);
-  letter-spacing: var(--letter-spacing-wide);
   height: 2rem;
 }
 

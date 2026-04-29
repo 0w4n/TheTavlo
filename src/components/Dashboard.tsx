@@ -1,7 +1,7 @@
 import type { Widget } from "../features/widgets/domain/widget.entity";
 import { WidgetRules } from "../features/widgets/domain/widget.rules";
 import { useState, useRef, useEffect } from "react";
-import WidgetContainer from "./WidgetContainer";
+import WidgetContainer from "./templates/widgets/base/container/WidgetContainer";
 
 interface DashboardGridProps {
   widgets: Widget[];
@@ -54,15 +54,15 @@ export default function DashboardGrid({
       0,
       Math.min(
         COLUMNS - draggingWidget.layout.w,
-        draggingWidget.layout.x + columnsMove
-      )
+        draggingWidget.layout.x + columnsMove,
+      ),
     );
     const newY = Math.max(0, draggingWidget.layout.y + rowsMove);
 
     const updatedWidgets = widgets.map((w) =>
       w.id === draggingWidget.id
         ? { ...w, layout: { ...w.layout, x: newX, y: newY } }
-        : w
+        : w,
     );
 
     onLayoutChange(updatedWidgets);
@@ -99,22 +99,22 @@ export default function DashboardGrid({
       Math.min(
         resizingWidget.layout.maxW || COLUMNS,
         COLUMNS - resizingWidget.layout.x,
-        resizingWidget.layout.w + columnsResize
-      )
+        resizingWidget.layout.w + columnsResize,
+      ),
     );
 
     const newH = Math.max(
       resizingWidget.layout.minH || 2,
       Math.min(
         resizingWidget.layout.maxH || 20,
-        resizingWidget.layout.h + rowsResize
-      )
+        resizingWidget.layout.h + rowsResize,
+      ),
     );
 
     const updatedWidgets = widgets.map((w) =>
       w.id === resizingWidget.id
         ? { ...w, layout: { ...w.layout, w: newW, h: newH } }
-        : w
+        : w,
     );
 
     onLayoutChange(updatedWidgets);

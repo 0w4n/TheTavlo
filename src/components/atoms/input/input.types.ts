@@ -34,12 +34,12 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   /**
    * Icon to display on the left side of input
    */
-  leftIcon?: React.ReactNode;
+  leftIcon?: string;
   
   /**
    * Icon to display on the right side of input
    */
-  rightIcon?: React.ReactNode;
+  rightIcon?: string;
   
   /**
    * Whether the input is required

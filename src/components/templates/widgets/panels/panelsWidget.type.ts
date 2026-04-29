@@ -4,6 +4,7 @@ export interface PanelsWidgetProps {
 
 export interface PanelsItemProps {
   panelId: string;
+  panelName: string;
   icon: string;
-  color: string;
+  color: number;
 }

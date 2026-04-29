@@ -56,7 +56,7 @@ export class FirebaseAuthRepository implements AuthRepository {
     try {
       const userCredential = await signInWithPopup(
         this.auth,
-        this.googleProvider
+        this.googleProvider,
       );
       return this.mapFirebaseUser(userCredential.user) as GoogleUser;
     } catch (error) {
@@ -73,19 +73,19 @@ export class FirebaseAuthRepository implements AuthRepository {
 
     const userCredential = await linkWithPopup(
       currentUser,
-      this.googleProvider
+      this.googleProvider,
     );
     return this.mapFirebaseUser(userCredential.user) as GoogleUser;
   }
 
-  getCurrentUser(): User | undefined {
+  getCurrentUser(): User | null {
     const firebaseUser = this.auth.currentUser;
-    return firebaseUser ? this.mapFirebaseUser(firebaseUser) : undefined;
+    return firebaseUser ? this.mapFirebaseUser(firebaseUser) : null;
   }
 
-  onAuthStateChanged(callback: (user: User | undefined) => void): () => void {
+  onAuthStateChanged(callback: (user: User | null) => void): () => void {
     return firebaseOnAuthStateChanged(this.auth, (firebaseUser) => {
-      callback(firebaseUser ? this.mapFirebaseUser(firebaseUser) : undefined);
+      callback(firebaseUser ? this.mapFirebaseUser(firebaseUser) : null);
     });
   }
 

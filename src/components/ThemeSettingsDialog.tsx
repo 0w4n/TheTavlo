@@ -127,7 +127,7 @@ export function ThemeSettingsDialog({ onClose }: ThemeSettingsDialogProps) {
                 transition: "all var(--transition-speed)",
               }}
             >
-              <Icon name={tab.icon} />
+              <Icon name={tab.icon} size={16}/>
               {tab.label}
             </button>
           ))}
@@ -204,7 +204,7 @@ function PresetTab() {
       label: "Oscuro",
       icon: "IconMoon",
     },
-    { key: "auto", label: "Segun sistema", icon: "IconSunMoon" },
+    { key: "system", label: "Segun sistema", icon: "IconSunMoon" },
   ];
 
   const presets: Array<{
