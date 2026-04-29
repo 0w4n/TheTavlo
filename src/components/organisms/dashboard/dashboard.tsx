@@ -35,6 +35,8 @@ function buildInitialLayouts(
       for (let index = 0; index < layout.length; index++) {
         const element = layout[index];
 
+        console.log("id del widget: ", widget.id, "index: ", index);
+
         const item: LayoutItem = {
           i:`${widget.id}-${index}`,
           h: element.h,

@@ -1,8 +1,8 @@
-export function pascalToKebab(name: string) {
-  return name
-    .replace(/^Icon/, "")
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .toLowerCase();
+export function pascalToKebab(name: string): { file: string; isFilled: boolean } {
+  const isFilled = name.endsWith("Filled");
+  name = name.replace(/^Icon(Filled)?/, "");
+  name = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+  return { file: name, isFilled };
 }
 
 export function extractSvgContent(svgString: string) {

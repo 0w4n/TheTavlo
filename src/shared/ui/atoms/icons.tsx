@@ -25,8 +25,14 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
     const [svg, setSvg] = useState<string | null>(null);
 
     useEffect(() => {
-      const file = pascalToKebab(name); 
-      const path = `/node_modules/@tabler/icons/icons/outline/${file}.svg`;
+      const {file, isFilled} = pascalToKebab(name);
+      let path = "" 
+      
+      if (isFilled) {
+        path = `/node_modules/@tabler/icons/icons/filled/${file}.svg`
+      } else {
+        path = `/node_modules/@tabler/icons/icons/outline/${file}.svg`;
+      }
 
       if (svgCache.has(path)) {
         setSvg(svgCache.get(path)!);
