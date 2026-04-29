@@ -1,10 +1,11 @@
 import Icon from "#shared/ui/atoms/icons";
 import type { Timestamp } from "firebase/firestore";
-import "./examsTimelineWidget.css";
 import type {
   ExamsTimelineWidgetProps,
   ExamTimelineItemProps,
 } from "./ExamsTimelineWidget.type";
+
+import "./examsTimelineWidget.css";
 
 export function ExamsTimelineWidget({ items }: ExamsTimelineWidgetProps) {
   return <>{items.map((item) => examTimelineItem(item))}</>;
