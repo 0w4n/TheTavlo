@@ -96,10 +96,28 @@ export function InvitationProvider({
     [invitationService],
   );
 
-  const acceptInvitation = async (id: string) => {};
+  const acceptInvitation = async (token: string) => {
+    const invitationResult = await invitationService.getInvitationByToken(token);
 
-  const rejectInvitation = async (id: string) => {
-    // Implementación para rechazar una invitación usando invitationService
+    if (invitationResult.error) {
+      dispatch({
+        type: "FETCH_INVITATION_ERROR",
+        payload: `Error al aceptar invitación: ${invitationResult.error}`,
+      });
+      return;
+    }
+  };
+
+  const rejectInvitation = async (token: string) => {
+    const invitationResult = await invitationService.getInvitationByToken(token);
+
+    if (invitationResult.error) {
+      dispatch({
+        type: "FETCH_INVITATION_ERROR",
+        payload: `Error al rechazar invitación: ${invitationResult.error}`,
+      });
+      return;
+    }
   };
 
   const clearError = () => {
