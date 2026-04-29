@@ -1,26 +1,23 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import type { InputProps } from "./input.types";
 import "./Input.css";
 import Icon from "#shared/ui/atoms/icons";
 
-function InputFn(
-  {
-    variant = "default",
-    size = "md",
-    label,
-    helperText,
-    errorMessage,
-    leftIcon,
-    rightIcon,
-    required = false,
-    className = "",
-    wrapperClassName = "",
-    id,
-    disabled,
-    ...props
-  }: InputProps,
-  ref: React.Ref<HTMLInputElement>
-) {
+export function Input({
+  variant = "default",
+  size = "md",
+  label,
+  helperText,
+  errorMessage,
+  leftIcon,
+  rightIcon,
+  required = false,
+  className = "",
+  wrapperClassName = "",
+  id,
+  disabled,
+  ...props
+}: InputProps) {
   const inputId = id || `input-${React.useId()}`;
   const helperTextId = `${inputId}-helper`;
   const errorMessageId = `${inputId}-error`;
@@ -44,7 +41,6 @@ function InputFn(
 
   return (
     <div className={wrapperClasses}>
-      {/* Label */}
       {label && (
         <label
           htmlFor={inputId}
@@ -54,14 +50,16 @@ function InputFn(
         </label>
       )}
 
-      {/* Input container */}
       <div className="input-container">
         {leftIcon && (
-          <Icon name={leftIcon} className="input__icon input__icon--left" aria-hidden="true" />
+          <Icon
+            name={leftIcon}
+            className="input__icon input__icon--left"
+            aria-hidden="true"
+          />
         )}
 
         <input
-          ref={ref}
           id={inputId}
           className={inputClasses}
           disabled={disabled}
@@ -71,14 +69,18 @@ function InputFn(
             errorMessage
               ? errorMessageId
               : helperText
-              ? helperTextId
-              : undefined
+                ? helperTextId
+                : undefined
           }
           {...props}
         />
 
         {rightIcon && (
-          <Icon name={rightIcon} className="input__icon input__icon--right" aria-hidden="true" />
+          <Icon
+            name={rightIcon}
+            className="input__icon input__icon--right"
+            aria-hidden="true"
+          />
         )}
       </div>
 
@@ -98,7 +100,7 @@ function InputFn(
             aria-hidden="true"
           >
             <path
-              d="M8 1.33334C4.32 1.33334 1.33333 4.32001 1.33333 8.00001C1.33333 11.68 4.32 14.6667 8 14.6667C11.68 14.6667 14.6667 11.68 14.6667 8.00001C14.6667 4.32001 11.68 1.33334 8 1.33334ZM8.66667 11.3333H7.33333V10H8.66667V11.3333ZM8.66667 8.66668H7.33333V4.66668H8.66667V8.66668Z"
+              d="M8 1.33334C4.32 1.33334 1.33333 4.32001 1.33333 8.00001C1.33333 11.68 4.32 14.6667 8 14.6667C11.68 14.6667 14.6667 11.68 14.6667 8.00001C14.6667 4.32001 11.68 1.33334 8 1.33334ZM8.66667 11.3333H7.33333V10H8.66667 11.3333ZM8.66667 8.66668H7.33333V4.66668H8.66667V8.66668Z"
               fill="currentColor"
             />
           </svg>
@@ -114,8 +116,3 @@ function InputFn(
     </div>
   );
 }
-
-const Input = forwardRef(InputFn);
-Input.displayName = "Input";
-
-export default Input;
