@@ -12,7 +12,6 @@ import {
   Firestore,
   writeBatch,
   arrayUnion,
-  collectionGroup,
   where,
 } from "firebase/firestore";
 import type { PanelRepository } from "../app/panelsRepository.interface";
@@ -69,14 +68,7 @@ export class FirebasePanelsRepository implements PanelRepository {
       icon: data.icon,
       color: data.color,
       isDefault: !!data.isDefault,
-      subPanelsId: (data.subPanelsId ?? Array<string>()).map(
-        (ref: DocumentReference | string) => {
-          if (ref instanceof DocumentReference) return ref.id;
-          if (typeof ref === "string" && ref.includes("/"))
-            return ref.split("/").pop()!;
-          return ref;
-        },
-      ),
+      subPanelsId: data.subPanelsId,
       sharedWith: data.sharedWith ?? "",
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
@@ -163,13 +155,21 @@ export class FirebasePanelsRepository implements PanelRepository {
 
   // *R* = Leer
   async findHomePanel(): Promise<Panel> {
-    const q = query(
-      collectionGroup(this.firestore, "panels"),
-      where("isDefault", "==", true),
-      where("id", "<=", `/users/${this.getUser().id}_`),
+    const colPath = this.getCollectionPath();
+    const q = await query(
+      collection(
+        this.firestore,
+        colPath,
+      ),
+      where("isDefault", "==", true)
     );
 
+    console.log("findHomePanel - q: ", q);
+
     const querySnapshot = await getDocs(q);
+
+    console.log("findHomePanel - querySnapshot: ", querySnapshot);
+
 
     if (querySnapshot.empty) {
       console.info("No tienes nada, pero se está creando uno por defecto");

@@ -15,7 +15,6 @@ import "./dashboard.css";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fastVerticalCompactor } from "react-grid-layout/extras";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 
 function buildInitialLayouts(
@@ -37,7 +36,7 @@ function buildInitialLayouts(
         const element = layout[index];
 
         const item: LayoutItem = {
-          i: widget.id,
+          i:`${widget.id}-${index}`,
           h: element.h,
           w: element.w,
           x: element.x,
@@ -154,16 +153,14 @@ export function Dashboard({ widgetList, editMode }: Props) {
           breakpoints={DEFAULT_BREAKPOINTS}
           cols={DEFAULT_COLS}
           width={width}
-          rowHeight={98}
-          compactor={fastVerticalCompactor}
           layouts={layouts}
           onLayoutChange={handleLayoutChange}
           containerPadding={[0, 0]}
           margin={[10, 10]}
           positionStrategy={absoluteStrategy}
         >
-          {widgetList.map((widget) => (
-            <div key={widget.id} style={{ display: "flex" }}>
+          {widgetList.map((widget, index) => (
+            <div key={`${widget.id}-${index}`} style={{ display: "flex" }}>
               <WidgetContainer widget={widget} editMode={editMode} />
             </div>
           ))}

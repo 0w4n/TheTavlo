@@ -55,10 +55,11 @@ export class WidgetService {
     layouts: ResponsiveLayouts,
   ): Promise<{ success: boolean; error?: string }> {
     // Validate all layout items for every breakpoint
-    for (const [, items] of Object.entries(layouts)) {
+    for (const [_, items] of Object.entries(layouts)) {
       for (const item of items ?? []) {
         const error = WidgetRules.validateLayout(item);
         if (error) {
+          console.error("Layout validation error:", error);
           return { success: false, error };
         }
       }

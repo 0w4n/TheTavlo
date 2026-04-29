@@ -69,6 +69,8 @@ export function PanelsProvider({
 
     try {
       const homePanel = await panelsService.getHomePanel();
+      dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [homePanel] });
+      console.log("Panel home cargado:", homePanel);
       return homePanel;
     } catch (error) {
       dispatch({
@@ -220,8 +222,8 @@ export function PanelsProvider({
 
   useEffect(() => {
     if (!authState.user) return;
-    fetchPanels();
-  }, [fetchPanels, authState.user]);
+    fetchHomePanel();
+  }, [fetchHomePanel, authState.user]);
 
   const value: PanelsContextValue = {
     state,

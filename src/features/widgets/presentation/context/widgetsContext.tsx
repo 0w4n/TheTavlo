@@ -94,7 +94,8 @@ export function WidgetsProvider({
       const result = await widgetService.updateWidgetLayout(layouts);
 
       if (!result.success) {
-        const msg = result.error ?? "Error al actualizar layouts";
+        console.error("Error updating widget layout:", result.error);
+        const msg = result.error ?? "Error al actualizar layout";
         dispatch({ type: "FETCH_ERROR", payload: msg });
         throw new Error(msg);
       }
