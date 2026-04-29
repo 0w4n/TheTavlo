@@ -2,7 +2,7 @@ import { Header } from "#components/organisms/header";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import { Rise } from "#components/molecules/rise";
@@ -12,7 +12,9 @@ export default function HomePage() {
   const [riseOpen, setRiseOpen] = useState(false);
   const { fetchHomePanel } = usePanels();
 
-  fetchHomePanel();
+  useEffect(() => {
+    fetchHomePanel();
+  }, [fetchHomePanel]);
 
   return (
     <>
@@ -31,7 +33,7 @@ export default function HomePage() {
               ],
               icon: "IconSpy",
             },
-          ]} // tus datos reales
+          ]}
           onItemClick={(item) => console.log(item)}
           onItemStatusChange={(id, status) =>
             console.log("Status change", id, status)
