@@ -1,5 +1,4 @@
 import { Header } from "#components/organisms/header";
-import { ThemeSettingsDialog } from "#components/ThemeSettingsDialog";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
@@ -67,11 +66,6 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
     <>
       <Header
         actions={[
-          {
-            type: "dialog",
-            icon: "IconWand",
-            dialog: (onClose) => <ThemeSettingsDialog onClose={onClose} />,
-          },
           {
             type: "children",
             children: (
