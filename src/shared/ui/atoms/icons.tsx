@@ -49,6 +49,7 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
       loader().then((raw: string) => {
         svgCache.set(path, raw);
         setSvg(raw);
+        console.debug(`Loaded Tabler icon "${name}" from "${path}"`);
       });
     }, [name]);
 
@@ -67,8 +68,8 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
         width={size}
         height={size}
         strokeWidth={stroke}
+        fill={name.toLowerCase().includes("filled") ? "currentColor" : "none"}
         color={color}
-        fill="none"
         stroke="currentColor"
         dangerouslySetInnerHTML={{ __html: content }}
         {...props}

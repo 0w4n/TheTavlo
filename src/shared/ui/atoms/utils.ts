@@ -1,6 +1,7 @@
 export function pascalToKebab(name: string): { file: string; isFilled: boolean } {
   const isFilled = name.endsWith("Filled");
-  name = name.replace(/^Icon(Filled)?/, "");
+  name = name.replace(/^Icon?/, "");
+   name = name.replace(/Filled$/, "");
   name = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
   return { file: name, isFilled };
 }
