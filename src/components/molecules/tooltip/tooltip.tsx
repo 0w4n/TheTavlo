@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { TooltipProps } from "./tooltip.types";
-import "./Tooltip.css";
+import "./tooltip.css";
 
 /**
  * Tooltip component for contextual information

@@ -1,7 +1,8 @@
 import React from "react";
-import "./Button.css";
 import "../../base/colors.css"
 import Icon from "#shared/ui/atoms/icons";
+
+import "./button.css";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
