@@ -1,16 +1,12 @@
 import {
   doc,
   Firestore,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
+  getDoc
 } from "firebase/firestore";
 import { onAuthStateChanged, type Auth, type User } from "firebase/auth";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
 import type { Panel } from "#features/panels/domain/panel.entity";
-import type { Task } from "#features/task/domain/task.entity";
+// import type { Task } from "#features/task/domain/task.entity";
 
 function getCurrentUser(auth: Auth) {
   return new Promise<User | null>((resolve, reject) => {
@@ -143,24 +139,24 @@ async function fetchSubPanel(
   }
 }
 
-async function fetchTask(user: User, db: Firestore, pid: string, tid: string) {
-  try {
-    const taskRef = doc(db, "users", user.uid, "panels", pid, "task", tid);
-    const snapshot = await getDoc(taskRef);
+// async function fetchTask(user: User, db: Firestore, pid: string, tid: string) {
+//   try {
+//     const taskRef = doc(db, "users", user.uid, "panels", pid, "task", tid);
+//     const snapshot = await getDoc(taskRef);
 
-    if (!snapshot.exists()) {
-      throw new Response(
-        "[(ts)panel.loader-fetchTask:143]@Panel no encontrado",
-        { status: 404 },
-      );
-    }
+//     if (!snapshot.exists()) {
+//       throw new Response(
+//         "[(ts)panel.loader-fetchTask:143]@Panel no encontrado",
+//         { status: 404 },
+//       );
+//     }
 
-    return { ...snapshot.data(), id: tid } as Task;
-  } catch (error) {
-    console.error("Error al cargar la task:", error);
-    throw new Response(
-      "[(ts)panel.loader-fetchTask:152]@Error al cargar la task",
-      { status: 500 },
-    );
-  }
-}
+//     return { ...snapshot.data(), id: tid } as Task;
+//   } catch (error) {
+//     console.error("Error al cargar la task:", error);
+//     throw new Response(
+//       "[(ts)panel.loader-fetchTask:152]@Error al cargar la task",
+//       { status: 500 },
+//     );
+//   }
+// }

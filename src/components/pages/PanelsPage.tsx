@@ -1,10 +1,8 @@
-import Icon from "#shared/ui/atoms/icons";
 import { useRouteLoaderData } from "react-router-dom";
 import "./panelsPage.css";
 import { useRef, useState, useEffect } from "react";
 import type { Panel } from "#features/panels/domain/panel.entity";
-import BreadCrumb from "#components/molecules/breadcrumb/breadcrumb";
-import Dashboard from "#components/organisms/dashboard/dashboard";
+import { Dashboard } from "#components/organisms/dashboard/dashboard";
 import { Header } from "#components/organisms/header";
 import { ThemeSettingsDialog } from "#components/ThemeSettingsDialog";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
@@ -27,7 +25,6 @@ export default function PanelsPage() {
 
   const headerRef = useRef<HTMLDivElement>(null);
   const [editMode, setEditMode] = useState(false);
-  const [userMenuValue, setUserMenuValue] = useState("Puedo");
 
   headerRef.current?.style.setProperty(
     "background-color",
@@ -63,21 +60,19 @@ export default function PanelsPage() {
           {
             type: "dropdown",
             iconTrigger: "IconUser",
-            value: userMenuValue,
-            onChange: (value) => setUserMenuValue(value),
             options: [
               {
                 icon: "IconUser",
                 label: "Hola",
-                onclick: () => {
+                onClick: () => {
                   console.log("Hola");
                 },
               },
               {
                 icon: "IconLogout",
                 label: "Cerrar Sesión",
-                strong: true,
-                onclick: () => {
+                danger: true,
+                onClick: () => {
                   signOut();
                 },
               },

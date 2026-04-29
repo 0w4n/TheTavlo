@@ -15,8 +15,6 @@ import { PanelsService } from "#features/panels/app/panels.service";
 import { WidgetService } from "#features/widgets/app/widget.service";
 import { RouterProvider, Navigate, Outlet } from "react-router-dom";
 import { appRouter } from "#core/routing/appRouter";
-import { ThemeProvider } from "#shared/themes/presentation/context/themeContext";
-import { FirebaseThemeRepository } from "#shared/themes/infraestructure/themeRepository.firebase";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import { GlobalContextProvider } from "#core/globalContext/context/globalContext";
 import { InvitationService } from "#features/invitations/app/invitation.service";

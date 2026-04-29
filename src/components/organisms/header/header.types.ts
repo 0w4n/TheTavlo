@@ -1,3 +1,4 @@
+import type { DropdownItemProps } from "#components/molecules/dropdown";
 import type { HTMLAttributes, ReactNode } from "react";
 
 /* =====================
@@ -29,16 +30,8 @@ export interface HeaderDialogAction {
 /* ---------- DROPDOWN ---------- */
 export interface HeaderDropDownAction {
   type: "dropdown";
-  icon?: string;
   iconTrigger?: string;
-  value: string;
-  options: Array<{
-    icon: string;
-    label: string;
-    onclick?: () => void;
-    strong?: boolean;
-  }>;
-  onChange: (value: string) => void;
+  options: DropdownItemProps[];
 }
 
 /* ---------- CHILDREN ---------- */

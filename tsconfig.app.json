@@ -1,5 +1,5 @@
 {
-  "extends" : "./tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
@@ -26,5 +26,16 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    ".vscode/widgets",
+    ".vscode/Dashboard.tsx",
+    ".vscode/DashbordarToolbar.tsx",
+    ".vscode/ExamsList.tsx",
+    "src/components/MigrationDialog.tsx",
+    ".vscode/PanelDialog.tsx",
+    ".vscode/TaskList.tsx",
+    "src/components/ThemeSettingsDialog.tsx",
+    "src/components/ThemeToggleButton.tsx"
+, ".vscode/breakpoint", ".vscode/desing-page.tsx", ".vscode/desing.tsx"  ]
 }

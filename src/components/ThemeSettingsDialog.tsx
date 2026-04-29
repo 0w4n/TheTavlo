@@ -127,7 +127,7 @@ export function ThemeSettingsDialog({ onClose }: ThemeSettingsDialogProps) {
                 transition: "all var(--transition-speed)",
               }}
             >
-              <Icon name={tab.icon} size={16}/>
+              <Icon name={tab.icon} size={16} />
               {tab.label}
             </button>
           ))}
@@ -541,8 +541,8 @@ function AccessibilityTab() {
                     size === "small"
                       ? "0.875rem"
                       : size === "large"
-                      ? "1.125rem"
-                      : "1rem",
+                        ? "1.125rem"
+                        : "1rem",
                   fontWeight: "600",
                   color: "var(--color-textPrimary)",
                 }}
@@ -560,8 +560,8 @@ function AccessibilityTab() {
                 {size === "small"
                   ? "Pequeño"
                   : size === "large"
-                  ? "Grande"
-                  : "Mediano"}
+                    ? "Grande"
+                    : "Mediano"}
               </div>
             </button>
           ))}
@@ -600,8 +600,8 @@ function AccessibilityTab() {
                   radius === "square"
                     ? "0px"
                     : radius === "rounded"
-                    ? "8px"
-                    : "999px",
+                      ? "8px"
+                      : "999px",
                 background:
                   config.borderRadius === radius
                     ? "var(--color-primaryLight)20"
@@ -619,8 +619,8 @@ function AccessibilityTab() {
                     radius === "square"
                       ? "0px"
                       : radius === "rounded"
-                      ? "8px"
-                      : "999px",
+                        ? "8px"
+                        : "999px",
                   margin: "0 auto 0.75rem",
                 }}
               />
@@ -635,8 +635,8 @@ function AccessibilityTab() {
                 {radius === "square"
                   ? "Cuadrado"
                   : radius === "rounded"
-                  ? "Redondeado"
-                  : "Píldora"}
+                    ? "Redondeado"
+                    : "Píldora"}
               </div>
             </button>
           ))}

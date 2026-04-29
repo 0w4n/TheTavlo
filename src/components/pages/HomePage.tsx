@@ -2,7 +2,7 @@ import { Header } from "#components/organisms/header";
 import { ThemeSettingsDialog } from "#components/ThemeSettingsDialog";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
-import Dashboard from "#components/organisms/dashboard/dashboard";
+import { Dashboard } from "#components/organisms/dashboard/dashboard";
 import { useState } from "react";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
@@ -54,7 +54,6 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
   console.log("HomePage - widgetsState: ", widgetsState);
 
   const [editMode, setEditMode] = useState(false);
-  const [userMenuValue, setUserMenuValue] = useState("Puedo");
 
   // function toggleTheme() {
   //   if (config.mode === "system") {
@@ -86,21 +85,19 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
           {
             type: "dropdown",
             iconTrigger: "IconUser",
-            value: userMenuValue,
-            onChange: (value) => setUserMenuValue(value),
             options: [
               {
                 icon: "IconUser",
                 label: "Hola",
-                onclick: () => {
+                onClick: () => {
                   console.log("Hola");
                 },
               },
               {
                 icon: "IconLogout",
                 label: "Cerrar Sesión",
-                strong: true,
-                onclick: () => {
+                danger: true,
+                onClick: () => {
                   signOut();
                 },
               },

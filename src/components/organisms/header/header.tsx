@@ -3,7 +3,6 @@ import type { HeaderProps, HeaderAction } from "./header.types";
 import "./header.css";
 import { Button } from "#components/atoms/button";
 import ModalPortal from "#components/molecules/modal/portal";
-import Icon from "#shared/ui/atoms/icons";
 import { Dropdown } from "#components/molecules/dropdown";
 
 export const Header: React.FC<HeaderProps> = ({
@@ -89,25 +88,26 @@ function HeaderActionRenderer({ action }: { action: HeaderAction }) {
             </Button>
           }
         >
-          {action.options.map((option, index) => (
-            <Dropdown.Item
-              key={index}
-              onClick={() => {
-                action.onChange(option.label);
-                option.onclick && option.onclick();
-              }}
-              danger={option.strong}
-            >
-              {option.icon && (
-                <Icon
-                  name={option.icon}
-                  size={16}
-                  className="dropdown-item-icon"
+          {action.options.map((option, index) => 
+            option.portalModal ? (
+                <Dropdown.Item
+                  key={index}
+                  label={option.label}
+                  icon={option.icon}
+                  danger={option.danger}
+                  render={option.render}
+                  portalModal
                 />
-              )}
-              {option.label}
-            </Dropdown.Item>
-          ))}
+              ) : (
+                <Dropdown.Item
+                  key={index}
+                  label={option.label}
+                  icon={option.icon}
+                  danger={option.danger}
+                  onClick={option.onClick}
+                />
+              ),
+          )}
         </Dropdown>
       );
 

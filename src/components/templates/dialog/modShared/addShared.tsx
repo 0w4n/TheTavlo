@@ -1,8 +1,8 @@
 import { Modal } from "#components/molecules/modal";
 import { Button } from "#components/atoms/button";
-import Input from "#components/atoms/input/input";
+import { Input } from "#components/atoms/input/input";
 import type { AddSharedProps } from "./addShared.type";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import useInvitation from "#features/invitations/presentation/hooks/useInvitation";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import type {
@@ -48,12 +48,12 @@ export default function AddShared({ type, onClose }: AddSharedProps) {
             placeholder="Ingrese el correo electrónico"
             leftIcon="IconAt"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement, HTMLInputElement>) => setEmail(e.target.value)}
           />
           <select
             className="add-shared__select"
             defaultValue="editor"
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLSelectElement, HTMLSelectElement>) => setRole(e.target.value)}
           >
             <option value="editor">Editor</option>
             <option value="viewer">Viewer</option>

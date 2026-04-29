@@ -1,5 +1,5 @@
 import type { LayoutItem } from "react-grid-layout";
-import type { ResponsiveLayout, Widget, WidgetType } from "./widget.entity";
+import type { ResponsiveLayout, WidgetType } from "./widget.entity";
 
 export class WidgetRules {
   static readonly GRID_COLUMNS = 12;
@@ -57,73 +57,5 @@ export class WidgetRules {
       return "El alto es menor al mínimo permitido";
     }
     return null;
-  }
-
-  static findNextAvailablePosition(
-    existingWidgets: Widget[],
-    newLayout: LayoutItem,
-  ): LayoutItem {
-    // Algoritmo simple: buscar la primera posición disponible
-    let y = 0;
-    let found = false;
-
-    while (!found && y < 100) {
-      // Límite de seguridad
-      for (let x = 0; x <= this.GRID_COLUMNS - newLayout.w; x++) {
-        const testLayout = { ...newLayout, x, y };
-        if (!this.hasCollision(testLayout, existingWidgets)) {
-          return testLayout;
-        }
-      }
-      y++;
-    }
-
-    // Si no encuentra espacio, colocar al final
-    const maxY = Math.max(
-      ...existingWidgets.map((w) => w.layout.y + w.layout.h),
-      0,
-    );
-    return { ...newLayout, x: 0, y: maxY };
-  }
-
-  static hasCollision(layout: LayoutItem, widgets: Widget[]): boolean {
-    return widgets.some((widget) => {
-      const w = widget.layout;
-      return !(
-        layout.x + layout.w <= w.x ||
-        layout.x >= w.x + w.w ||
-        layout.y + layout.h <= w.y ||
-        layout.y >= w.y + w.h
-      );
-    });
-  }
-
-  static compactLayout(widgets: Widget[]): Widget[] {
-    // Ordenar por posición Y, luego X
-    const sorted = [...widgets].sort((a, b) => {
-      if (a.layout.y !== b.layout.y) return a.layout.y - b.layout.y;
-      return a.layout.x - b.layout.x;
-    });
-
-    const compacted = sorted.map((widget) => {
-      let newY = 0;
-      const newLayout = { ...widget.layout };
-
-      // Buscar la posición Y más alta posible
-      while (newY < widget.layout.y) {
-        const testLayout = { ...newLayout, y: newY };
-        const otherWidgets = sorted.filter((w) => w.id !== widget.id);
-
-        if (!this.hasCollision(testLayout, otherWidgets)) {
-          newLayout.y = newY;
-          break;
-        }
-        newY++;
-      }
-
-      return { ...widget, layout: newLayout };
-    });
-
-    return compacted;
   }
 }

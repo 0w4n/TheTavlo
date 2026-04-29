@@ -127,13 +127,13 @@ export function Dropdown({
             {React.Children.map(children, (child) => {
               if (React.isValidElement(child)) {
                 if (isDropdownItem(child)) {
-                  return React.cloneElement(child, {
-                    onClick: (e: React.MouseEvent) => {
-                      child.props.onClick?.(e);
-                      handleClose();
-                    },
-                  });
-                }
+                    return React.cloneElement(child, {
+                      onClick: (e: React.MouseEvent) => {
+                        child.props.portalModal === false && child.props.onClick?.(e);
+                        handleClose();
+                      }
+                    });
+                  }
                 return child;
               }
               return child;

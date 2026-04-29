@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import type { Widget } from "#features/widgets/domain/widget.entity";
-import { ProductivityChartWidget } from "../../../../widgets/ProductivityChartWidget";
-import { DonutChartWidget } from "../../../../widgets/DonutChartWidget";
+import { ProductivityChartWidget } from "../../../../../../.vscode/widgets/ProductivityChartWidget";
+import { DonutChartWidget } from "../../../../../../.vscode/widgets/DonutChartWidget";
 import PanelsWidget from "../../panels/panelsWidget";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
