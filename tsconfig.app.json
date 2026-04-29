@@ -27,7 +27,6 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src",
     ".vscode/widgets",
     ".vscode/Dashboard.tsx",
     ".vscode/DashbordarToolbar.tsx",
