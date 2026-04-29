@@ -29,7 +29,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: Navigate({ to: "/home", replace: true }),
+    element: <Navigate to="/home" />,
   },
   {
     path: "*",
