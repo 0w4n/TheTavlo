@@ -87,10 +87,44 @@ export class FirebaseInvitationRepository implements InvitationRepository {
   }
 
   async update(id: string, data: UpdateInvitationDTO): Promise<Invitation> {
-    throw new Error("Method not implemented.");
+    const docRef = doc(this.firestore, this.getCollectionPath(), id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      throw new Error(`Invitación con id "${id}" no encontrada`);
+    }
+
+    const batch = writeBatch(this.firestore);
+    batch.update(docRef, data);
+    await batch.commit();
+
+    const updatedSnap = await getDoc(docRef);
+    if (!updatedSnap.exists()) {
+      throw new Error("No se pudo recuperar la invitación actualizada");
+    }
+
+    return {
+      id: updatedSnap.id,
+      objRef: docRef,
+      ...updatedSnap.data(),
+    } as Invitation;
   }
 
   async delete(token: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    const q = query(
+      collection(this.firestore, this.getCollectionPath()),
+      where("token", "==", token),
+    );
+
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+      throw new Error(`Invitación con token "${token}" no encontrada`);
+    }
+
+    const batch = writeBatch(this.firestore);
+    snapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    await batch.commit();
   }
 }

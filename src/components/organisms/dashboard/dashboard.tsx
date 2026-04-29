@@ -101,7 +101,7 @@ type Props = {
 
 export function Dashboard({ widgetList, editMode }: Props) {
   const { width, containerRef, mounted } = useContainerWidth();
-  const { updateLayouts } = useWidgets();
+  const { updateLayout } = useWidgets();
 
   const [layouts, setLayouts] = useState<ResponsiveLayouts>(
     buildInitialLayouts(widgetList, editMode),
@@ -141,7 +141,7 @@ export function Dashboard({ widgetList, editMode }: Props) {
   useEffect(() => {
     if (prevEditModeRef.current && !editMode && hasChangesRef.current) {
       console.log("Dashboard - Saving layouts:", layoutsRef.current);
-      updateLayouts(layoutsRef.current);
+      updateLayout(layoutsRef.current);
       hasChangesRef.current = false;
     }
     prevEditModeRef.current = editMode;

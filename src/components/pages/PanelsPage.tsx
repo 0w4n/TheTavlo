@@ -43,11 +43,6 @@ export default function PanelsPage() {
       <Header
         actions={[
           {
-            type: "dialog",
-            icon: "IconWand",
-            dialog: (onClose) => <ThemeSettingsDialog onClose={onClose} />,
-          },
-          {
             type: "children",
             children: (
               <EditModeButton

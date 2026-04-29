@@ -12,6 +12,8 @@ export class WidgetRules {
         lg: this.createLayoutItem(2, 4),
         md: this.createLayoutItem(3, 2),
         sm: this.createLayoutItem(2, 1),
+        xs: this.createLayoutItem(2, 1),
+        xxs: this.createLayoutItem(2, 1),
       },
       "panels-list": {
         lg: this.createLayoutItem(2, 4),

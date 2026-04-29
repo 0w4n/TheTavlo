@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 import type { Widget } from "#features/widgets/domain/widget.entity";
-import { ProductivityChartWidget } from "../../../../../../.vscode/widgets/ProductivityChartWidget";
-import { DonutChartWidget } from "../../../../../../.vscode/widgets/DonutChartWidget";
 import PanelsWidget from "../../panels/panelsWidget";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
@@ -101,8 +99,8 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     //     <StatisticsWidget panelId={widget.panelId} config={widget.config} />
     //   );
 
-    case "quick-add":
-      return <DonutChartWidget panelId={panelId} />;
+    // case "quick-add":
+    //   return <DonutChartWidget panelId={panelId} />;
 
     // case "recent-activity":
     //   return (
@@ -117,10 +115,10 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
         />
       );
 
-    case "productivity-chart":
-      return (
-        <ProductivityChartWidget panelId={panelId} config={widget.config} />
-      );
+    // case "productivity-chart":
+    //   return (
+    //     <ProductivityChartWidget panelId={panelId} config={widget.config} />
+    //   );
 
     // case "notes":
     //   return <NotesWidget panelId={widget.panelId} config={widget.config} />;

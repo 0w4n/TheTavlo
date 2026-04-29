@@ -1,10 +1,9 @@
-import { doc, Timestamp, writeBatch } from "firebase/firestore";
 import type { Widget, WidgetType } from "../domain/widget.entity";
 import { WidgetRules } from "../domain/widget.rules";
 import { WIDGET_TEMPLATES } from "../domain/widgetTemplates";
 import type { WidgetRepository } from "./widgetRepository.interface";
-import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
-import type { LayoutItem } from "react-grid-layout";
+import { Timestamp } from "firebase/firestore";
+import type { ResponsiveLayouts } from "react-grid-layout";
 
 export class WidgetService {
   constructor(private repository: WidgetRepository) {}
@@ -29,7 +28,7 @@ export class WidgetService {
         layout,
         config: template.defaultConfig,
         locked: false,
-        isHome: true,
+        isHome: template.isHome,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
@@ -45,32 +44,30 @@ export class WidgetService {
     config: Record<string, any>,
   ): Promise<{ widget?: Widget; error?: string }> {
     try {
-      const widget = await this.repository.update(widgetId, {
-        config,
-      });
+      const widget = await this.repository.update(widgetId, { config });
       return { widget };
     } catch (error) {
       return { error: "Error al actualizar configuración" };
     }
   }
 
-  async updateWidgetLayouts(
-    updates: Array<{ layout: Omit<LayoutItem, "i"> }>,
+  async updateWidgetLayout(
+    layouts: ResponsiveLayouts,
   ): Promise<{ success: boolean; error?: string }> {
-    // Validar todos los layouts
-    for (const update of updates) {
-      const error = WidgetRules.validateLayout(update.layout);
-      if (error) {
-        console.error("Error de validación de layout:", error);
-        return { success: false, error };
+    // Validate all layout items for every breakpoint
+    for (const [, items] of Object.entries(layouts)) {
+      for (const item of items ?? []) {
+        const error = WidgetRules.validateLayout(item);
+        if (error) {
+          return { success: false, error };
+        }
       }
     }
 
     try {
-      await this.repository.updateBulkLayouts(updates);
+      await this.repository.updateBulkLayout(layouts);
       return { success: true };
     } catch (error) {
-      console.error("Error de actualización de layout:", error);
       return { success: false, error: "Error al actualizar layouts" };
     }
   }
@@ -97,51 +94,11 @@ export class WidgetService {
     }
   }
 
-  async compactWidgets(
-    panelId: string,
-  ): Promise<{ success: boolean; error?: string }> {
-    try {
-      const widgets = await this.repository.findByPanel(panelId);
-      const compacted = WidgetRules.compactLayout(widgets);
-
-      const updates = compacted.map((w) => ({
-        id: w.id,
-        layout: w.layout,
-        panelId,
-      }));
-
-      await this.repository.updateBulkLayouts(updates);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: "Error al compactar widgets" };
-    }
-  }
-
   async removeWidget(
     userId: string,
     panelId: string,
     widgetId: string,
   ): Promise<void> {
-    const db = firebaseService.firestore;
-    const batch = writeBatch(db);
-
-    const panelRef = doc(db, "users", userId, "panels", panelId);
-    const widgetRef = doc(
-      db,
-      "users",
-      userId,
-      "panels",
-      panelId,
-      "widgets",
-      widgetId,
-    );
-
-    batch.update(panelRef, {
-      updatedAt: Timestamp.now(),
-    });
-
-    batch.delete(widgetRef);
-
-    await batch.commit();
+    await this.repository.delete(widgetId);
   }
 }

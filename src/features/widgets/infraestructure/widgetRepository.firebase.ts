@@ -40,10 +40,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
       panel: { panelId },
     } = this.getContext().state;
 
-    console.log(
-      `Widget Coll Path: ${accountType}/${userId}/panels/${panelId}/widgets, panelId: ${panelId}, userId: ${userId}`,
-    );
-
     return `${accountType}/${userId}/panels/${panelId}/widgets`;
   }
 
@@ -75,19 +71,11 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   private mapWidgetToDocument(
     widget: Partial<Widget> | Partial<CreateWidgetDTO>,
   ): DocumentData {
-    const data: any = { ...widget };
+    // Spread a copy so we don't mutate the original
+    const data: Record<string, any> = { ...widget };
 
-    if (data.createdAt instanceof Timestamp) {
-      data.createdAt = Timestamp.fromDate(data.createdAt);
-    }
-
-    if (data.updatedAt instanceof Timestamp) {
-      data.updatedAt = Timestamp.fromDate(data.updatedAt);
-      console.log("Cmabio")
-    }
-
+    // Timestamps are already Timestamp instances — no conversion needed
     delete data.id;
-    delete data.layout.i;
 
     return data as DocumentData;
   }
@@ -96,27 +84,20 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   // 📌 FIND
   // -------------------------------------------------------
 
-  async findByPanel(): Promise<Widget[]> {
+  // panelId is resolved from context; the parameter keeps the interface contract
+  async findByPanel(_panelId: string): Promise<Widget[]> {
     const path = this.getCollectionPath();
-
     const q = query(collection(this.firestore, path));
-
     const snap = await getDocs(q);
-    console.log(
-      "Widgets found:",
-      snap.docs.map((docSnap) =>
-        this.mapDocumentToWidget(docSnap.id, docSnap.data()),
-      ),
-    );
 
     return snap.docs.map((docSnap) =>
       this.mapDocumentToWidget(docSnap.id, docSnap.data()),
     );
   }
 
-  async findById(id: string): Promise<Widget | null> {
+  // panelId is resolved from context; the parameter keeps the interface contract
+  async findById(id: string, _panelId?: string): Promise<Widget | null> {
     const path = this.getCollectionPath();
-
     const ref = doc(this.firestore, path, id);
     const snap = await getDoc(ref);
 
@@ -125,18 +106,20 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     return this.mapDocumentToWidget(snap.id, snap.data());
   }
 
-  async findByRef(DocumentRef: DocumentReference): Promise<Widget | null> {
-    const snap = await getDoc(DocumentRef);
+  async findByRef(documentRef: DocumentReference): Promise<Widget | null> {
+    const snap = await getDoc(documentRef);
 
     if (!snap.exists()) throw new Error("Widget no encontrado");
 
     return this.mapDocumentToWidget(snap.id, snap.data());
   }
 
-  // *C* = Crear
+  // -------------------------------------------------------
+  // ➕ CREATE
+  // -------------------------------------------------------
+
   async create(data: CreateWidgetDTO): Promise<Widget> {
     const path = this.getCollectionPath();
-    console.log(data, path);
 
     const ref = await addDoc(collection(this.firestore, path), {
       ...data,
@@ -181,17 +164,19 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   // 📐 LAYOUTS
   // -------------------------------------------------------
 
-  async updateLayout(layout: ResponsiveLayouts): Promise<Widget> {
-    const { panelId } = this.getContext().state.panel;
-    await this.updateBulkLayouts({ layout, panelId });
+  async updateLayout(layouts: ResponsiveLayouts): Promise<Widget> {
+    await this.updateBulkLayout(layouts);
 
-    if (layout["lg"] == undefined) {
-      throw new Error("Widget no encontrado");
+    // Resolve the widget id from the first breakpoint available
+    const firstBreakpoint = Object.keys(layouts)[0];
+    const items = layouts[firstBreakpoint];
+
+    if (!items || items.length === 0) {
+      throw new Error("No hay items de layout para actualizar");
     }
 
-    const layoutId = layout["lg"][0].i;
-
-    const widget = await this.findById(layoutId);
+    const widgetId = items[0].i;
+    const widget = await this.findById(widgetId);
 
     if (!widget) {
       throw new Error("Widget no encontrado después de actualizar layout");
@@ -200,30 +185,29 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     return widget;
   }
 
-  async updateBulkLayouts(updates: {
-    layout: ResponsiveLayouts;
-    panelId: string;
-  }): Promise<void> {
+  async updateBulkLayout(layouts: ResponsiveLayouts): Promise<void> {
     const batch = writeBatch(this.firestore);
-    console.log(
-      "Batch updating layouts for widgets:",
-      updates,
-      "in batch:",
-      batch,
-    );
     const path = this.getCollectionPath();
 
-    // updates.forEach(({ breakPoint }: { breakPoint: Breakpoint }) => {
-    //   breakPoint.forEach(({layout}: { layout: LayoutItem }) => {
-    //     const id = layout.i;
+    // Group layout items by widget id across all breakpoints
+    const widgetLayouts = new Map<string, Record<string, any>>();
 
-    //   const ref = doc(this.firestore, path, id);
-    //   batch.update(ref, {
-    //     layout: layout,
-    //     updatedAt: Timestamp.now(),
-    //   });
+    for (const [breakpoint, items] of Object.entries(layouts)) {
+      for (const item of items ?? []) {
+        const { i: id, ...rest } = item;
+        const existing = widgetLayouts.get(id) ?? {};
+        existing[breakpoint] = [rest];
+        widgetLayouts.set(id, existing);
+      }
+    }
 
-    // }));
+    for (const [id, layout] of widgetLayouts.entries()) {
+      const ref = doc(this.firestore, path, id);
+      batch.update(ref, {
+        layout,
+        updatedAt: Timestamp.now(),
+      });
+    }
 
     await batch.commit();
   }
@@ -234,7 +218,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
 
   async delete(id: string): Promise<void> {
     const path = this.getCollectionPath();
-    console.log(path);
 
     const existing = await this.findById(id);
     if (!existing) {

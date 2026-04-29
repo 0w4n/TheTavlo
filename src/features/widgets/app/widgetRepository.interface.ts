@@ -11,9 +11,6 @@ export interface WidgetRepository {
   create(data: CreateWidgetDTO): Promise<Widget>;
   update(id: string, data: UpdateWidgetDTO): Promise<Widget>;
   updateLayout(layout: ResponsiveLayouts): Promise<Widget>;
-  updateBulkLayouts(updates: {
-    layout: ResponsiveLayouts;
-    panelId: string;
-  }): Promise<void>;
+  updateBulkLayout(layout: ResponsiveLayouts): Promise<void>;
   delete(id: string): Promise<void>;
 }

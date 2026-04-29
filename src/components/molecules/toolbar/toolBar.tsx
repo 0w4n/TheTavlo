@@ -38,7 +38,7 @@ export function EditModeButton({
         createPortal(
           <DashboardEditPanel
             isHome={isHome}
-            onAdd={() => addWidget(type)}
+            onAdd={(type:WidgetType) => addWidget(type)}
           />,
           document.body,
         )}
