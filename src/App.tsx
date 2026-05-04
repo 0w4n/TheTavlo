@@ -20,6 +20,9 @@ import { GlobalContextProvider } from "#core/globalContext/context/globalContext
 import { InvitationService } from "#features/invitations/app/invitation.service";
 import { FirebaseInvitationRepository } from "#features/invitations/infraestructure/invitationRepository.firebase";
 import { InvitationProvider } from "#features/invitations/presentation/context/invitationContext";
+import { FirebaseTaskRepository } from "#features/task/infraestructure/taskRepository.firebase";
+import { TasksService } from "#features/task/app/task.service";
+import { TasksProvider } from "#features/task/presentation/context/TasksContext";
 // import ComposeProviders from "#core/providers/composeProviders";
 
 export default function App() {
@@ -123,15 +126,30 @@ function ProviderApp() {
     return new InvitationService(invitationRepository);
   }, [invitationRepository]);
 
+  const taskRepository = useMemo(() => {
+    console.log("[VERBOSE] taskRepository");
+    return new FirebaseTaskRepository(
+      firebaseService.firestore,
+      () => globalContext
+    )
+  }, [globalContext]);
+
+  const taskService = useMemo(() => {
+    console.log("[VERBOSE] taskService");
+    return new TasksService(taskRepository);
+  }, [taskRepository])
+
   return (
     <>
       {/* <EventsProvider>
               <ExamsProvider> */}
-      <InvitationProvider invitationService={invitationService}>
-        <WidgetsProvider widgetService={widgetService}>
-          <Outlet />
-        </WidgetsProvider>
-      </InvitationProvider>
+      <TasksProvider tasksService={taskService}>
+        <InvitationProvider invitationService={invitationService}>
+          <WidgetsProvider widgetService={widgetService}>
+            <Outlet />
+          </WidgetsProvider>
+        </InvitationProvider>
+      </TasksProvider>
       {/* </ExamsProvider>
             </EventsProvider> */}
     </>

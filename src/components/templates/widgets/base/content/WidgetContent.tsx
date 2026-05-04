@@ -7,6 +7,7 @@ import { ExamsTimelineWidget } from "../../examsTimeline/examsTimelineWidget";
 import { Timestamp } from "firebase/firestore";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import type { Panel } from "#features/panels/domain/panel.entity";
+import { TaskWidget } from "../../task/taskWidget";
 
 export default function WidgetContent({ widget }: { widget: Widget }) {
   const { state, findByRef } = usePanels();
@@ -37,8 +38,8 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
   }, [state.currentPanel]);
 
   switch (widget.type) {
-    // case "task-list":
-    //   return <TaskListWidget panelId={widget.panelId} config={widget.config} />;
+    case "task-list":
+      return <TaskWidget /* panelId={state.currentPanel!} config={widget.config} */ />;
 
     case "panels-list":
       return (

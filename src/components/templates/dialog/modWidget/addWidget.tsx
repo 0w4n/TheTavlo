@@ -91,9 +91,7 @@ export default function AddWidget({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Cancelar
-        </Button>
+        <Button variant="secondary" onClick={onClose} label="Cancelar" />
       </Modal.Footer>
     </>
   );

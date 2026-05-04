@@ -91,6 +91,7 @@ export function WidgetsProvider({
 
   const updateLayout = useCallback(
     async (layouts: ResponsiveLayouts) => {
+      console.log("WidgetsContext - updateLayout called with:", layouts);
       const result = await widgetService.updateWidgetLayout(layouts);
 
       if (!result.success) {

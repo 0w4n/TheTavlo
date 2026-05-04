@@ -9,35 +9,35 @@ export class WidgetRules {
   static getDefaultLayout(type: WidgetType): ResponsiveLayout {
     const defaults: Record<WidgetType, ResponsiveLayout> = {
       "task-list": {
-        lg: this.createLayoutItem(2, 4),
+        lg: this.createLayoutItem(3, 2),
         md: this.createLayoutItem(3, 2),
         sm: this.createLayoutItem(2, 1),
         xs: this.createLayoutItem(2, 1),
-        xxs: this.createLayoutItem(2, 1),
+        xxs: this.createLayoutItem(1, 2),
       },
       "panels-list": {
-        lg: this.createLayoutItem(2, 4),
-        md: this.createLayoutItem(2, 4),
+        lg: this.createLayoutItem(3, 2),
+        md: this.createLayoutItem(3, 2),
         sm: this.createLayoutItem(2, 4),
         xs: this.createLayoutItem(2, 4),
-        xxs: this.createLayoutItem(2, 4),
+        xxs: this.createLayoutItem(1, 2),
       },
       "event-calendar": { lg: { x: 0, y: 0, w: 8, h: 5 } }, // w: 8, h: 5
       "event-list": { lg: { x: 0, y: 0, w: 4, h: 4 } }, // w: 4, h: 4
       "exam-timeline": {
-        lg: this.createLayoutItem(2, 4),
+        lg: this.createLayoutItem(3, 2),
         md: this.createLayoutItem(3, 2),
         sm: this.createLayoutItem(2, 1),
         xs: this.createLayoutItem(2, 1),
-        xxs: this.createLayoutItem(2, 1),
+        xxs: this.createLayoutItem(1, 2),
       },
       "exam-countdown": {
-        lg: this.createLayoutItem(2, 4),
+        lg: this.createLayoutItem(3, 2),
         md: this.createLayoutItem(3, 2),
         sm: this.createLayoutItem(2, 1),
         xs: this.createLayoutItem(2, 1),
-        xxs: this.createLayoutItem(2, 1),
-      }, // w: 3, h: 2
+        xxs: this.createLayoutItem(1, 2),
+      },
       statistics: { lg: { x: 0, y: 0, w: 4, h: 3 } }, // w: 4, h: 3
       "quick-add": { lg: { x: 0, y: 0, w: 4, h: 2 } }, // w: 4, h: 2
       "recent-activity": { lg: { x: 0, y: 0, w: 4, h: 4 } }, //

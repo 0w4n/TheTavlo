@@ -1,18 +1,16 @@
 import type { Timestamp } from "firebase/firestore";
 
 export type TaskStatus =
-  | "not-started"
-  | "in-progress"
+  | "notStarted"
+  | "inProgress"
   | "submitted"
   | "delayed";
 
 export interface Task {
   id: string;
-  title: string;
-  description?: string;
-  priority: "low" | "medium" | "high";
-  status: TaskStatus;
-  dueDate: Timestamp;
+  name: string;
+  progress: TaskStatus;
+  endLine: Timestamp;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

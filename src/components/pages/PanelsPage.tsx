@@ -75,7 +75,7 @@ export default function PanelsPage() {
         ]}
         dateTimeItem={<DateTimeBadge onClick={() => {}} />}
       />
-      <Dashboard widgetList={widgetsState.widgets} editMode={editMode} />
+      <Dashboard widgetState={widgetsState} />
     </>
   );
 }

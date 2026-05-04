@@ -1,21 +1,33 @@
-import type { Widget } from "#features/widgets/domain/widget.entity";
+import type {
+  Widget,
+  WidgetType,
+} from "#features/widgets/domain/widget.entity";
 import WidgetContainer from "#components/templates/widgets/base/container/WidgetContainer";
 import {
   DEFAULT_BREAKPOINTS,
   DEFAULT_COLS,
   ResponsiveGridLayout,
   useContainerWidth,
+  verticalCompactor,
   type Breakpoint,
   type Layout,
   type LayoutItem,
   type ResponsiveLayouts,
 } from "react-grid-layout";
-import { absoluteStrategy } from "react-grid-layout/core";
+import {
+  absoluteStrategy,
+  //calcGridCellDimensions,
+} from "react-grid-layout/core";
 import "./dashboard.css";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { /* useCallback ,*/ useEffect, useRef, useState } from "react";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
+import { Button } from "#components/atoms/button";
+import type { WidgetsState } from "#features/widgets/presentation/context/widgetReducer";
+import LoadingPage from "#components/pages/LoadingPage";
+import ModalPortal from "#components/molecules/modal/portal";
+import AddWidget from "#components/templates/dialog/modWidget/addWidget";
 
 function buildInitialLayouts(
   widgets: Widget[],
@@ -24,7 +36,7 @@ function buildInitialLayouts(
   const makeLayout = (breakPoint: Breakpoint): LayoutItem[] =>
     widgets.flatMap((widget) => {
       const layout = widget.layout[breakPoint];
-      console.debug("Widget con layout", layout, "y el widget: ", widget);
+      console.debug("Widget con layout", layout, ", el widget: ", widget);
 
       if (!layout) {
         throw new Error("No tiene layout");
@@ -32,26 +44,20 @@ function buildInitialLayouts(
 
       const itemMap = [];
 
-      for (let index = 0; index < layout.length; index++) {
-        const element = layout[index];
+      const item: LayoutItem = {
+        i: widget.id,
+        x: layout.x,
+        y: layout.y,
+        h: layout.h,
+        w: layout.w,
+        isDraggable: widget.locked,
+        isResizable: widget.locked,
+        resizeHandles: ["se"],
+      };
 
-        console.log("id del widget: ", widget.id, "index: ", index);
+      console.info("Item generado: ", item);
 
-        const item: LayoutItem = {
-          i:`${widget.id}-${index}`,
-          h: element.h,
-          w: element.w,
-          x: element.x,
-          y: element.y,
-          isDraggable: widget.locked,
-          isResizable: widget.locked,
-          resizeHandles: ["se"],
-        };
-
-        console.info("Item generado: ", item);
-
-        itemMap.push(item);
-      }
+      itemMap.push(item);
 
       return itemMap;
     });
@@ -66,13 +72,17 @@ function buildInitialLayouts(
     DEFAULT_BREAKPOINTS,
   );
 
-  return {
+  const layouts: ResponsiveLayouts = {
     lg: makeLayout("lg"),
     md: makeLayout("md"),
     sm: makeLayout("sm"),
     xs: makeLayout("xs"),
     xxs: makeLayout("xxs"),
   };
+
+  console.log("Resultados: ", layouts);
+
+  return layouts;
 }
 
 function toggleEditMode(
@@ -96,17 +106,29 @@ function toggleEditMode(
 }
 
 type Props = {
-  widgetList: Widget[];
-  editMode: boolean;
+  widgetState: WidgetsState;
 };
 
-export function Dashboard({ widgetList, editMode }: Props) {
-  const { width, containerRef, mounted } = useContainerWidth();
-  const { updateLayout } = useWidgets();
+export function Dashboard({ widgetState }: Props) {
+  const { width, containerRef, mounted } = useContainerWidth({
+    measureBeforeMount: true,
+  });
+  const { updateLayout, addWidget } = useWidgets();
 
-  const [layouts, setLayouts] = useState<ResponsiveLayouts>(
-    buildInitialLayouts(widgetList, editMode),
-  );
+  console.log("widgetState: ", widgetState);
+  if (widgetState == undefined || widgetState.isLoading) {
+    <LoadingPage />;
+  }
+
+  // TODO: Hay que poner un `calcGridCellDimensions` para hacer un overlay
+
+  const widgetList = widgetState.widgets;
+  const editMode = widgetState.editMode;
+  const initalLay = buildInitialLayouts(widgetList, editMode);
+
+  console.log("Initial:", initalLay);
+
+  const [layouts, setLayouts] = useState<ResponsiveLayouts>(initalLay);
 
   console.log("Dashboard render with layouts:", layouts, "and width:", width);
 
@@ -114,29 +136,40 @@ export function Dashboard({ widgetList, editMode }: Props) {
   const hasChangesRef = useRef(false);
   const prevEditModeRef = useRef(editMode);
 
+  const handleAddWidget = async (type: WidgetType) => {
+    return addWidget(type);
+  };
+
   /** 🧠 Sync inicial cuando cambian widgets */
   useEffect(() => {
     const next = buildInitialLayouts(widgetList, editMode);
     setLayouts(next);
-    console.log("Dashboard render with layouts:", layouts, "and width:", width);
+    console.log(
+      "Dashboard on the `useEffect` inicial sync render with layouts:",
+      layouts,
+      "and width:",
+      width,
+    );
     layoutsRef.current = next;
     hasChangesRef.current = false;
   }, [widgetList]);
 
   /** ✏️ Toggle edición */
   useEffect(() => {
+    console.log("[useEffect]: Toggle edit");
     setLayouts((prev) => toggleEditMode(prev, editMode));
   }, [editMode]);
 
   /** 🔁 Captura cambios SIN setState */
-  const handleLayoutChange = useCallback(
-    (_: Layout, all: ResponsiveLayouts) => {
-      layoutsRef.current = all;
-      hasChangesRef.current = true;
-      setLayouts(all);
-    },
-    [],
-  );
+  // const handleLayoutChange = useCallback(
+  //   (_: Layout, all: ResponsiveLayouts) => {
+  //     layoutsRef.current = all;
+  //     hasChangesRef.current = true;
+  //     setLayouts(all);
+  //     console.log("Layout: ", _, "all: ", all);
+  //   },
+  //   [],
+  // );
 
   /** 💾 Guardar SOLO al salir de editMode */
   useEffect(() => {
@@ -148,25 +181,42 @@ export function Dashboard({ widgetList, editMode }: Props) {
     prevEditModeRef.current = editMode;
   }, [editMode]);
 
+  console.log("Mounted: ", mounted, "containerRef: ", containerRef);
+
   return (
     <div className="dashboard" data-edit-mode={editMode} ref={containerRef}>
-      {mounted && (
-        <ResponsiveGridLayout
-          breakpoints={DEFAULT_BREAKPOINTS}
-          cols={DEFAULT_COLS}
-          width={width}
-          layouts={layouts}
-          onLayoutChange={handleLayoutChange}
-          containerPadding={[0, 0]}
-          margin={[10, 10]}
-          positionStrategy={absoluteStrategy}
-        >
-          {widgetList.map((widget, index) => (
-            <div key={`${widget.id}-${index}`} style={{ display: "flex" }}>
-              <WidgetContainer widget={widget} editMode={editMode} />
-            </div>
-          ))}
-        </ResponsiveGridLayout>
+      {widgetList.length > 0 ? (
+        mounted && (
+          <ResponsiveGridLayout
+            breakpoints={DEFAULT_BREAKPOINTS}
+            cols={DEFAULT_COLS}
+            width={width}
+            layouts={layouts}
+            containerPadding={[0, 0]}
+            margin={[10, 10]}
+            positionStrategy={absoluteStrategy}
+            compactor={verticalCompactor}
+          >
+            {widgetList.map((widget) => (
+              <div key={widget.id} style={{ display: "flex" }}>
+                <WidgetContainer type={widget.type} widget={widget} editMode={editMode} />
+              </div>
+            ))}
+          </ResponsiveGridLayout>
+        )
+      ) : (
+        <div>
+          <span>Panel vacio</span>
+          <ModalPortal label="Añadir tu próximo panel" iconName="IconPlus">
+            {(onClose: () => void) => (
+              <AddWidget
+                isHome={true}
+                onAddWidget={handleAddWidget}
+                onClose={onClose}
+              />
+            )}
+          </ModalPortal>
+        </div>
       )}
     </div>
   );

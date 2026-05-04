@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type ReactNode } from "react";
 import "../../base/colors.css"
 import Icon from "#shared/ui/atoms/icons";
 
@@ -12,7 +12,7 @@ export interface ButtonProps
   label?: string;
   iconSize?: number;
   isLoading?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -24,6 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   isLoading = false,
   className = "",
   disabled,
+  children,
   ...props
 }) => {
   const classes = [
@@ -41,7 +42,7 @@ export const Button: React.FC<ButtonProps> = ({
     <button className={classes} disabled={disabled || isLoading} {...props}>
       {isLoading ? (
         <span className="button__icon">⏳</span>
-      ) : (icon && label) ? (
+      ) : icon && label ? (
         <>
           <Icon name={icon} size={iconSize ?? 24} />
           <span>{label}</span>
@@ -51,6 +52,7 @@ export const Button: React.FC<ButtonProps> = ({
       ) : label ? (
         <span>{label}</span>
       ) : null}
+      {children}
     </button>
   );
 };

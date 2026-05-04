@@ -1,54 +1,66 @@
 import { useEffect, useRef } from "react";
 import { Button } from "#components/atoms/button";
-import type { Widget } from "#features/widgets/domain/widget.entity";
+import type {
+  Widget,
+  WidgetType,
+} from "#features/widgets/domain/widget.entity";
 import Icon from "#shared/ui/atoms/icons";
 import WidgetContent from "../content/WidgetContent";
-import { getIconWidgetType } from "./utils";
+import { GetDialogWdigetType, getIconWidgetType } from "./utils";
 import { Dropdown } from "#components/molecules/dropdown";
 import BreadCrumb from "#components/molecules/breadcrumb/breadcrumb";
 import AddShared from "#components/templates/dialog/modShared/addShared";
 
 import "./widgetContainer.css";
-
-const actionTrigers = {
-  iconTrigger: "IconDotsVertical",
-  options: [
-    {
-      label: "Compartir",
-      icon: "IconUserPlus",
-      onClick: () => console.log("Opción 1 seleccionada"),
-      render: (onClose: () => void) => <AddShared type="widget" onClose={onClose} />,
-      portalModal: true,
-    },
-    {
-      label: "Ajustes",
-      icon: "IconSettings",
-      onClick: () => console.log("Opción 2 seleccionada"),
-    },
-    {
-      label: "Bloquear",
-      icon: "IconLock",
-      onClick: () => console.log("Opción 3 seleccionada"),
-    },
-    {
-      label: "Eliminar",
-      icon: "IconTrash",
-      danger: true,
-      onClick: () => console.log("Opción 4 seleccionada"),
-    },
-  ],
-};
+import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
+import ModalPortal from "#components/molecules/modal/portal";
+import { DelWidget } from "#components/templates/dialog/modWidget/delWidget";
 
 export default function WidgetContainer({
+  type,
   widget,
   editMode,
-  onRemove,
 }: {
+  type: WidgetType;
   widget: Widget;
   editMode: boolean;
   onResize?: (layout: Widget["layout"]) => void;
-  onRemove?: () => void;
 }) {
+  const actionTrigers = {
+    iconTrigger: "IconDotsVertical",
+    options: [
+      {
+        label: "Compartir",
+        icon: "IconUserPlus",
+        onClick: () => console.log("Opción 1 seleccionada"),
+        render: (onClose: () => void) => (
+          <AddShared type="widget" onClose={onClose} />
+        ),
+        portalModal: true,
+      },
+      {
+        label: "Ajustes",
+        icon: "IconSettings",
+        onClick: () => console.log("Opción 2 seleccionada"),
+      },
+      {
+        label: "Bloquear",
+        icon: "IconLock",
+        onClick: () => console.log("Opción 3 seleccionada"),
+      },
+      {
+        label: "Eliminar",
+        icon: "IconTrash",
+        danger: true,
+        onClick: () => console.log("Opción 4 seleccionada"),
+        render: (onClose: () => void) => (
+          <DelWidget onDelete={handleRemoving} onClose={onClose} />
+        ),
+        portalModal: true,
+      },
+    ],
+  };
+
   const contentRef = useRef<HTMLDivElement>(null);
 
   // 🔹 Detectar overflow y aplicar clase
@@ -86,6 +98,12 @@ export default function WidgetContainer({
     };
   }, []);
 
+  const { removeWidget } = useWidgets();
+
+  const handleRemoving = async () => {
+    removeWidget(widget.id);
+  };
+
   return (
     <div className="widget" style={{ cursor: editMode ? "grab" : "default" }}>
       <div className="widget__header">
@@ -95,7 +113,7 @@ export default function WidgetContainer({
         <div>
           <BreadCrumb />
           {editMode && !widget.locked && (
-            <Button variant="danger" onClick={onRemove}>
+            <Button variant="danger" onClick={handleRemoving}>
               <Icon name="IconTrash" />
             </Button>
           )}
@@ -137,12 +155,17 @@ export default function WidgetContainer({
 
       <div ref={contentRef} className="widget__content">
         <WidgetContent widget={widget} />
-        <div className="widget__content-add">
+        <ModalPortal label={type} iconName="IconPlus">
+          {(onClose: () => void) => (
+            <GetDialogWdigetType widgetType={type} onClose={onClose}/>
+          )}
+        </ModalPortal>
+        {/* <div className="widget__content-add">
           <Icon name={"IconPlus"} strokeWidth={2.0} size={32} />
           <div className="widget__content-add-text">
-            <span>Añadir tu próximo panel</span>
+            <span></span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

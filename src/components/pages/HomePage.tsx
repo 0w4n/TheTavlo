@@ -55,13 +55,11 @@ export default function HomePage() {
 function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
   const { signOut } = useAuth();
   // const { config, isDark, setMode } = useTheme();
-  const { state: widgetsState } = useWidgets();
+  const { state: widgetsState, toggleEditMode } = useWidgets();
 
   console.log("HomePage - widgetsState: ", widgetsState);
 
-  const [editMode, setEditMode] = useState(false);
-
-  // function toggleTheme() {
+    // function toggleTheme() {
   //   if (config.mode === "system") {
   //     setMode(isDark ? "light" : "dark");
   //   } else {
@@ -78,8 +76,8 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
             children: (
               <EditModeButton
                 isHome={true}
-                editMode={editMode}
-                onToggle={() => setEditMode(!editMode)}
+                editMode={widgetsState.editMode}
+                onToggle={toggleEditMode}
               />
             ),
           },
@@ -107,7 +105,7 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
         ]}
         dateTimeItem={<DateTimeBadge onClick={onOpenRise} />}
       />
-      <Dashboard widgetList={widgetsState.widgets} editMode={editMode} />
+      <Dashboard widgetState={widgetsState} />
     </>
   );
 }

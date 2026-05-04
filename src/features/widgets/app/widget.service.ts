@@ -54,7 +54,6 @@ export class WidgetService {
   async updateWidgetLayout(
     layouts: ResponsiveLayouts,
   ): Promise<{ success: boolean; error?: string }> {
-    // Validate all layout items for every breakpoint
     for (const [_, items] of Object.entries(layouts)) {
       for (const item of items ?? []) {
         const error = WidgetRules.validateLayout(item);
@@ -66,7 +65,7 @@ export class WidgetService {
     }
 
     try {
-      await this.repository.updateBulkLayout(layouts);
+      await this.repository.updateLayout(layouts);
       return { success: true };
     } catch (error) {
       return { success: false, error: "Error al actualizar layouts" };

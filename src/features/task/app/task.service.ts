@@ -18,12 +18,12 @@ export class TasksService {
     data: CreateTaskDTO
   ): Promise<{ task?: Task; error?: string }> {
     // Validaciones de negocio
-    const titleError = TaskRules.validateTitle(data.title);
+    const titleError = TaskRules.validateTitle(data.name);
     if (titleError) {
       return { error: titleError };
     }
 
-    const dateError = TaskRules.validateDueDate(data.dueDate.toDate());
+    const dateError = TaskRules.validateDueDate(data.endLine.toDate());
     if (dateError) {
       return { error: dateError };
     }
@@ -40,13 +40,13 @@ export class TasksService {
     id: string,
     data: UpdateTaskDTO
   ): Promise<{ task?: Task; error?: string }> {
-    if (data.title) {
-      const titleError = TaskRules.validateTitle(data.title);
+    if (data.name) {
+      const titleError = TaskRules.validateTitle(data.name);
       if (titleError) return { error: titleError };
     }
 
-    if (data.dueDate) {
-      const dateError = TaskRules.validateDueDate(data.dueDate.toDate());
+    if (data.endLine) {
+      const dateError = TaskRules.validateDueDate(data.endLine.toDate());
       if (dateError) return { error: dateError };
     }
 

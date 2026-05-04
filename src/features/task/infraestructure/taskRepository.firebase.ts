@@ -4,10 +4,8 @@ import {
   addDoc,
   getDoc,
   getDocs,
-  orderBy,
   query,
   Timestamp,
-  where,
   type DocumentData,
   type Firestore,
   updateDoc,
@@ -20,12 +18,13 @@ import type { GlobalContextValue } from "#core/globalContext/context/globalConte
 export class FirebaseTaskRepository implements TaskRepository {
   constructor(
     private firestore: Firestore,
-    private getCurrentContext: () => GlobalContextValue
+    private getCurrentContext: () => GlobalContextValue,
   ) {}
 
   private getCollectionPath(): string {
     const { userId, accountType } = this.getContext().state.user;
-    return `${accountType}/${userId}/tasks`;
+    const { panelId } = this.getContext().state.panel;
+    return `${accountType}/${userId}/panels/${panelId}/task`;
   }
 
   private getContext(): GlobalContextValue {
@@ -41,21 +40,21 @@ export class FirebaseTaskRepository implements TaskRepository {
 
     return {
       id: id,
-      title: task.title,
-      description: task.description,
-      priority: task.priority,
-      status: task.status,
-      dueDate: Timestamp.fromDate(new Date()),
-      createdAt: Timestamp.fromDate(new Date()),
-      updatedAt: Timestamp.fromDate(new Date()),
+      name: task.name,
+      progress: task.progress,
+      endLine: task.endLine,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
     };
   }
 
   private mapTaskToDocument(task: Partial<Task>): DocumentData {
     const data: any = { ...task };
 
-    if (task.dueDate) {
-      data.dueDate = Timestamp.fromDate(task.dueDate.toDate());
+    console.log("taskData: ", data);
+
+    if (task.endLine) {
+      data.dueDate = Timestamp.fromDate(task.endLine.toDate());
     }
     if (task.createdAt) {
       data.createdAt = Timestamp.fromDate(task.createdAt.toDate());
@@ -70,18 +69,16 @@ export class FirebaseTaskRepository implements TaskRepository {
   }
 
   async findAll(): Promise<Task[]> {
-    const { userId } = this.getContext().state.user;
     const collectionName = this.getCollectionPath();
 
-    const q = query(
-      collection(this.firestore, collectionName),
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(collection(this.firestore, collectionName));
+
+    console.log("Query: ", q);
 
     const querySnapshot = await getDocs(q);
+    querySnapshot.docs.map(doc => console.log("taskRepo-querySnapshot: ", doc.data()));
     return querySnapshot.docs.map((doc) =>
-      this.mapDocumentToTask(doc.id, { ...doc })
+      this.mapDocumentToTask(doc.id, { ...doc.data() }),
     );
   }
 
@@ -111,7 +108,7 @@ export class FirebaseTaskRepository implements TaskRepository {
 
     const docRef = await addDoc(
       collection(this.firestore, collectionName),
-      taskData
+      taskData,
     );
 
     return this.mapDocumentToTask(docRef.id, { ...docRef });

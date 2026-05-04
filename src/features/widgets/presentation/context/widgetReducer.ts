@@ -4,7 +4,7 @@ import type { ResponsiveLayouts } from "react-grid-layout";
 export type WidgetsState = {
   widgets: Widget[];
   isLoading: boolean;
-  error: string | null;
+  error?: string;
   editMode: boolean;
 };
 
@@ -21,8 +21,8 @@ export type WidgetsAction =
 
 export const initialState: WidgetsState = {
   widgets: [],
-  isLoading: false,
-  error: null,
+  isLoading: true,
+  error: undefined,
   editMode: false,
 };
 
@@ -32,7 +32,7 @@ export function widgetsReducer(
 ): WidgetsState {
   switch (action.type) {
     case "FETCH_START":
-      return { ...state, isLoading: true, error: null };
+      return { ...state, isLoading: true, error: undefined };
 
     case "FETCH_SUCCESS":
       return { ...state, isLoading: false, widgets: action.payload };
@@ -97,7 +97,7 @@ export function widgetsReducer(
       return { ...state, editMode: !state.editMode };
 
     case "CLEAR_ERROR":
-      return { ...state, error: null };
+      return { ...state, error: undefined };
 
     default:
       return state;

@@ -104,7 +104,7 @@ export default function LoginPage() {
               fontWeight: "600",
               border: "none",
               borderRadius: "8px",
-              background: "#4285F4",
+              background: "hsl(217, 89%, 61%)",
               color: "white",
               cursor: isLoading ? "not-allowed" : "pointer",
               display: "flex",
@@ -121,7 +121,7 @@ export default function LoginPage() {
               e.currentTarget.style.background = "#4285F4";
             }}
           >
-            <Icon name={"IconBrandGoogleFilled"} />
+            <Icon name={"IconBrandGoogleFilled"} color="hsl(217, 89%, 20%)"/>
             Continuar con Google
           </button>
 

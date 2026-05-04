@@ -156,7 +156,7 @@ export class FirebasePanelsRepository implements PanelRepository {
   // *R* = Leer
   async findHomePanel(): Promise<Panel> {
     const colPath = this.getCollectionPath();
-    const q = await query(
+    const q = query(
       collection(
         this.firestore,
         colPath,

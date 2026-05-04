@@ -115,7 +115,7 @@
 
 /* Date */
 .datetime-badge__date {
-  font-size: clamp(1rem, 3dvw, 2.45rem);
+  font-size: clamp(1rem, 1.75rem, 2.5rem);
   text-align: justify;
   text-transform: capitalize;
   font-weight: var(--font-weight-semibold);
@@ -132,10 +132,9 @@
 
 /* Time */
 .datetime-badge__time {
-  font-size: var(--font-size-lg);
+  font-size: clamp(0.5rem, 1rem, 1.5rem);
   font-weight: var(--font-weight-medium);
   color: var(--color-textSecondary);
-  font-variant-numeric: tabular-nums;
 }
 
 .datetime-badge--compact .datetime-badge__time {

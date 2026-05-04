@@ -19,6 +19,7 @@ import type {
   Widget,
   CreateWidgetDTO,
   UpdateWidgetDTO,
+  LayoutItemDTO,
 } from "../domain/widget.entity";
 
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
@@ -186,25 +187,28 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   }
 
   async updateBulkLayout(layouts: ResponsiveLayouts): Promise<void> {
+    console.log("WidgetRepository - updateBulkLayout called with:", layouts);
     const batch = writeBatch(this.firestore);
     const path = this.getCollectionPath();
 
     // Group layout items by widget id across all breakpoints
-    const widgetLayouts = new Map<string, Record<string, any>>();
+    const widgetLayouts = new Map<string, Record<string, LayoutItemDTO>>();
 
     for (const [breakpoint, items] of Object.entries(layouts)) {
       for (const item of items ?? []) {
         const { i: id, ...rest } = item;
         const existing = widgetLayouts.get(id) ?? {};
-        existing[breakpoint] = [rest];
+        existing[breakpoint] = { x: rest.x, y: rest.y, w: rest.w, h: rest.h };
         widgetLayouts.set(id, existing);
       }
     }
 
     for (const [id, layout] of widgetLayouts.entries()) {
+      console.log("widgetLayout: ", { id, layout });
+      
       const ref = doc(this.firestore, path, id);
       batch.update(ref, {
-        layout,
+        layout: layout,
         updatedAt: Timestamp.now(),
       });
     }

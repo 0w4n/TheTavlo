@@ -41,6 +41,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     dispatch({ type: "FETCH_TASKS_START" });
     try {
       const tasks = await tasksService.getAllTasks();
+      console.log("Task fetched: ", tasks);
       dispatch({ type: "FETCH_TASKS_SUCCESS", payload: tasks });
     } catch (error) {
       dispatch({
