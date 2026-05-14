@@ -32,7 +32,7 @@ type WidgetsContextValue = {
   clearError: () => void;
 };
 
-export const WidgetsContext = createContext<WidgetsContextValue | null>(null);
+export const WidgetsContext = createContext<WidgetsContextValue | undefined>(undefined);
 
 export function WidgetsProvider({
   children,

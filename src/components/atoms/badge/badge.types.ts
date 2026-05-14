@@ -1,18 +1,7 @@
-export type BadgeVariant =
-  | "success"
-  | "error"
-  | "warning"
-  | "info"
-  | "primary"
-  | "neutral";
-  
-export type BadgeSize = "sm" | "md" | "lg";
+import type { TaskProgress } from "#features/task/domain/task.entity";
 
 export interface BadgeProps {
-  variant?: BadgeVariant;
-  size?: BadgeSize;
-  icon?: React.ReactNode;
-  dot?: boolean;
+  variant: TaskProgress;
+  collapsed: boolean;
   className?: string;
-  children?: React.ReactNode;
 }

@@ -96,7 +96,7 @@ type AuthContextValue = {
   clearError: () => void;
 };
 
-export const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({
   children,

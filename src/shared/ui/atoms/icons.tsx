@@ -5,7 +5,6 @@ import { pascalToKebab, extractSvgContent } from "./utils";
 type IconProps = {
   name: string;
   size?: number;
-  stroke?: number;
 } & SVGProps<SVGSVGElement>;
 
 const svgCache = new Map<string, string>();

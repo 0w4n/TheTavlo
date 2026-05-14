@@ -1,5 +1,11 @@
 import { Timestamp } from "firebase/firestore";
-import type { CreateTaskDTO, Task, UpdateTaskDTO } from "../domain/task.entity";
+import {
+  TaskProgress,
+  type Task,
+  type CreateAnyTaskDTO,
+  type UpdateAnyTaskDTO,
+  type AnyTask
+} from "../domain/task.entity";
 import { TaskRules } from "../domain/task.rule";
 import type { TaskRepository } from "./taskRepository.interface";
 
@@ -14,19 +20,19 @@ export class TasksService {
     return this.repository.findById(id);
   }
 
-  async createTask(
-    data: CreateTaskDTO
-  ): Promise<{ task?: Task; error?: string }> {
+  async createAnyTask(
+    data: CreateAnyTaskDTO,
+  ): Promise<{ task?: AnyTask; error?: string }> {
     // Validaciones de negocio
-    const titleError = TaskRules.validateTitle(data.name);
+    const titleError = TaskRules.validateTitle(data.title);
     if (titleError) {
       return { error: titleError };
     }
 
-    const dateError = TaskRules.validateDueDate(data.endLine.toDate());
-    if (dateError) {
-      return { error: dateError };
-    }
+    // const dateError = TaskRules.validateDueDate(data..toDate());
+    // if (dateError) {
+    //   return { error: dateError };
+    // }
 
     try {
       const task = await this.repository.create(data);
@@ -36,17 +42,17 @@ export class TasksService {
     }
   }
 
-  async updateTask(
+  async updateAnyTask(
     id: string,
-    data: UpdateTaskDTO
-  ): Promise<{ task?: Task; error?: string }> {
-    if (data.name) {
-      const titleError = TaskRules.validateTitle(data.name);
+    data: UpdateAnyTaskDTO,
+  ): Promise<{ task?: AnyTask; error?: string }> {
+    if (data.title) {
+      const titleError = TaskRules.validateTitle(data.title);
       if (titleError) return { error: titleError };
     }
 
-    if (data.endLine) {
-      const dateError = TaskRules.validateDueDate(data.endLine.toDate());
+    if (data.endAt) {
+      const dateError = TaskRules.validateDueDate(data.endAt.toDate());
       if (dateError) return { error: dateError };
     }
 
@@ -69,7 +75,10 @@ export class TasksService {
       return { error: "La tarea ya está completada" };
     }
 
-    return this.updateTask(id, { status: "submitted", updatedAt: Timestamp.fromDate(new Date()) });
+    return this.updateAnyTask(id, {
+      progress: TaskProgress.SUBMITTED,
+      updatedAt: Timestamp.now(),
+    });
   }
 
   async deleteTask(id: string): Promise<{ success: boolean; error?: string }> {
@@ -86,8 +95,10 @@ export class TasksService {
     return tasks.filter((task: Task) => TaskRules.isOverdue(task));
   }
 
-  async getTasksByPriority(priority: Task["priority"]): Promise<Task[]> {
+  async getTasksByPriority(priority: Task["progress"]): Promise<Task[]> {
     const tasks = await this.repository.findAll();
-    return tasks.filter((task: { priority: string; }) => task.priority === priority);
+    return tasks.filter(
+      (task: { priority: string }) => task.priority === priority,
+    );
   }
 }

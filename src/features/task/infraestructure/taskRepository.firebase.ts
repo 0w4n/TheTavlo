@@ -40,9 +40,9 @@ export class FirebaseTaskRepository implements TaskRepository {
 
     return {
       id: id,
-      name: task.name,
+      title: task.title,
       progress: task.progress,
-      endLine: task.endLine,
+      endAt: task.endAt,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
@@ -53,8 +53,8 @@ export class FirebaseTaskRepository implements TaskRepository {
 
     console.log("taskData: ", data);
 
-    if (task.endLine) {
-      data.dueDate = Timestamp.fromDate(task.endLine.toDate());
+    if (task.endAt) {
+      data.dueDate = Timestamp.fromDate(task.endAt.toDate());
     }
     if (task.createdAt) {
       data.createdAt = Timestamp.fromDate(task.createdAt.toDate());

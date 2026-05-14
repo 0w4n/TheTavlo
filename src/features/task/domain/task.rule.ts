@@ -1,4 +1,4 @@
-import type { Task, TaskStatus } from "./task.entity";
+import type { Task, TaskProgress } from "./task.entity";
 
 export class TaskRules {
   static canComplete(task: Task): boolean {
@@ -27,9 +27,9 @@ export class TaskRules {
   }
 }
 
-export class TaskStatusRules {
+export class TaskProgressRules {
   static readonly STATUS_CONFIG: Record<
-    TaskStatus,
+    TaskProgress,
     {
       label: string;
       backgroundColor: string;
@@ -63,24 +63,24 @@ export class TaskStatusRules {
     },
   };
 
-  static readonly STATUS_ORDER: TaskStatus[] = [
+  static readonly STATUS_ORDER: TaskProgress[] = [
     "not-started",
     "in-progress",
     "submitted",
     "delayed",
   ];
 
-  static getStatusConfig(status: TaskStatus) {
+  static getStatusConfig(status: TaskProgress) {
     return this.STATUS_CONFIG[status];
   }
 
-  static getNextStatus(currentStatus: TaskStatus): TaskStatus {
+  static getNextStatus(currentStatus: TaskProgress): TaskProgress {
     const currentIndex = this.STATUS_ORDER.indexOf(currentStatus);
     const nextIndex = (currentIndex + 1) % this.STATUS_ORDER.length;
     return this.STATUS_ORDER[nextIndex];
   }
 
-  static getPreviousStatus(currentStatus: TaskStatus): TaskStatus {
+  static getPreviousStatus(currentStatus: TaskProgress): TaskProgress {
     const currentIndex = this.STATUS_ORDER.indexOf(currentStatus);
     const prevIndex =
       currentIndex === 0 ? this.STATUS_ORDER.length - 1 : currentIndex - 1;
@@ -92,7 +92,7 @@ export class TaskStatusRules {
     return task.status !== "submitted" && task.dueDate.toDate() < now;
   }
 
-  static getDefaultStatus(): TaskStatus {
+  static getDefaultStatus(): TaskProgress {
     return "not-started";
   }
 }

@@ -41,7 +41,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button className={classes} disabled={disabled || isLoading} {...props}>
       {isLoading ? (
-        <span className="button__icon">⏳</span>
+        <span className="button__icon">Cargando...</span>
       ) : icon && label ? (
         <>
           <Icon name={icon} size={iconSize ?? 24} />
