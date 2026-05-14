@@ -475,7 +475,7 @@ function SubTaskItems({
 
     title: `Tarea ${i + 1}`,
 
-    content: (    ),
+    content: (<><div></div></>),
   }));
 
   return (
