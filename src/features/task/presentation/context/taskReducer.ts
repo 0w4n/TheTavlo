@@ -1,27 +1,27 @@
-import type { Task } from "../../domain/task.entity";
+import type { AnyTask } from "../../domain/task.entity";
 
 export type TasksState = {
-  tasks: Task[];
+  tasks: AnyTask[];
   loading: boolean;
-  error: string | null;
-  selectedTask: Task | null;
+  error: string | undefined;
+  selectedTask: AnyTask | undefined;
 };
 
 type TasksAction =
   | { type: "FETCH_TASKS_START" }
-  | { type: "FETCH_TASKS_SUCCESS"; payload: Task[] }
+  | { type: "FETCH_TASKS_SUCCESS"; payload: AnyTask[] }
   | { type: "FETCH_TASKS_ERROR"; payload: string }
-  | { type: "CREATE_TASK_SUCCESS"; payload: Task }
-  | { type: "UPDATE_TASK_SUCCESS"; payload: Task }
+  | { type: "CREATE_TASK_SUCCESS"; payload: AnyTask }
+  | { type: "UPDATE_TASK_SUCCESS"; payload: AnyTask }
   | { type: "DELETE_TASK_SUCCESS"; payload: string }
-  | { type: "SELECT_TASK"; payload: Task | null }
+  | { type: "SELECT_TASK"; payload: AnyTask | undefined }
   | { type: "CLEAR_ERROR" };
 
 export const initialTasksState: TasksState = {
   tasks: [],
   loading: false,
-  error: null,
-  selectedTask: null,
+  error: undefined,
+  selectedTask: undefined,
 };
 
 export function tasksReducer(
@@ -30,7 +30,7 @@ export function tasksReducer(
 ): TasksState {
   switch (action.type) {
     case "FETCH_TASKS_START":
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true, error: undefined };
 
     case "FETCH_TASKS_SUCCESS":
       return { ...state, loading: false, tasks: action.payload };
@@ -42,7 +42,7 @@ export function tasksReducer(
       return {
         ...state,
         tasks: [...state.tasks, action.payload],
-        error: null,
+        error: undefined,
       };
 
     case "UPDATE_TASK_SUCCESS":
@@ -51,21 +51,21 @@ export function tasksReducer(
         tasks: state.tasks.map((task) =>
           task.id === action.payload.id ? action.payload : task
         ),
-        error: null,
+        error: undefined,
       };
 
     case "DELETE_TASK_SUCCESS":
       return {
         ...state,
         tasks: state.tasks.filter((task) => task.id !== action.payload),
-        error: null,
+        error: undefined,
       };
 
     case "SELECT_TASK":
       return { ...state, selectedTask: action.payload };
 
     case "CLEAR_ERROR":
-      return { ...state, error: null };
+      return { ...state, error: undefined };
 
     default:
       return state;

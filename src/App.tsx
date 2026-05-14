@@ -23,6 +23,9 @@ import { InvitationProvider } from "#features/invitations/presentation/context/i
 import { FirebaseTaskRepository } from "#features/task/infraestructure/taskRepository.firebase";
 import { TasksService } from "#features/task/app/task.service";
 import { TasksProvider } from "#features/task/presentation/context/TasksContext";
+import { EventsProvider } from "#features/events/presentation/context/eventsContext";
+import { FirebaseEventRepository } from "#features/events/infraestructure/eventRepository.firebase";
+import { EventsService } from "#features/events/app/events.service";
 // import ComposeProviders from "#core/providers/composeProviders";
 
 export default function App() {
@@ -130,28 +133,39 @@ function ProviderApp() {
     console.log("[VERBOSE] taskRepository");
     return new FirebaseTaskRepository(
       firebaseService.firestore,
-      () => globalContext
-    )
+      () => globalContext,
+    );
   }, [globalContext]);
 
   const taskService = useMemo(() => {
     console.log("[VERBOSE] taskService");
     return new TasksService(taskRepository);
-  }, [taskRepository])
+  }, [taskRepository]);
+
+  const eventRepository = useMemo(() => {
+    return new FirebaseEventRepository(
+      firebaseService.firestore,
+      () => globalContext,
+    );
+  }, [globalContext]);
+
+  const eventService = useMemo(() => {
+    return new EventsService(eventRepository);
+  }, [taskRepository]);
 
   return (
     <>
-      {/* <EventsProvider>
-              <ExamsProvider> */}
-      <TasksProvider tasksService={taskService}>
-        <InvitationProvider invitationService={invitationService}>
-          <WidgetsProvider widgetService={widgetService}>
-            <Outlet />
-          </WidgetsProvider>
-        </InvitationProvider>
-      </TasksProvider>
-      {/* </ExamsProvider>
-            </EventsProvider> */}
+      {/*<ExamsProvider> */}
+      <EventsProvider eventsService={eventService}>
+        <TasksProvider tasksService={taskService}>
+          <InvitationProvider invitationService={invitationService}>
+            <WidgetsProvider widgetService={widgetService}>
+              <Outlet />
+            </WidgetsProvider>
+          </InvitationProvider>
+        </TasksProvider>
+      </EventsProvider>
+      {/* </ExamsProvider> */}
     </>
   );
 }

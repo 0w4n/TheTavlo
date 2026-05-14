@@ -12,7 +12,7 @@ export type GlobalContextValue = {
   state: GlobalContextProps;
 };
 
-export const GlobalContext = createContext<GlobalContextValue | null>(null);
+export const GlobalContext = createContext<GlobalContextValue | undefined>(undefined);
 
 const initialGlobalContext: GlobalContextProps = {
   user: {

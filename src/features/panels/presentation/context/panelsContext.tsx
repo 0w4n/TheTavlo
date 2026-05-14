@@ -34,7 +34,7 @@ type PanelsContextValue = {
   clearError: () => void;
 };
 
-export const PanelsContext = createContext<PanelsContextValue | null>(null);
+export const PanelsContext = createContext<PanelsContextValue | undefined>(undefined);
 
 type PanelsProviderProps = PropsWithChildren<{
   panelsService: PanelsService;

@@ -8,7 +8,7 @@ import { Dropdown } from "#components/molecules/dropdown";
 export const Header: React.FC<HeaderProps> = ({
   logo,
   logoText = "TheTavlo",
-  logoHref = "/",
+  logoHref = "/home",
   actions = [],
   rightContent,
   dateTimeItem,

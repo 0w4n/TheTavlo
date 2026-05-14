@@ -1,8 +1,10 @@
 import type { TasksService } from "../../app/task.service";
-import type {
-  CreateTaskDTO,
-  Task,
-  UpdateTaskDTO,
+import {
+  isCreateNodeTask,
+  isCreateTask,
+  type AnyTask,
+  type CreateAnyTaskDTO,
+  type UpdateAnyTaskDTO,
 } from "../../domain/task.entity";
 import {
   createContext,
@@ -20,15 +22,17 @@ import {
 type TasksContextValue = {
   state: TasksState;
   fetchTasks: () => Promise<void>;
-  createTask: (data: CreateTaskDTO) => Promise<void>;
-  updateTask: (id: string, data: UpdateTaskDTO) => Promise<void>;
+  createTask: (data: CreateAnyTaskDTO[]) => Promise<void>;
+  updateTask: (id: string, data: UpdateAnyTaskDTO) => Promise<void>;
   completeTask: (id: string) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
-  selectTask: (task: Task | null) => void;
+  selectTask: (task: AnyTask | undefined) => void;
   clearError: () => void;
 };
 
-export const TasksContext = createContext<TasksContextValue | null>(null);
+export const TasksContext = createContext<TasksContextValue | undefined>(
+  undefined,
+);
 
 type TasksProviderProps = PropsWithChildren<{
   tasksService: TasksService;
@@ -41,9 +45,8 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     dispatch({ type: "FETCH_TASKS_START" });
     try {
       const tasks = await tasksService.getAllTasks();
-      console.log("Task fetched: ", tasks);
       dispatch({ type: "FETCH_TASKS_SUCCESS", payload: tasks });
-    } catch (error) {
+    } catch {
       dispatch({
         type: "FETCH_TASKS_ERROR",
         payload: "Error al cargar tareas",
@@ -52,24 +55,38 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   }, [tasksService]);
 
   const createTask = useCallback(
-    async (data: CreateTaskDTO) => {
-      const result = await tasksService.createTask(data);
+    async (data: CreateAnyTaskDTO[]) => {
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        let result: {
+          task?: AnyTask;
+          error?: string;
+        };
 
-      if (result.error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
-        throw new Error(result.error);
-      }
+        if (isCreateNodeTask(element)) {
+          result = await tasksService.createAnyTask(element);
+        } else if (isCreateTask(element)) {
+          result = await tasksService.createAnyTask(element);
+        } else {
+          result = {error: "Something"};
+        }
 
-      if (result.task) {
-        dispatch({ type: "CREATE_TASK_SUCCESS", payload: result.task });
+        if (result.error) {
+          dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
+          throw new Error(result.error);
+        }
+
+        if (result.task) {
+          dispatch({ type: "CREATE_TASK_SUCCESS", payload: result.task });
+        }
       }
     },
-    [tasksService]
+    [tasksService],
   );
 
   const updateTask = useCallback(
-    async (id: string, data: UpdateTaskDTO) => {
-      const result = await tasksService.updateTask(id, data);
+    async (id: string, data: UpdateAnyTaskDTO) => {
+      const result = await tasksService.updateAnyTask(id, data);
 
       if (result.error) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
@@ -80,7 +97,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
         dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.task });
       }
     },
-    [tasksService]
+    [tasksService],
   );
 
   const completeTask = useCallback(
@@ -96,7 +113,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
         dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.task });
       }
     },
-    [tasksService]
+    [tasksService],
   );
 
   const deleteTask = useCallback(
@@ -110,10 +127,10 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
 
       dispatch({ type: "DELETE_TASK_SUCCESS", payload: id });
     },
-    [tasksService]
+    [tasksService],
   );
 
-  const selectTask = useCallback((task: Task | null) => {
+  const selectTask = useCallback((task: AnyTask | undefined) => {
     dispatch({ type: "SELECT_TASK", payload: task });
   }, []);
 
@@ -135,6 +152,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     selectTask,
     clearError,
   };
+
   return (
     <TasksContext.Provider value={value}>{children}</TasksContext.Provider>
   );

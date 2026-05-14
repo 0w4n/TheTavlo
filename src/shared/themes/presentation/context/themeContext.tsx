@@ -28,7 +28,7 @@ type ThemeContextValue = {
   resetTheme: () => Promise<void>;
 };
 
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
+export const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const DEFAULT_THEME_CONFIG: Omit<ThemeConfig, "id" | "userId"> = {
   mode: "system",

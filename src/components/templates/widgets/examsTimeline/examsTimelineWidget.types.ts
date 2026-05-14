@@ -5,9 +5,7 @@ export interface ExamsTimelineWidgetProps {
 }
 
 export interface ExamTimelineItemProps {
-  examId: string;
+  id: string;
   examAssignatureName: string;
-  icon: string;
-  color: string;
   examDate: Timestamp;
 }

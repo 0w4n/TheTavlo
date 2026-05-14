@@ -1,10 +1,12 @@
-import React from 'react';
-import type { BadgeProps } from './badge.types';
-import './badge.css';
+import React from "react";
+import type { BadgeProps } from "./badge.types";
+import "./badge.css";
+import Icon from "#shared/ui/atoms/icons";
+import { getIconWithTaskProgress } from "./utils";
 
 /**
  * Badge component for status indicators, labels, and counts
- * 
+ *
  * @example
  * ```tsx
  * <Badge variant="success">Activo</Badge>
@@ -13,37 +15,32 @@ import './badge.css';
  * ```
  */
 export const Badge: React.FC<BadgeProps> = ({
-  variant = 'neutral',
-  size = 'md',
-  icon,
-  dot = false,
-  children,
-  className = '',
-  ...props
+  variant,
+  collapsed = false,
+  className = "",
 }) => {
   const classes = [
-    'badge',
-    `badge--${variant}`,
-    `badge--${size}`,
-    className
-  ].filter(Boolean).join(' ');
+    collapsed ? "badge badge__collapsed" : "badge",
+    `badge__${variant}`,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  return (
-    <span className={classes} {...props}>
-      {/* Dot indicator */}
-      {dot && <span className="badge__dot" aria-hidden="true" />}
-      
-      {/* Icon */}
-      {icon && (
-        <span className="badge__icon" aria-hidden="true">
-          {icon}
-        </span>
-      )}
-      
-      {/* Content */}
-      {children}
-    </span>
-  );
+  if (collapsed) {
+    return (
+      <div className={classes}>
+        <Icon name={getIconWithTaskProgress(variant)} size={16} stroke="2" />
+      </div>
+    );
+  } else {
+    return (
+      <div className={classes}>
+        <Icon name={getIconWithTaskProgress(variant)} size={16} stroke="2" />
+        <span>{variant.toString()}</span>
+      </div>
+    );
+  }
 };
 
-Badge.displayName = 'Badge';
+Badge.displayName = "Badge";

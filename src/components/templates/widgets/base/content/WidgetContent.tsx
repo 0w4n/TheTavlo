@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import type { Widget } from "#features/widgets/domain/widget.entity";
 import PanelsWidget from "../../panels/panelsWidget";
 import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
-import { ExamsTimelineWidget } from "../../examsTimeline/examsTimelineWidget";
+import ExamsTimelineWidget from "../../examsTimeline/examsTimelineWidget";
 import { Timestamp } from "firebase/firestore";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import type { Panel } from "#features/panels/domain/panel.entity";
@@ -60,35 +60,7 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
 
     case "exam-timeline":
       return (
-        <ExamsTimelineWidget
-          items={[
-            {
-              examId: "1",
-              examAssignatureName: "Matemáticas",
-              examDate: Timestamp.fromDate(new Date()),
-              icon: "IconMath",
-              color: "hsl(210, 100%, 70%)",
-            },
-            {
-              examId: "2",
-              examAssignatureName: "Historia",
-              examDate: Timestamp.fromDate(
-                new Date(new Date().getTime() + 86400000),
-              ),
-              icon: "IconHistory",
-              color: "hsl(30, 100%, 70%)",
-            },
-            {
-              examId: "3",
-              examAssignatureName: "Biología",
-              examDate: Timestamp.fromDate(
-                new Date(new Date().getTime() + 172800000),
-              ),
-              icon: "IconDna",
-              color: "hsl(120, 100%, 70%)",
-            },
-          ]}
-        />
+        <ExamsTimelineWidget />
       );
 
     // case "exam-countdown":

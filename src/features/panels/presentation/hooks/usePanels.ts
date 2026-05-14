@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { PanelsContext } from "../context/panelsContext";
 
 export default function usePanels() {
@@ -8,9 +8,5 @@ export default function usePanels() {
     throw new Error("Necesitas tener el contexto dentro del provider");
   }
   
-  useMemo(() => {
-    console.log(context?.state);
-  }, [context]);
-
   return context;
 }

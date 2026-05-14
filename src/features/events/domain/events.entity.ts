@@ -18,8 +18,8 @@ export interface Event {
 
 export interface GenericEvent extends Event {
   type: "generic";
-  startsAt: Timestamp;
-  endsAt?: Timestamp;
+  startAt: Timestamp;
+  endAt: Timestamp;
   location?: string;
 }
 
@@ -33,6 +33,7 @@ export interface MultiDayEvent extends Event {
   category: multidayCategory;
   startAt: Timestamp;
   endAt: Timestamp;
+  location: string;
 }
 
 export interface ReminderEvent extends Event {
@@ -43,5 +44,5 @@ export interface ReminderEvent extends Event {
 
 export type AnyEvent = GenericEvent | ExamEvent | MultiDayEvent | ReminderEvent;
 
-export type createAnyEventDTO = Omit<AnyEvent, "id">;
-export type updateAnyEventDTO = Omit<AnyEvent, "id" | "createAt">;
+export type CreateAnyEventDTO = Omit<AnyEvent, "id">;
+export type UpdateAnyEventDTO = Omit<AnyEvent, "id" | "createAt">;
