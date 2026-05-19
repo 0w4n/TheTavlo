@@ -4,6 +4,7 @@ import HomePage from "#components/pages/HomePage";
 import LoginPage from "#components/pages/LoginPage";
 import CommingPage from "#components/pages/Comming";
 import PanelsPage from "#components/pages/PanelsPage";
+import ErrorPage from "#components/pages/error";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
@@ -16,12 +17,14 @@ export const routes = [
     children: [
       {
         path: "/home",
+        ErrorBoundary: ErrorPage,
         children: [
-          { index: true, element: <HomePage /> },
+          { index: true, element: <HomePage />},
           {
             path: ":pid/*",
             loader: panelsLoader,
             element: <PanelsPage />,
+            ErrorBoundary: <ErrorPage />,
           },
         ],
       },

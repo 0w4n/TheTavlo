@@ -12,13 +12,13 @@ export type PanelsState = {
   selectedPanel?: Panel;
   currentPanel?: Panel;
   isLoading: boolean;
-  error?: string;
+  error?: Error;
 };
 
 type PanelsAction =
   | { type: "FETCH_PANELS_START" }
   | { type: "FETCH_PANELS_SUCCESS"; payload: Panel[] }
-  | { type: "FETCH_PANELS_ERROR"; payload: string }
+  | { type: "FETCH_PANELS_ERROR"; payload: Error }
   | { type: "CREATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }

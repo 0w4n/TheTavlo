@@ -124,13 +124,15 @@ export class FirebasePanelsRepository implements PanelRepository {
 
     // 2. Preparar el nuevo documento hijo con una ref generada en cliente
     const childRef = doc(collection(this.firestore, collectionPath));
-
-    const rawDoc = {
+    if (data.createdAt == undefined || data.updatedAt == undefined) {
+      data = {
       ...data,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
-    const panelDoc = this.mapPanelToDocument(rawDoc);
+    }
+
+    const panelDoc = this.mapPanelToDocument(data);
 
     // 3. Batch: set del hijo + arrayUnion del ref en el padre (atómico)
     const batch = writeBatch(this.firestore);

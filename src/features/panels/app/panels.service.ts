@@ -37,56 +37,53 @@ export class PanelsService {
 
   async createPanel(
     data: CreatePanelDTO,
-    parentId: string = "root"
-  ): Promise<{ panel?: Panel; error?: string }> {
+    parentId: string = "root",
+  ): Promise<Panel | Error> {
     const nameError = PanelRules.validateName(data.name);
-    if (nameError) return { error: nameError };
+    if (nameError) return Error(nameError);
 
     try {
-      const panel =  await this.repository.create(data, parentId);
+      const panel = await this.repository.create(data, parentId);
 
-      return { panel };
+      return panel;
     } catch (error) {
-      return { error: "Error al crear el panel" };
+      return Error("Error al crear el panel");
     }
   }
 
-  async updatePanel(
-    id: string,
-    data: UpdatePanelDTO,
-  ): Promise<{ panel?: Panel; error?: string }> {
+  async updatePanel(id: string, data: UpdatePanelDTO): Promise<Panel | Error> {
     if (data.name) {
       const nameError = PanelRules.validateName(data.name);
-      if (nameError) return { error: nameError };
+      if (nameError) return Error(nameError);
     }
 
     try {
       const panel = await this.repository.update(id, data);
-      return { panel };
+      return panel;
     } catch (error) {
-      return { error: "Error al actualizar el panel" };
+      return Error("Error al actualizar el panel");
     }
   }
 
-  async deletePanel(id: string): Promise<{ success: boolean; error?: string }> {
+  async deletePanel(id: string): Promise<{ success: boolean; error?: Error }> {
     try {
       const panel = await this.repository.findById(id);
 
       if (!panel) {
-        return { success: false, error: "Panel no encontrado" };
+        return { success: false, error: Error("Panel no encontrado") };
       }
 
       if (!PanelRules.canDelete(panel)) {
         return {
           success: false,
-          error: "No se puede eliminar el panel por defecto",
+          error: Error("No se puede eliminar el panel por defecto"),
         };
       }
 
       await this.repository.delete(id);
       return { success: true };
     } catch (error) {
-      return { success: false, error: "Error al eliminar el panel" };
+      return { success: false, error: Error("Error al eliminar el panel")};
     }
   }
 

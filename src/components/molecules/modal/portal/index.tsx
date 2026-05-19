@@ -29,7 +29,7 @@ export default function ModalPortal({
         icon={iconName}
         label={label}
         className={className}
-      ></Button>
+      />
 
       {open &&
         createPortal(

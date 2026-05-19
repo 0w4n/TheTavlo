@@ -1,6 +1,7 @@
 import type { WidgetType } from "#features/widgets/domain/widget.entity";
 import type { JSX } from "react";
 import { AddTask } from "../../task/addTask";
+import { AddPanels } from "../../panels/addPanels";
 
 export function getIconWidgetType(widgetType: WidgetType): string {
   switch (widgetType) {
@@ -39,8 +40,8 @@ export function GetDialogWdigetType({widgetType, onClose}:{widgetType: WidgetTyp
   switch (widgetType) {
     case "task-list":
       return <AddTask onClose={onClose}/>;
-    // case "panels-list":
-    //   return "IconFolders";
+    case "panels-list":
+       return <AddPanels onClose={onClose}/>;
     // case "event-calendar":
     //   return "IconCalendar";
     // case "event-list":

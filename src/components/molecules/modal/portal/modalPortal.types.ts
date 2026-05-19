@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface ModalPortalProps {
   className?: string;
 
@@ -5,5 +7,5 @@ export interface ModalPortalProps {
 
   label?: string;
 
-  children: (onClose: () => void) => React.ReactNode;
+  children: (onClose: () => void) => ReactNode;
 }

@@ -21,9 +21,8 @@ import {
 import "./dashboard.css";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { /* useCallback ,*/ useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
-import { Button } from "#components/atoms/button";
 import type { WidgetsState } from "#features/widgets/presentation/context/widgetReducer";
 import LoadingPage from "#components/pages/LoadingPage";
 import ModalPortal from "#components/molecules/modal/portal";

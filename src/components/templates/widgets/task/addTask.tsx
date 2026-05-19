@@ -42,31 +42,35 @@ function toLocalDatetimeString(date: Date): string {
 }
 
 function toAccordionItem(item: CreateAnyTaskDTO, key: string): AccordionItem {
-  return { id: key, title: item.title ? item.title : "", content: <>
+  return {
+    id: key,
+    title: item.title ? item.title : "",
+    content: (
+      <>
         <div>
-        <Field label="Título">
-          <input
-            className="add-task__input"
-            type="text"
-            value={item.title}
-            onChange={(e) =>
-              handleSubtaskTitle(i, e.target.value)
-            }
-            placeholder={`Título de subtarea ${i + 1}`}
-          />
-        </Field>
+          <Field label="Título">
+            <input
+              className="add-task__input"
+              type="text"
+              value={item.title}
+              onChange={(e) => handleSubtaskTitle(i, e.target.value)}
+              placeholder={`Título de subtarea ${i + 1}`}
+            />
+          </Field>
 
-        <div style={{ marginTop: 12 }}>
-          <Button
-            type="button"
-            variant="ghost"
-            icon="IconX"
-            label="Eliminar"
-            onClick={() => handleRemoveSubtask(i)}
-          />
+          <div style={{ marginTop: 12 }}>
+            <Button
+              type="button"
+              variant="ghost"
+              icon="IconX"
+              label="Eliminar"
+              onClick={() => handleRemoveSubtask(i)}
+            />
+          </div>
         </div>
-      </div>
-</>}
+      </>
+    ),
+  };
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -209,11 +213,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
       </Modal.Header>
 
       <Modal.Body>
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="add-task__card"
-        >
+        <form onSubmit={handleSubmit} noValidate className="add-task__card">
           <div className="add-task__body">
             {/* Title */}
             <Field label="Título" required error={errors.title}>
@@ -249,11 +249,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                 />
               </Field>
 
-              <Field
-                label="Cierra el"
-                required
-                error={errors.endAt}
-              >
+              <Field label="Cierra el" required error={errors.endAt}>
                 <input
                   className={`add-task__input ${
                     errors.endAt ? "add-task__input--error" : ""
@@ -278,16 +274,10 @@ export function AddTask({ onClose }: AddTaskFormProps) {
             {/* Progress */}
             {!hasSubtasks && (
               <div className="add-task__row">
-                <Field
-                  label="Progreso"
-                  required
-                  error={errors.progress}
-                >
+                <Field label="Progreso" required error={errors.progress}>
                   <select
                     className={`add-task__input add-task__select ${
-                      errors.progress
-                        ? "add-task__input--error"
-                        : ""
+                      errors.progress ? "add-task__input--error" : ""
                     }`}
                     value={progress}
                     onChange={(e) => {
@@ -303,17 +293,11 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                   >
                     <option value="">Seleccionar...</option>
 
-                    <option value={TaskProgress.NOTSTARTED}>
-                      Not started
-                    </option>
+                    <option value={TaskProgress.NOTSTARTED}>Not started</option>
 
-                    <option value={TaskProgress.INPROGRESS}>
-                      In progress
-                    </option>
+                    <option value={TaskProgress.INPROGRESS}>In progress</option>
 
-                    <option value={TaskProgress.SUBMITTED}>
-                      Submitted
-                    </option>
+                    <option value={TaskProgress.SUBMITTED}>Submitted</option>
                   </select>
                 </Field>
               </div>
@@ -322,23 +306,15 @@ export function AddTask({ onClose }: AddTaskFormProps) {
             {/* Subtasks */}
             {hasSubtasks && (
               <div className="add-task__subtask-section">
-                <SubTaskItems
-                  subtasks={subtasks}
-                  setSubtasks={setSubtasks}
-                />
+                <SubTaskItems subtasks={subtasks} setSubtasks={setSubtasks} />
               </div>
             )}
 
             {/* Divider */}
-            <div
-              className="add-task__divider"
-              role="separator"
-            />
+            <div className="add-task__divider" role="separator" />
 
             {/* Section */}
-            <div className="add-task__section-label">
-              Subtareas
-            </div>
+            <div className="add-task__section-label">Subtareas</div>
 
             <Button
               type="button"
@@ -397,10 +373,7 @@ function Field({
         {label}
 
         {required && (
-          <span
-            className="field__required"
-            aria-hidden="true"
-          >
+          <span className="field__required" aria-hidden="true">
             {" "}
             *
           </span>
@@ -415,9 +388,7 @@ function Field({
         </p>
       )}
 
-      {hint && !error && (
-        <p className="field__hint">{hint}</p>
-      )}
+      {hint && !error && <p className="field__hint">{hint}</p>}
     </div>
   );
 }
@@ -426,15 +397,10 @@ function Field({
 
 interface SubTaskItemsProps {
   subtasks: CreateTaskDTO[];
-  setSubtasks: React.Dispatch<
-    React.SetStateAction<CreateTaskDTO[]>
-  >;
+  setSubtasks: React.Dispatch<React.SetStateAction<CreateTaskDTO[]>>;
 }
 
-function SubTaskItems({
-  subtasks,
-  setSubtasks,
-}: SubTaskItemsProps) {
+function SubTaskItems({ subtasks, setSubtasks }: SubTaskItemsProps) {
   function handleAddSubtask() {
     const task: CreateTaskDTO = {
       title: "",
@@ -449,15 +415,10 @@ function SubTaskItems({
   }
 
   function handleRemoveSubtask(index: number) {
-    setSubtasks((prev) =>
-      prev.filter((_, i) => i !== index),
-    );
+    setSubtasks((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function handleSubtaskTitle(
-    index: number,
-    value: string,
-  ) {
+  function handleSubtaskTitle(index: number, value: string) {
     setSubtasks((prev) =>
       prev.map((task, i) =>
         i === index
@@ -475,7 +436,11 @@ function SubTaskItems({
 
     title: `Tarea ${i + 1}`,
 
-    content: (<><div></div></>),
+    content: (
+      <>
+        <div></div>
+      </>
+    ),
   }));
 
   return (

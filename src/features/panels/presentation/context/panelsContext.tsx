@@ -1,44 +1,22 @@
-import {
-  createContext,
-  useReducer,
-  useCallback,
-  useEffect,
-  type PropsWithChildren,
-} from "react";
-import {
-  initialPanelsState,
-  panelsReducer,
-  type PanelsState,
-} from "./panelReducer";
+import { createContext, useReducer, useCallback, useEffect } from "react";
+import { initialPanelsState, panelsReducer } from "./panelReducer";
 import type {
   CreatePanelDTO,
   Panel,
   UpdatePanelDTO,
-} from "features/panels/domain/panel.entity";
-import type { PanelsService } from "../../app/panels.service";
+} from "../../domain/panel.entity";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
-import { DocumentReference, Timestamp } from "firebase/firestore";
+import { DocumentReference } from "firebase/firestore";
+import {
+  returnTypes,
+  type createOpt,
+  type PanelsContextValue,
+  type PanelsProviderProps,
+} from "./panelsContext.types";
 
-type PanelsContextValue = {
-  state: PanelsState;
-  fetchPanels: () => Promise<void>;
-  fetchHomePanel: () => Promise<Panel>;
-  //findById: (id: string) => Promise<Panel | undefined>;
-  findByRef: (ref: DocumentReference) => Promise<Panel | undefined>;
-  createPanel: (data: CreatePanelDTO) => Promise<void>;
-  addSubPanel: (parentRef: DocumentReference, childRef: DocumentReference) => Promise<void>;
-  updatePanel: (id: string, data: UpdatePanelDTO) => Promise<void>;
-  deletePanel: (id: string) => Promise<void>;
-  removeSubPanel: (parentId: DocumentReference, childId: DocumentReference) => Promise<void>;
-  selectPanel: (panel: Panel) => void;
-  clearError: () => void;
-};
-
-export const PanelsContext = createContext<PanelsContextValue | undefined>(undefined);
-
-type PanelsProviderProps = PropsWithChildren<{
-  panelsService: PanelsService;
-}>;
+export const PanelsContext = createContext<PanelsContextValue | undefined>(
+  undefined,
+);
 
 export function PanelsProvider({
   children,
@@ -56,7 +34,7 @@ export function PanelsProvider({
       } catch (error) {
         dispatch({
           type: "FETCH_PANELS_ERROR",
-          payload: `Error al buscar panel por referencia: ${error}`,
+          payload: Error(`Error al buscar panel por referencia: ${error}`),
         });
         return undefined;
       }
@@ -75,7 +53,7 @@ export function PanelsProvider({
     } catch (error) {
       dispatch({
         type: "FETCH_PANELS_ERROR",
-        payload: `Error al cargar el panel home: ${error}`,
+        payload: Error(`Error al cargar el panel home: ${error}`),
       });
       throw error;
     }
@@ -87,53 +65,63 @@ export function PanelsProvider({
     try {
       const panels = await panelsService.getAllPanels();
 
-      console.log(
-        "Paneles con isDefault= true:",
-        panels.find((p) => p.isDefault === true),
-      );
-
-      let homePanel = panels.find((p) => p.isDefault === true);
-
-      if (!homePanel) {
-        const result = await panelsService.createPanel({
-          name: "Home",
-          icon: "IconHome",
-          isDefault: true,
-          color: 0,
-          subPanelsId: [],
-          sharedWith: "",
-          createdAt: Timestamp.now(),
-          updatedAt: Timestamp.now(),
-        });
-
-        if (result.panel) {
-          homePanel = result.panel;
-          panels.push(result.panel);
-        }
-      }
-
       dispatch({ type: "FETCH_PANELS_SUCCESS", payload: panels });
     } catch (error) {
       dispatch({
         type: "FETCH_PANELS_ERROR",
-        payload: `Error al cargar paneles: ${error}`,
+        payload: Error(`Error al cargar paneles: ${error}`),
       });
     }
   }, [panelsService]);
 
   const createPanel = useCallback(
-    async (data: CreatePanelDTO) => {
-      const result = await panelsService.createPanel(data);
+    async (data: CreatePanelDTO, opt?: createOpt) => {
+      if (opt == undefined) {
+        const result = await panelsService.createPanel(data);
 
-      if (result.error) {
-        dispatch({
-          type: "FETCH_PANELS_ERROR",
-          payload: `Error al crear panel: ${result.error}`,
-        });
-      }
+        if (result instanceof Error) {
+          dispatch({
+            type: "FETCH_PANELS_ERROR",
+            payload: result,
+          });
+        } else {
+          dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
+        }
+      } else {
+        // 1. Ejecutamos la creación del panel
+        const result = await panelsService.createPanel(data);
 
-      if (result.panel) {
-        dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.panel });
+        if (result instanceof Error) {
+          dispatch({
+            type: "FETCH_PANELS_ERROR",
+            payload: result,
+          });
+          return result;
+        }
+
+        // 2. Si se solicita, vinculamos el panel con su padre
+        // Nota: Asumimos que 'data' contiene la referencia del padre (data.parentRef)
+        // y 'result' expone su propia referencia (result.ref)
+        if (opt.addToParent) {
+          await panelsService.addSubPanel(data.parentRef, result.ref);
+        }
+
+        // 3. Manejamos los distintos tipos de retorno solicitados
+        switch (opt.return) {
+          case returnTypes.PANEL:
+            return result; // Retorna el objeto Panel completo
+
+          case returnTypes.DOCREF:
+            return result.ref; // Retorna la DocumentReference
+
+          case returnTypes.STRING:
+            return result.id; // Retorna el ID del panel como string
+
+          case returnTypes.DEFAULT:
+          default:
+            dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
+            return;
+        }
       }
     },
     [panelsService],
@@ -151,10 +139,10 @@ export function PanelsProvider({
         subPanelsId: [...parentDoc.subPanelsId, childId],
       });
 
-      if (result.error) {
+      if (result instanceof Error) {
         dispatch({
           type: "FETCH_PANELS_ERROR",
-          payload: `Error al crear panel: ${result.error}`,
+          payload: result,
         });
       }
     },
@@ -165,15 +153,13 @@ export function PanelsProvider({
     async (id: string, data: UpdatePanelDTO) => {
       const result = await panelsService.updatePanel(id, data);
 
-      if (result.error) {
+      if (result instanceof Error) {
         dispatch({
           type: "FETCH_PANELS_ERROR",
-          payload: `Error al actualizar panel: ${result.error}`,
+          payload: result,
         });
-      }
-
-      if (result.panel) {
-        dispatch({ type: "UPDATE_PANEL_SUCCESS", payload: result.panel });
+      } else {
+        dispatch({ type: "UPDATE_PANEL_SUCCESS", payload: result });
       }
     },
     [panelsService],
@@ -208,7 +194,7 @@ export function PanelsProvider({
     if (!panel) {
       dispatch({
         type: "FETCH_PANELS_ERROR",
-        payload: `Error al seleccionar panel: Panel no encontrado`,
+        payload: Error(`Error al seleccionar panel: Panel no encontrado`),
       });
       return;
     }
