@@ -17,14 +17,14 @@ export const routes = [
     children: [
       {
         path: "/home",
-        ErrorBoundary: ErrorPage,
+        ErrorElement: <ErrorPage />,
         children: [
           { index: true, element: <HomePage />},
           {
             path: ":pid/*",
             loader: panelsLoader,
             element: <PanelsPage />,
-            ErrorBoundary: <ErrorPage />,
+            ErrorElement: <ErrorPage />,
           },
         ],
       },
