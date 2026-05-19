@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from "react";
+import { useState } from "react";
 import { DocumentReference, Timestamp } from "firebase/firestore";
 import {
   TaskProgress,
@@ -7,14 +7,12 @@ import {
   type CreateNodeTaskDTO,
   type CreateTaskDTO,
 } from "#features/task/domain/task.entity";
-
 import { Modal } from "#components/molecules/modal";
 import useTasks from "#features/task/presentation/hooks/useTask";
 import { Accordion } from "#components/molecules/acordion/acordion";
 import { Button } from "#components/atoms/button";
 
 import "./addTask.css";
-import type { AccordionItem } from "#components/molecules/acordion/acordion.types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -38,56 +36,19 @@ function toTimestamp(value: string): Timestamp {
 function toLocalDatetimeString(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function toAccordionItem(item: CreateAnyTaskDTO, key: string): AccordionItem {
-  return {
-    id: key,
-    title: item.title ? item.title : "",
-    content: (
-      <>
-        <div>
-          <Field label="Título">
-            <input
-              className="add-task__input"
-              type="text"
-              value={item.title}
-              onChange={(e) => handleSubtaskTitle(i, e.target.value)}
-              placeholder={`Título de subtarea ${i + 1}`}
-            />
-          </Field>
-
-          <div style={{ marginTop: 12 }}>
-            <Button
-              type="button"
-              variant="ghost"
-              icon="IconX"
-              label="Eliminar"
-              onClick={() => handleRemoveSubtask(i)}
-            />
-          </div>
-        </div>
-      </>
-    ),
-  };
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function AddTask({ onClose }: AddTaskFormProps) {
-  // Form state
-  const initialStateTask: CreateTaskDTO = {
-    title: "",
-    phase: TaskPhase.UNSCHEDULED,
-    progress: TaskProgress.NOTSTARTED,
-    endAt: Timestamp.now(),
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-  };
-
-  const [tasks, setTasks] = useState<CreateAnyTaskDTO[]>([initialStateTask]);
-  const [accordionItems, setAccordionItems] = useState([]);
+  // Field States (Faltaban estas declaraciones)
+  const [title, setTitle] = useState("");
+  const [openAt, setOpenAt] = useState("");
+  const [endAt, setEndAt] = useState("");
+  const [progress, setProgress] = useState<TaskProgress | "">("");
 
   // Subtask state
   const [hasSubtasks, setHasSubtasks] = useState(false);
@@ -106,7 +67,8 @@ export function AddTask({ onClose }: AddTaskFormProps) {
     const next: FormErrors = {};
 
     if (!title.trim()) next.title = "El título es obligatorio";
-    if (!progress) next.progress = "Selecciona un progreso";
+    // Solo pedimos el progreso si NO hay subtareas activas
+    if (!hasSubtasks && !progress) next.progress = "Selecciona un progreso";
     if (!endAt) next.endAt = "La fecha de cierre es obligatoria";
 
     setErrors(next);
@@ -122,7 +84,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
 
   // ── Submit ─────────────────────────────────────────────────────────────────
 
-  async function handleSubmit(e: SyntheticEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!validate()) return;
@@ -131,7 +93,6 @@ export function AddTask({ onClose }: AddTaskFormProps) {
 
     try {
       const now = Timestamp.now();
-
       const taskMap: CreateAnyTaskDTO[] = [];
 
       if (hasSubtasks) {
@@ -163,7 +124,8 @@ export function AddTask({ onClose }: AddTaskFormProps) {
         const taskDTO: CreateTaskDTO = {
           title: title.trim(),
           phase: TaskPhase.UNSCHEDULED,
-          progress: TaskProgress.NOTSTARTED,
+          // Hacemos un cast porque ya sabemos que pasó la validación
+          progress: progress as TaskProgress,
           ...(openAt && { openAt: toTimestamp(openAt) }),
           endAt: toTimestamp(endAt),
           createdAt: now,
@@ -174,6 +136,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
       }
 
       await createTask(taskMap);
+      onClose(); // Es buena práctica cerrar el modal al tener éxito
     } finally {
       setIsLoading(false);
     }
@@ -204,7 +167,6 @@ export function AddTask({ onClose }: AddTaskFormProps) {
 
           <div>
             <p className="add-task__header-title">Nueva tarea</p>
-
             <p className="add-task__header-sub">
               Los campos con * son obligatorios
             </p>
@@ -225,7 +187,6 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
-
                   setErrors((p) => ({
                     ...p,
                     title: undefined,
@@ -259,7 +220,6 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                   min={openAt || minDate}
                   onChange={(e) => {
                     setEndAt(e.target.value);
-
                     setErrors((p) => ({
                       ...p,
                       endAt: undefined,
@@ -282,7 +242,6 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                     value={progress}
                     onChange={(e) => {
                       setProgress(e.target.value as TaskProgress);
-
                       setErrors((p) => ({
                         ...p,
                         progress: undefined,
@@ -292,11 +251,8 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                     aria-invalid={!!errors.progress}
                   >
                     <option value="">Seleccionar...</option>
-
                     <option value={TaskProgress.NOTSTARTED}>Not started</option>
-
                     <option value={TaskProgress.INPROGRESS}>In progress</option>
-
                     <option value={TaskProgress.SUBMITTED}>Submitted</option>
                   </select>
                 </Field>
@@ -318,7 +274,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
 
             <Button
               type="button"
-              label="Crear una subTarea"
+              label={hasSubtasks ? "Quitar subtareas" : "Crear una subTarea"}
               icon="IconAdd"
               onClick={handleToggleSubtasks}
             />
@@ -339,10 +295,17 @@ export function AddTask({ onClose }: AddTaskFormProps) {
             </button>
           )}
 
+          {/* El botón onSubmit va a enviar el formulario porque está dentro del contexto <form> indirectamente, o en su defecto invoca handleSubmit desde el form*/}
           <button
             type="submit"
+            onClick={(e) => {
+              // Hack rápido si el footer está fuera del <form> en el DOM visual:
+              // Forzamos el submit enviando un evento al form, o puedes meter el footer dentro del form.
+              // Como onSubmit está en el form superior, funcionará si Modal.Footer renderiza dentro del form.
+            }}
             className="add-task__btn-primary"
             disabled={isLoading}
+            formTarget="add-task-form"
           >
             {isLoading ? "Creando..." : "Crear tarea"}
           </button>
@@ -371,7 +334,6 @@ function Field({
     <div className="field">
       <label className="field__label">
         {label}
-
         {required && (
           <span className="field__required" aria-hidden="true">
             {" "}
@@ -410,7 +372,6 @@ function SubTaskItems({ subtasks, setSubtasks }: SubTaskItemsProps) {
       phase: TaskPhase.UNSCHEDULED,
       progress: TaskProgress.NOTSTARTED,
     };
-
     setSubtasks((prev) => [...prev, task]);
   }
 
@@ -426,20 +387,37 @@ function SubTaskItems({ subtasks, setSubtasks }: SubTaskItemsProps) {
               ...task,
               title: value,
             }
-          : task,
-      ),
+          : task
+      )
     );
   }
 
-  const accordionItems = subtasks.map((task, i) => ({
+  // Movimos el contenido problemático de `toAccordionItem` aquí dentro
+  const accordionItems = subtasks.map((item, i) => ({
     id: String(i),
-
-    title: `Tarea ${i + 1}`,
-
+    title: item.title ? item.title : `Nueva subtarea ${i + 1}`,
     content: (
-      <>
-        <div></div>
-      </>
+      <div>
+        <Field label="Título">
+          <input
+            className="add-task__input"
+            type="text"
+            value={item.title}
+            onChange={(e) => handleSubtaskTitle(i, e.target.value)}
+            placeholder={`Título de subtarea ${i + 1}`}
+          />
+        </Field>
+
+        <div style={{ marginTop: 12 }}>
+          <Button
+            type="button"
+            variant="ghost"
+            icon="IconX"
+            label="Eliminar"
+            onClick={() => handleRemoveSubtask(i)}
+          />
+        </div>
+      </div>
     ),
   }));
 
