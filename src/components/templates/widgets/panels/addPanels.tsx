@@ -36,7 +36,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormError>({});
 
-  const { createPanel, state, addSubPanel, findByRef } = usePanels();
+  const { createPanel } = usePanels();
 
   async function handleCreatePanels(e: SyntheticEvent) {
     e.preventDefault();
