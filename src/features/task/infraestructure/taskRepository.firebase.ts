@@ -42,6 +42,7 @@ export class FirebaseTaskRepository implements TaskRepository {
       id: id,
       title: task.title,
       progress: task.progress,
+      phase: task.phase,
       endAt: task.endAt,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,

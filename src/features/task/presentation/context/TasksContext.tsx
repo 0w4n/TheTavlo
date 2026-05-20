@@ -49,7 +49,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     } catch {
       dispatch({
         type: "FETCH_TASKS_ERROR",
-        payload: "Error al cargar tareas",
+        payload: Error("Error al cargar tareas"),
       });
     }
   }, [tasksService]);
@@ -58,26 +58,23 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     async (data: CreateAnyTaskDTO[]) => {
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
-        let result: {
-          task?: AnyTask;
-          error?: string;
-        };
+        let result: AnyTask | Error;
 
         if (isCreateNodeTask(element)) {
           result = await tasksService.createAnyTask(element);
         } else if (isCreateTask(element)) {
           result = await tasksService.createAnyTask(element);
         } else {
-          result = {error: "Something"};
+          result = Error("Something");
         }
 
-        if (result.error) {
-          dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
-          throw new Error(result.error);
+        if (result instanceof Error) {
+          dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+          throw result;
         }
 
-        if (result.task) {
-          dispatch({ type: "CREATE_TASK_SUCCESS", payload: result.task });
+        if (result) {
+          dispatch({ type: "CREATE_TASK_SUCCESS", payload: result });
         }
       }
     },
@@ -88,13 +85,13 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     async (id: string, data: UpdateAnyTaskDTO) => {
       const result = await tasksService.updateAnyTask(id, data);
 
-      if (result.error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
-        throw new Error(result.error);
+      if (result instanceof Error) {
+        dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+        throw result;
       }
 
-      if (result.task) {
-        dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.task });
+      if (result) {
+        dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
       }
     },
     [tasksService],
@@ -104,13 +101,13 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     async (id: string) => {
       const result = await tasksService.completeTask(id);
 
-      if (result.error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
-        throw new Error(result.error);
+      if (result instanceof Error) {
+        dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+        throw result;
       }
 
-      if (result.task) {
-        dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.task });
+      if (result) {
+        dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
       }
     },
     [tasksService],
@@ -120,9 +117,9 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     async (id: string) => {
       const result = await tasksService.deleteTask(id);
 
-      if (result.error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.error });
-        throw new Error(result.error);
+      if (result instanceof Error) {
+        dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+        throw result ;
       }
 
       dispatch({ type: "DELETE_TASK_SUCCESS", payload: id });

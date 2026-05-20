@@ -1,3 +1,4 @@
+import { DocumentReference } from "firebase/firestore";
 import { type Panel } from "../../domain/panel.entity";
 
 /**
@@ -8,7 +9,7 @@ import { type Panel } from "../../domain/panel.entity";
  * @param error Error que devuelve
  */
 export type PanelsState = {
-  subPanelsId: string[];
+  subPanelsId: DocumentReference[];
   selectedPanel?: Panel;
   currentPanel?: Panel;
   isLoading: boolean;
@@ -23,7 +24,7 @@ type PanelsAction =
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
   | { type: "SELECT_PANEL"; payload: Panel }
-  | { type: "FETCH_SUB_PANELS"; payload: string[] }
+  | { type: "FETCH_SUB_PANELS"; payload: DocumentReference[] }
   | { type: "CLEAR_ERROR" };
 
 export const initialPanelsState: PanelsState = {

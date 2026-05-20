@@ -22,7 +22,7 @@ export type PanelsContextValue = {
   fetchHomePanel: () => Promise<Panel>;
   //TODO: findById: (id: string) => Promise<Panel | undefined>;
   findByRef: (ref: DocumentReference) => Promise<Panel | undefined>;
-  createPanel: (data: CreatePanelDTO, opt?: createOpt) => Promise<void | Panel | string | DocumentReference>;
+  createPanel: (data: CreatePanelDTO, opt?: createOpt) => Promise<void | Panel | DocumentReference | Error>;
   addSubPanel: (
     parentRef: DocumentReference,
     childRef: DocumentReference,

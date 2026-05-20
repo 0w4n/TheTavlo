@@ -23,11 +23,11 @@ export class TasksService {
 
   async createAnyTask(
     data: CreateAnyTaskDTO,
-  ): Promise<{ task?: AnyTask; error?: string }> {
+  ): Promise< AnyTask | Error> {
     // Validaciones de negocio
     const titleError = TaskRules.validateTitle(data.title);
     if (titleError) {
-      return { error: titleError };
+      return Error(titleError);
     }
 
     // const dateError = TaskRules.validateDueDate(data..toDate());
@@ -37,9 +37,9 @@ export class TasksService {
 
     try {
       const task = await this.repository.create(data);
-      return { task };
+      return task;
     } catch (error) {
-      return { error: "Error al crear la tarea" };
+      return Error("Error al crear la tarea");
     }
   }
 

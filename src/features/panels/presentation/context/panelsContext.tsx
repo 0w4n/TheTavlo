@@ -80,51 +80,49 @@ export function PanelsProvider({
         const result = await panelsService.createPanel(data);
 
         if (result instanceof Error) {
-          dispatch({
-            type: "FETCH_PANELS_ERROR",
-            payload: result,
-          });
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: result });
         } else {
           dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
         }
       } else {
-        // 1. Ejecutamos la creación del panel
+        // 1. Ejecutamos la creación del panel hijo
         const result = await panelsService.createPanel(data);
 
         if (result instanceof Error) {
-          dispatch({
-            type: "FETCH_PANELS_ERROR",
-            payload: result,
-          });
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: result });
           return result;
         }
 
-        // 2. Si se solicita, vinculamos el panel con su padre
-        // Nota: Asumimos que 'data' contiene la referencia del padre (data.parentRef)
-        // y 'result' expone su propia referencia (result.ref)
-        if (opt.addToParent) {
-          await panelsService.addSubPanel(data.parentRef, result.ref);
+        // 2. Si se solicita, vinculamos el panel con su padre obteniendo sus DocumentReferences reales
+        if (opt.addToParent && state.currentPanel) {
+          const childRef = await panelsService.getDocRef(result.id);
+          const parentRef = await panelsService.getDocRef(
+            state.currentPanel.id,
+          );
+
+          if (!(childRef instanceof Error) && !(parentRef instanceof Error)) {
+            await panelsService.addSubPanel(parentRef, childRef);
+          }
         }
 
-        // 3. Manejamos los distintos tipos de retorno solicitados
+        // 3. Manejamos los distintos tipos de retorno solicitados de forma segura
         switch (opt.return) {
           case returnTypes.PANEL:
-            return result; // Retorna el objeto Panel completo
+            return result;
 
-          case returnTypes.DOCREF:
-            return result.ref; // Retorna la DocumentReference
-
-          case returnTypes.STRING:
-            return result.id; // Retorna el ID del panel como string
+          case returnTypes.DOCREF: {
+            const ref = await panelsService.getDocRef(result.id);
+            if (ref instanceof Error) throw ref;
+            return ref;
+          }
 
           case returnTypes.DEFAULT:
           default:
             dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
-            return;
         }
       }
     },
-    [panelsService],
+    [panelsService, state.currentPanel], // Añadido state.currentPanel a las dependencias
   );
 
   const addSubPanel = useCallback(

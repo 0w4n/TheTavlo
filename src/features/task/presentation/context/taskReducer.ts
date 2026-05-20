@@ -3,18 +3,18 @@ import type { AnyTask } from "../../domain/task.entity";
 export type TasksState = {
   tasks: AnyTask[];
   loading: boolean;
-  error: string | undefined;
-  selectedTask: AnyTask | undefined;
+  error?: Error;
+  selectedTask?: AnyTask;
 };
 
 type TasksAction =
   | { type: "FETCH_TASKS_START" }
   | { type: "FETCH_TASKS_SUCCESS"; payload: AnyTask[] }
-  | { type: "FETCH_TASKS_ERROR"; payload: string }
+  | { type: "FETCH_TASKS_ERROR"; payload: Error }
   | { type: "CREATE_TASK_SUCCESS"; payload: AnyTask }
   | { type: "UPDATE_TASK_SUCCESS"; payload: AnyTask }
   | { type: "DELETE_TASK_SUCCESS"; payload: string }
-  | { type: "SELECT_TASK"; payload: AnyTask | undefined }
+  | { type: "SELECT_TASK"; payload?: AnyTask }
   | { type: "CLEAR_ERROR" };
 
 export const initialTasksState: TasksState = {

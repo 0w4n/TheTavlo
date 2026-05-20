@@ -10,7 +10,9 @@ export interface PanelRepository {
   findHomePanel(): Promise<Panel>;
   findById(id: string): Promise<Panel | undefined>;
   findByRef(ref: DocumentReference): Promise<Panel | undefined>;
+  findDocRef(id: string): Promise<DocumentReference | Error>;
   create(data: CreatePanelDTO, parentId: string): Promise<Panel>;
+  addSubPanel(parentRef: DocumentReference, childRef: DocumentReference): Promise<boolean | Error>;
   update(id: string, data: UpdatePanelDTO): Promise<Panel>;
   delete(id: string): Promise<void>;
 }

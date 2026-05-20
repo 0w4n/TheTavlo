@@ -115,39 +115,34 @@ export class FirebasePanelsRepository implements PanelRepository {
   async create(data: CreatePanelDTO, parentId: string): Promise<Panel> {
     const collectionPath = this.getCollectionPath();
 
-    // 1. Verificar que el padre existe antes de abrir el batch
     const parentRef = doc(this.firestore, collectionPath, parentId);
     const parentSnap = await getDoc(parentRef);
     if (!parentSnap.exists()) {
       throw new Error(`Panel padre con id "${parentId}" no encontrado`);
     }
 
-    // 2. Preparar el nuevo documento hijo con una ref generada en cliente
     const childRef = doc(collection(this.firestore, collectionPath));
     if (data.createdAt == undefined || data.updatedAt == undefined) {
       data = {
-      ...data,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    };
+        ...data,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      };
     }
 
     const panelDoc = this.mapPanelToDocument(data);
-
-    // 3. Batch: set del hijo + arrayUnion del ref en el padre (atómico)
     const batch = writeBatch(this.firestore);
 
     batch.set(childRef, panelDoc);
 
     batch.update(parentRef, {
-      // arrayUnion evita duplicados y es más seguro que leer-modificar-escribir
-      subPanelsId: arrayUnion(childRef.id),
+      // CAMBIO: Guardamos 'childRef' (DocumentReference) en lugar de 'childRef.id'
+      subPanelsId: arrayUnion(childRef),
       updatedAt: Timestamp.now(),
     });
 
     await batch.commit();
 
-    // 4. Leer el hijo recién creado para devolver la entidad completa
     const createdSnap = await getDoc(childRef);
     if (!createdSnap.exists()) {
       throw new Error("No se pudo recuperar el panel recién creado");
@@ -155,15 +150,27 @@ export class FirebasePanelsRepository implements PanelRepository {
     return this.mapDocumentToPanel(createdSnap.id, createdSnap.data()!);
   }
 
+  async addSubPanel(
+    parentRef: DocumentReference,
+    childRef: DocumentReference,
+  ): Promise<boolean | Error> {
+    try {
+      await updateDoc(parentRef, {
+        subPanelsId: arrayUnion(childRef),
+        updatedAt: Timestamp.now(),
+      });
+      return true;
+    } catch (error) {
+      return Error("Error al añadir el subPanel al padre");
+    }
+  }
+
   // *R* = Leer
   async findHomePanel(): Promise<Panel> {
     const colPath = this.getCollectionPath();
     const q = query(
-      collection(
-        this.firestore,
-        colPath,
-      ),
-      where("isDefault", "==", true)
+      collection(this.firestore, colPath),
+      where("isDefault", "==", true),
     );
 
     console.log("findHomePanel - q: ", q);
@@ -171,7 +178,6 @@ export class FirebasePanelsRepository implements PanelRepository {
     const querySnapshot = await getDocs(q);
 
     console.log("findHomePanel - querySnapshot: ", querySnapshot);
-
 
     if (querySnapshot.empty) {
       console.info("No tienes nada, pero se está creando uno por defecto");
@@ -231,6 +237,15 @@ export class FirebasePanelsRepository implements PanelRepository {
     }
 
     return undefined;
+  }
+
+  async findDocRef(id: string): Promise<DocumentReference | Error> {
+    try {
+      const collectionPath = this.getCollectionPath();
+      return doc(this.firestore, collectionPath, id);
+    } catch (error) {
+      return Error("No se pudo generar la referencia del documento");
+    }
   }
 
   // *U* = Actualizar

@@ -35,6 +35,10 @@ export class PanelsService {
     return this.repository.findByRef(ref);
   }
 
+  async getDocRef(id: string): Promise<DocumentReference | Error> {
+    return this.repository.findDocRef(id);
+  }
+
   async createPanel(
     data: CreatePanelDTO,
     parentId: string = "root",
@@ -48,6 +52,28 @@ export class PanelsService {
       return panel;
     } catch (error) {
       return Error("Error al crear el panel");
+    }
+  }
+
+  async addSubPanel(
+    parentRef: DocumentReference,
+    childRef: DocumentReference,
+  ): Promise<boolean | Error> {
+    try {
+      // 1. Añadimos el await para esperar a que el repositorio termine la operación en Firestore
+      const result = await this.repository.addSubPanel(parentRef, childRef);
+
+      // 2. Si el repositorio devolvió un Error, lo retornamos
+      if (result instanceof Error) {
+        return result;
+      }
+
+      return true;
+    } catch (error) {
+      // 3. Pasamos el objeto de error real para que la presentación sepa qué falló exactamente
+      return Error(
+        `Error al añadir el subPanel en el servicio: ${error instanceof Error ? error.message : error}`,
+      );
     }
   }
 
@@ -83,7 +109,7 @@ export class PanelsService {
       await this.repository.delete(id);
       return { success: true };
     } catch (error) {
-      return { success: false, error: Error("Error al eliminar el panel")};
+      return { success: false, error: Error("Error al eliminar el panel") };
     }
   }
 
