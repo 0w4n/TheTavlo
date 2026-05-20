@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { DocumentReference, Timestamp } from "firebase/firestore";
 import {
   TaskProgress,
@@ -67,7 +67,6 @@ export function AddTask({ onClose }: AddTaskFormProps) {
     const next: FormErrors = {};
 
     if (!title.trim()) next.title = "El título es obligatorio";
-    // Solo pedimos el progreso si NO hay subtareas activas
     if (!hasSubtasks && !progress) next.progress = "Selecciona un progreso";
     if (!endAt) next.endAt = "La fecha de cierre es obligatoria";
 
@@ -84,7 +83,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
 
   // ── Submit ─────────────────────────────────────────────────────────────────
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
 
     if (!validate()) return;
@@ -299,9 +298,8 @@ export function AddTask({ onClose }: AddTaskFormProps) {
           <button
             type="submit"
             onClick={(e) => {
-              // Hack rápido si el footer está fuera del <form> en el DOM visual:
-              // Forzamos el submit enviando un evento al form, o puedes meter el footer dentro del form.
-              // Como onSubmit está en el form superior, funcionará si Modal.Footer renderiza dentro del form.
+              e.preventDefault();
+              handleSubmit(e);
             }}
             className="add-task__btn-primary"
             disabled={isLoading}

@@ -1,5 +1,5 @@
 import LoadingPage from "#components/pages/LoadingPage";
-import type { Task } from "#features/task/domain/task.entity";
+import { isNodeTask, isTask, type AnyTask } from "#features/task/domain/task.entity";
 import useTasks from "#features/task/presentation/hooks/useTask";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import Icon from "#shared/ui/atoms/icons";
@@ -25,19 +25,44 @@ export function TaskWidget() {
   }
 }
 
-function taskItem(item: Task) {
-  return (
-    <>
-      <div className="task__item">
-        <Badge variant={item.progress} collapsed />
-        <div className="task__item-content">
-          <span>{item.endAt.toDate().getDate()}</span>
-          <div className="task__item-content--text">
-            <span>{item.title}</span>
-            <Icon name="IconArrowNarrowRightDashed" color="#fff" />
+function taskItem(item: AnyTask) {
+  if(isTask(item)) {
+    return (
+      <>
+        <div className="task__item">
+          <Badge variant={item.progress} collapsed />
+          <div className="task__item-content">
+            <span>{item.endAt.toDate().getDate()}</span>
+            <div className="task__item-content--text">
+              <span>{item.title}</span>
+              <Icon name="IconArrowNarrowRightDashed" color="#fff" />
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  } else if (isNodeTask(item)) {
+    return (
+      <>
+        <div className="task__item">
+          <div className="task__item-content">
+            <span>{item.endAt.toDate().getDate()}</span>
+            <div className="task__item-content--text">
+              <span>{item.title}</span>
+              <Icon name="IconArrowNarrowRightDashed" color="#fff" />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <div className="task__item">
+          <p>Error</p>
+        </div>
+      </>
+    );
+
+  }
 }

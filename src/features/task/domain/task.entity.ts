@@ -58,8 +58,8 @@ export type CreateNodeTaskDTO = Omit<NodeTask, "id">;
 export type CreateTaskDTO = Omit<Task, "id">;
 export type CreateAnyTaskDTO = CreateNodeTaskDTO | CreateTaskDTO;
 
-export type UpdateNodeTaskDTO = Omit<NodeTask, "id" | "createdAt">;
-export type UpdateTaskDTO = Omit<Task, "id" | "createdAt">;
+export type UpdateNodeTaskDTO = Partial<Omit<NodeTask, "id" | "createdAt">>;
+export type UpdateTaskDTO = Partial<Omit<Task, "id" | "createdAt">>;
 export type UpdateAnyTaskDTO = UpdateNodeTaskDTO | UpdateTaskDTO;
 
 // ─── Type guards ──────────────────────────────────────────────────────────────

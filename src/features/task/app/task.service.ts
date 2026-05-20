@@ -4,7 +4,8 @@ import {
   type Task,
   type CreateAnyTaskDTO,
   type UpdateAnyTaskDTO,
-  type AnyTask
+  type AnyTask,
+  isTask,
 } from "../domain/task.entity";
 import { TaskRules } from "../domain/task.rule";
 import type { TaskRepository } from "./taskRepository.interface";
@@ -45,48 +46,55 @@ export class TasksService {
   async updateAnyTask(
     id: string,
     data: UpdateAnyTaskDTO,
-  ): Promise<{ task?: AnyTask; error?: string }> {
+  ): Promise<AnyTask | Error> {
     if (data.title) {
       const titleError = TaskRules.validateTitle(data.title);
-      if (titleError) return { error: titleError };
+      if (titleError) return Error(titleError);
     }
 
     if (data.endAt) {
       const dateError = TaskRules.validateDueDate(data.endAt.toDate());
-      if (dateError) return { error: dateError };
+      if (dateError) return Error(dateError);
     }
 
     try {
       const task = await this.repository.update(id, data);
-      return { task };
+      return task;
     } catch (error) {
-      return { error: "Error al actualizar la tarea" };
+      return Error("Error al actualizar la tarea");
     }
   }
 
-  async completeTask(id: string): Promise<{ task?: Task; error?: string }> {
+  async completeTask(id: string): Promise<Task | Error> {
     const existingTask = await this.repository.findById(id);
 
-    if (!existingTask) {
-      return { error: "Tarea no encontrada" };
-    }
+    if (!existingTask) return Error("Tarea no encontrada");
+    if (!TaskRules.canComplete(existingTask)) return Error("La tarea ya está completada");
+    if (isTask(existingTask)) {
+      const res = await this.updateAnyTask(id, {
+        progress: TaskProgress.SUBMITTED,
+        updatedAt: Timestamp.now(),
+      });
 
-    if (!TaskRules.canComplete(existingTask)) {
-      return { error: "La tarea ya está completada" };
-    }
+      if (res instanceof Error) return Error("Algo");
+      if (isTask(res)) return res;
 
-    return this.updateAnyTask(id, {
-      progress: TaskProgress.SUBMITTED,
-      updatedAt: Timestamp.now(),
-    });
+      return Error(
+        "Error inesperado: el resultado de la actualización no es válido",
+      );
+    } else {
+      return Error(
+        `El id ${id} de la tarea me devuelve una interfaz no válida`,
+      );
+    }
   }
 
-  async deleteTask(id: string): Promise<{ success: boolean; error?: string }> {
+  async deleteTask(id: string): Promise<boolean | Error> {
     try {
       await this.repository.delete(id);
-      return { success: true };
+      return true;
     } catch (error) {
-      return { success: false, error: "Error al eliminar la tarea" };
+      return Error(`Error al eliminar la tarea, con  el id: ${id}`);
     }
   }
 
@@ -95,10 +103,10 @@ export class TasksService {
     return tasks.filter((task: Task) => TaskRules.isOverdue(task));
   }
 
-  async getTasksByPriority(priority: Task["progress"]): Promise<Task[]> {
+  async getTasksByProgress(progress: TaskProgress): Promise<Task[]> {
     const tasks = await this.repository.findAll();
     return tasks.filter(
-      (task: { priority: string }) => task.priority === priority,
+      (task: { progress: TaskProgress }) => task.progress === progress,
     );
   }
 }
