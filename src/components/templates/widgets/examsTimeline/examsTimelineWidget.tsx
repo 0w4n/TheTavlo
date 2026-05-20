@@ -8,7 +8,7 @@ import LoadingPage from "#components/pages/LoadingPage";
 import type { ExamEvent } from "#features/events/domain/events.entity";
 
 export default function ExamsTimelineWidget() {
-  const { state } = useEvents({filterType: "exam"});
+  const { state } = useEvents();
 
   if (state.loading) {
     <LoadingPage />;
