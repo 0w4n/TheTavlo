@@ -6,6 +6,12 @@ import {
   where,
   type DocumentData,
   type Firestore,
+  // --- NUEVAS IMPORTACIONES PARA LA IMPLEMENTACIÓN ---
+  addDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import type { EventRepository } from "../app/eventRepository.interface";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
@@ -82,8 +88,22 @@ export class FirebaseEventRepository implements EventRepository {
     }
   }
 
+  // --- MÉTODOS IMPLEMENTADOS ---
+
   async create(data: CreateAnyEventDTO): Promise<AnyEvent> {
-    const collectionName = this.getCollectionPath();
+    const collectionPath = this.getCollectionPath();
+    const collectionRef = collection(this.firestore, collectionPath);
+
+    // Añadimos marcas de tiempo automáticas para la creación
+    const payload = {
+      ...data,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    const docRef = await addDoc(collectionRef, payload);
+    
+    return this.mapDocumentToAnyEvent(docRef.id, payload);
   }
 
   async findAll(): Promise<AnyEvent[]> {
@@ -105,10 +125,43 @@ export class FirebaseEventRepository implements EventRepository {
   }
 
   async findById(id: string): Promise<AnyEvent | undefined> {
-    return undefined;
+    const collectionPath = this.getCollectionPath();
+    const docRef = doc(this.firestore, collectionPath, id);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      return undefined;
+    }
+
+    return this.mapDocumentToAnyEvent(docSnap.id, docSnap.data());
   }
 
-  async update(id: string, data: UpdateAnyEventDTO): Promise<AnyEvent> {}
+  async update(id: string, data: UpdateAnyEventDTO): Promise<AnyEvent> {
+    const collectionPath = this.getCollectionPath();
+    const docRef = doc(this.firestore, collectionPath, id);
 
-  async delete(id: string): Promise<void> {}
+    // Actualizamos los datos junto con la fecha de modificación
+    const payload = {
+      ...data,
+      updatedAt: Timestamp.now(),
+    };
+
+    // Usamos updateDoc para hacer una actualización parcial (solo los campos enviados)
+    await updateDoc(docRef, payload);
+
+    // Recuperamos el documento completo para devolver la entidad actualizada
+    const updatedSnap = await getDoc(docRef);
+    if (!updatedSnap.exists()) {
+      throw new Error(`No se pudo encontrar el evento con ID ${id} tras la actualización.`);
+    }
+
+    return this.mapDocumentToAnyEvent(updatedSnap.id, updatedSnap.data());
+  }
+
+  async delete(id: string): Promise<void> {
+    const collectionPath = this.getCollectionPath();
+    const docRef = doc(this.firestore, collectionPath, id);
+    
+    await deleteDoc(docRef);
+  }
 }

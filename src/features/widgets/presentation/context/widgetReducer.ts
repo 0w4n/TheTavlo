@@ -67,16 +67,10 @@ export function widgetsReducer(
 
               return [
                 breakpoint,
-                item
-                  ? [
-                      {
-                        ...item,
-                      },
-                    ]
-                  : [],
+                item ? { ...item } : widget.layout[breakpoint],
               ];
             }),
-          );
+          ) as Widget["layout"];
 
           return {
             ...widget,

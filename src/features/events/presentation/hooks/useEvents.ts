@@ -1,12 +1,7 @@
 import { useContext } from "react";
 import { EventsContext } from "../context/eventsContext";
-import type { typeEvent } from "#features/events/domain/events.entity";
 
-interface useEventsOpts {
-  filterType: typeEvent;
-}
-
-export function useEvents(opts?:useEventsOpts) {
+export function useEvents() {
     const context = useContext(EventsContext);
 
     if (!context) {
