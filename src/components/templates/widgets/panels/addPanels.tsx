@@ -44,6 +44,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
     setIsLoading(true);
 
     await createPanel(panel, {addToParent: true, return: returnTypes.DEFAULT});
+    onClose();
   }
 
   return (
