@@ -151,7 +151,7 @@ export class FirebasePanelsRepository implements PanelRepository {
     if (!createdSnap.exists()) {
       throw new Error("No se pudo recuperar el panel recién creado");
     }
-    
+
     return this.mapDocumentToPanel(createdSnap.id, createdSnap.data()!);
   }
 
@@ -229,10 +229,10 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   async findByRef(ref: DocumentReference): Promise<Panel | undefined> {
-    const collectionPath = this.getCollectionPath();
-
-    const docRef = doc(this.firestore, collectionPath, ref.id);
-    const docSnap = await getDoc(docRef);
+    // Use the ref's own path directly — it may point to the user's "panels"
+    // collection or to the global "shared" collection; either way the ref
+    // already carries the correct Firestore path.
+    const docSnap = await getDoc(ref);
 
     if (docSnap.exists()) {
       return this.mapDocumentToPanel(docSnap.id, docSnap.data());

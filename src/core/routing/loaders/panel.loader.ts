@@ -1,8 +1,4 @@
-import {
-  doc,
-  Firestore,
-  getDoc
-} from "firebase/firestore";
+import { doc, DocumentReference, Firestore, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, type Auth, type User } from "firebase/auth";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
 import type { Panel } from "#features/panels/domain/panel.entity";
@@ -22,7 +18,6 @@ function getCurrentUser(auth: Auth) {
 }
 
 export default async function panelsLoader({ params }: { params: any }) {
-
   const { pid, "*": nestedPath } = params;
 
   if (!pid) {
@@ -92,34 +87,46 @@ async function fetchSubPanel(
 ) {
   try {
     const panelRef = doc(db, "users", user.uid, "panels", pid);
-    const subPanelRef = doc(db, "users", user.uid, "panels", subPid);
     const snapshot = await getDoc(panelRef);
 
     if (!snapshot.exists()) {
       throw new Response(
-        "[(ts)panel.loader-fetchSubPanel:115]@Panel no encontrado",
+        "[(ts)panel.loader-fetchSubPanel:94]@Panel no encontrado",
         { status: 404 },
       );
     }
 
-    const arraySubPanel = snapshot.get("subPanelsId");
+    const arraySubPanel: DocumentReference[] =
+      snapshot.get("subPanelsId") ?? [];
     console.info(arraySubPanel);
 
-    for (let index = 0; index < arraySubPanel.length; index++) {
-      const element = arraySubPanel[index];
-      const subPanelPath = `panels/${subPanelRef.id}`
-
-
-      if (element.path == subPanelPath) {
-        const subSnapshot = await getDoc(subPanelRef);
+    for (const ref of arraySubPanel) {
+      // A subPanelsId entry can point to the user's own "panels" collection
+      // OR to the global "shared" collection — match by the last segment (id).
+      if (ref.id === subPid) {
+        // Use the DocumentReference directly so shared refs resolve correctly.
+        const subSnapshot = await getDoc(ref);
         console.info(subSnapshot);
+
+        if (!subSnapshot.exists()) {
+          throw new Response(
+            "[(ts)panel.loader-fetchSubPanel:113]@SubPanel no encontrado en Firestore",
+            { status: 404 },
+          );
+        }
 
         return { ...subSnapshot.data(), id: subPid } as Panel;
       }
     }
-  } catch (error) {
+
     throw new Response(
-      "[(ts)panel.loader-fetchSubPanel:130]@Error al cargar el panel",
+      "[(ts)panel.loader-fetchSubPanel:123]@SubPanel no encontrado en la lista del padre",
+      { status: 404 },
+    );
+  } catch (error) {
+    if (error instanceof Response) throw error;
+    throw new Response(
+      "[(ts)panel.loader-fetchSubPanel:129]@Error al cargar el panel",
       { status: 500 },
     );
   }
