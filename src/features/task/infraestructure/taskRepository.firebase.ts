@@ -52,8 +52,6 @@ export class FirebaseTaskRepository implements TaskRepository {
   private mapTaskToDocument(task: Partial<Task>): DocumentData {
     const data: any = { ...task };
 
-    console.log("taskData: ", data);
-
     if (task.endAt) {
       data.dueDate = Timestamp.fromDate(task.endAt.toDate());
     }
@@ -74,10 +72,7 @@ export class FirebaseTaskRepository implements TaskRepository {
 
     const q = query(collection(this.firestore, collectionName));
 
-    console.log("Query: ", q);
-
     const querySnapshot = await getDocs(q);
-    querySnapshot.docs.map(doc => console.log("taskRepo-querySnapshot: ", doc.data()));
     return querySnapshot.docs.map((doc) =>
       this.mapDocumentToTask(doc.id, { ...doc.data() }),
     );

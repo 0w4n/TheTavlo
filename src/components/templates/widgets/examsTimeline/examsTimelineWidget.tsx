@@ -74,13 +74,11 @@ function TimestampToString(timestamp: Timestamp) {
   const date = timestamp.toDate().getTime();
   const now = new Date().setHours(23, 59, 59, 0);
   const diff = date - now;
-  console.log("Ahora", now, ", fecha: ", date, ", diff:", diff);
   const interClassName = "exams-timeline-widget-item__date--text";
 
   if (diff === 0) return <span className={interClassName}>Hoy</span>;
   else {
     const days = diff / 86400000;
-    console.log("Days: ", days);
 
     let innerText = "";
 

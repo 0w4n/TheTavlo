@@ -27,16 +27,32 @@ export function PanelsProvider({
 
   const findByRef = useCallback(
     async (ref: DocumentReference): Promise<Panel | undefined> => {
-      try {
-        console.log(`Buscando panel por referencia: ${ref.id}`);
-        const panel = await panelsService.getPanelByRef(ref);
-        return panel || undefined;
-      } catch (error) {
-        dispatch({
-          type: "FETCH_PANELS_ERROR",
-          payload: Error(`Error al buscar panel por referencia: ${error}`),
-        });
-        return undefined;
+      if (ref.parent.id === "panels") {
+        try {
+          const panel = await panelsService.getPanelByRef(ref);
+          return panel || undefined;
+        } catch (error) {
+          dispatch({
+            type: "FETCH_PANELS_ERROR",
+            payload: Error(`Error al buscar panel por referencia: ${error}`),
+          });
+          return undefined;
+        }
+      } else if (ref.parent.id === "shared") {
+        try {
+          const panel = await panelsService.getPanelByRef(ref);
+          return panel || undefined;
+        } catch (error) {
+          dispatch({
+            type: "FETCH_PANELS_ERROR",
+            payload: Error(`Error al buscar panel por referencia: ${error}`),
+          });
+          return undefined;
+        }
+      } else {
+        throw new Error(
+          `Referencia con colección padre desconocida: ${ref.parent.id}`,
+        );
       }
     },
     [panelsService],
@@ -48,7 +64,6 @@ export function PanelsProvider({
     try {
       const homePanel = await panelsService.getHomePanel();
       dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [homePanel] });
-      console.log("Panel home cargado:", homePanel);
       return homePanel;
     } catch (error) {
       dispatch({
@@ -85,44 +100,36 @@ export function PanelsProvider({
           dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
         }
       } else {
-        // 1. Ejecutamos la creación del panel hijo
-        const result = await panelsService.createPanel(data);
-
-        if (result instanceof Error) {
-          dispatch({ type: "FETCH_PANELS_ERROR", payload: result });
-          return result;
-        }
-
+        console.log("Creando panel con opciones:", opt);
         // 2. Si se solicita, vinculamos el panel con su padre obteniendo sus DocumentReferences reales
         if (opt.addToParent && state.currentPanel) {
-          const childRef = await panelsService.getDocRef(result.id);
-          const parentRef = await panelsService.getDocRef(
-            state.currentPanel.id,
-          );
+          const result = await panelsService.createPanel(data, state.currentPanel.id);
 
-          if (!(childRef instanceof Error) && !(parentRef instanceof Error)) {
-            await panelsService.addSubPanel(parentRef, childRef);
-          }
-        }
-
-        // 3. Manejamos los distintos tipos de retorno solicitados de forma segura
-        switch (opt.return) {
-          case returnTypes.PANEL:
+          if (result instanceof Error) {
+            console.error(result);
+            dispatch({ type: "FETCH_PANELS_ERROR", payload: result });
             return result;
-
-          case returnTypes.DOCREF: {
-            const ref = await panelsService.getDocRef(result.id);
-            if (ref instanceof Error) throw ref;
-            return ref;
           }
 
-          case returnTypes.DEFAULT:
-          default:
-            dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
+          // 3. Manejamos los distintos tipos de retorno solicitados de forma segura
+          switch (opt.return) {
+            case returnTypes.PANEL:
+              return result;
+
+            case returnTypes.DOCREF: {
+              const ref = await panelsService.getDocRef(result.id);
+              if (ref instanceof Error) throw ref;
+              return ref;
+            }
+
+            case returnTypes.DEFAULT:
+            default:
+              dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
+          }
         }
       }
     },
-    [panelsService, state.currentPanel], // Añadido state.currentPanel a las dependencias
+    [panelsService, state.currentPanel],
   );
 
   const addSubPanel = useCallback(

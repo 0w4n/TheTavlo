@@ -16,7 +16,6 @@ export default function PanelsPage() {
   const { selectPanel } = usePanels();
 
   const panelData = useRouteLoaderData("1-0-1") as Panel;
-  console.info("PanelData: ", panelData);
 
   useEffect(() => {
     selectPanel(panelData);

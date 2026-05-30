@@ -45,26 +45,17 @@ export default function App() {
 }
 
 export function ProtectedLayout() {
-  console.log("🔥 ProtectedLayout rendered");
-
   const { state } = useAuth();
-  console.info("ProtectedLayout - state:", state);
 
-  // Loader mientras se inicializa auth
   if (!state.initialized) {
-    console.log("init");
     return <LoadingPage />;
   }
 
-  // Migración pendiente
   if (state.migrationPending) {
-    console.log("migration");
     return <MigrationDialog />;
   }
 
-  // ❗ No autenticado → redirigir a /login
   if (!state.user) {
-    console.log("notInit");
     return <Navigate to="/login" replace />;
   }
 
@@ -101,7 +92,6 @@ export function ProtectedLayout() {
 
 function ProviderApp() {
   const globalContext = useGlobalContext();
-  console.log("ProviderApp: ", globalContext);
 
   // Widgets
   const widgetRepository = useMemo(() => {
@@ -112,12 +102,10 @@ function ProviderApp() {
   }, [globalContext]);
 
   const widgetService = useMemo(() => {
-    console.log("[VERBOSE] widgetService");
     return new WidgetService(widgetRepository);
   }, [widgetRepository]);
 
   const invitationRepository = useMemo(() => {
-    console.log("[VERBOSE] invaitationRepository");
     return new FirebaseInvitationRepository(
       firebaseService.firestore,
       () => globalContext,
@@ -125,12 +113,10 @@ function ProviderApp() {
   }, [globalContext]);
 
   const invitationService = useMemo(() => {
-    console.log("[VERBOSE] invitationService");
     return new InvitationService(invitationRepository);
   }, [invitationRepository]);
 
   const taskRepository = useMemo(() => {
-    console.log("[VERBOSE] taskRepository");
     return new FirebaseTaskRepository(
       firebaseService.firestore,
       () => globalContext,
@@ -138,7 +124,6 @@ function ProviderApp() {
   }, [globalContext]);
 
   const taskService = useMemo(() => {
-    console.log("[VERBOSE] taskService");
     return new TasksService(taskRepository);
   }, [taskRepository]);
 

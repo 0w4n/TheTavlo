@@ -38,8 +38,6 @@ export function GlobalContextProvider({ children }: PropsWithChildren) {
   const currentPanel = usePanels().state.currentPanel;
 
   useMemo(() => {
-    console.log(user);
-    console.log(currentPanel);
     if (!user || !currentPanel) return null;
 
     setState({

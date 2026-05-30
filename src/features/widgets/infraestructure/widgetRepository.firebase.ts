@@ -187,7 +187,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   }
 
   async updateBulkLayout(layouts: ResponsiveLayouts): Promise<void> {
-    console.log("WidgetRepository - updateBulkLayout called with:", layouts);
     const batch = writeBatch(this.firestore);
     const path = this.getCollectionPath();
 
@@ -204,7 +203,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     }
 
     for (const [id, layout] of widgetLayouts.entries()) {
-      console.log("widgetLayout: ", { id, layout });
       
       const ref = doc(this.firestore, path, id);
       batch.update(ref, {

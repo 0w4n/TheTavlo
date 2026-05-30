@@ -29,13 +29,11 @@ import ModalPortal from "#components/molecules/modal/portal";
 import AddWidget from "#components/templates/dialog/modWidget/addWidget";
 
 function buildInitialLayouts(
-  widgets: Widget[],
-  editMode: boolean,
+  widgets: Widget[]
 ): ResponsiveLayouts {
   const makeLayout = (breakPoint: Breakpoint): LayoutItem[] =>
     widgets.flatMap((widget) => {
       const layout = widget.layout[breakPoint];
-      console.debug("Widget con layout", layout, ", el widget: ", widget);
 
       if (!layout) {
         throw new Error("No tiene layout");
@@ -54,22 +52,10 @@ function buildInitialLayouts(
         resizeHandles: ["se"],
       };
 
-      console.info("Item generado: ", item);
-
       itemMap.push(item);
 
       return itemMap;
     });
-
-  console.info(
-    "Building initial layouts for widgets:",
-    widgets.map((w) => w),
-    "with editMode:",
-    editMode,
-    ", resulting in layouts:",
-    DEFAULT_COLS,
-    DEFAULT_BREAKPOINTS,
-  );
 
   const layouts: ResponsiveLayouts = {
     lg: makeLayout("lg"),
@@ -78,8 +64,6 @@ function buildInitialLayouts(
     xs: makeLayout("xs"),
     xxs: makeLayout("xxs"),
   };
-
-  console.log("Resultados: ", layouts);
 
   return layouts;
 }
@@ -114,7 +98,6 @@ export function Dashboard({ widgetState }: Props) {
   });
   const { updateLayout, addWidget } = useWidgets();
 
-  console.log("widgetState: ", widgetState);
   if (widgetState == undefined || widgetState.isLoading) {
     <LoadingPage />;
   }
@@ -123,13 +106,9 @@ export function Dashboard({ widgetState }: Props) {
 
   const widgetList = widgetState.widgets;
   const editMode = widgetState.editMode;
-  const initalLay = buildInitialLayouts(widgetList, editMode);
-
-  console.log("Initial:", initalLay);
+  const initalLay = buildInitialLayouts(widgetList);
 
   const [layouts, setLayouts] = useState<ResponsiveLayouts>(initalLay);
-
-  console.log("Dashboard render with layouts:", layouts, "and width:", width);
 
   const layoutsRef = useRef<ResponsiveLayouts>(layouts);
   const hasChangesRef = useRef(false);
@@ -141,21 +120,14 @@ export function Dashboard({ widgetState }: Props) {
 
   /** 🧠 Sync inicial cuando cambian widgets */
   useEffect(() => {
-    const next = buildInitialLayouts(widgetList, editMode);
+    const next = buildInitialLayouts(widgetList);
     setLayouts(next);
-    console.log(
-      "Dashboard on the `useEffect` inicial sync render with layouts:",
-      layouts,
-      "and width:",
-      width,
-    );
     layoutsRef.current = next;
     hasChangesRef.current = false;
   }, [widgetList]);
 
   /** ✏️ Toggle edición */
   useEffect(() => {
-    console.log("[useEffect]: Toggle edit");
     setLayouts((prev) => toggleEditMode(prev, editMode));
   }, [editMode]);
 
@@ -173,14 +145,11 @@ export function Dashboard({ widgetState }: Props) {
   /** 💾 Guardar SOLO al salir de editMode */
   useEffect(() => {
     if (prevEditModeRef.current && !editMode && hasChangesRef.current) {
-      console.log("Dashboard - Saving layouts:", layoutsRef.current);
       updateLayout(layoutsRef.current);
       hasChangesRef.current = false;
     }
     prevEditModeRef.current = editMode;
   }, [editMode]);
-
-  console.log("Mounted: ", mounted, "containerRef: ", containerRef);
 
   return (
     <div className="dashboard" data-edit-mode={editMode} ref={containerRef}>
@@ -190,6 +159,7 @@ export function Dashboard({ widgetState }: Props) {
             breakpoints={DEFAULT_BREAKPOINTS}
             cols={DEFAULT_COLS}
             width={width}
+            rowHeight={150}
             layouts={layouts}
             containerPadding={[0, 0]}
             margin={[10, 10]}
@@ -204,9 +174,9 @@ export function Dashboard({ widgetState }: Props) {
           </ResponsiveGridLayout>
         )
       ) : (
-        <div>
-          <span>Panel vacio</span>
-          <ModalPortal label="Añadir tu próximo panel" iconName="IconPlus">
+        <div className="dashboard-empty">
+          <span>Dashboard vacio</span>
+          <ModalPortal label="Añadir tu próximo widget" iconName="IconPlus">
             {(onClose: () => void) => (
               <AddWidget
                 isHome={true}

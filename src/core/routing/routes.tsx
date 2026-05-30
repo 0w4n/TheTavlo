@@ -6,6 +6,7 @@ import CommingPage from "#components/pages/Comming";
 import PanelsPage from "#components/pages/PanelsPage";
 import ErrorPage from "#components/pages/error";
 import { Navigate } from "react-router-dom";
+// import invitationsLoader from "./loaders/invitation.loader";
 
 export const routes = [
   {
@@ -34,6 +35,12 @@ export const routes = [
     path: "/",
     element: <Navigate to="/home" />,
   },
+  // {
+  //   path: "/invitation/:invitacionId",
+  //   loader: invitationsLoader,
+  //   element: ,
+  //   ErrorElement: <ErrorPage />,
+  // },
   {
     path: "*",
     element: <CommingPage />,

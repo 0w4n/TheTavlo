@@ -13,7 +13,6 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      console.log("Iniciando sesión como google...");
       await signInWithGoogle();
     } catch (error) {
       console.error("Error al iniciar sesión con Google:", error);
@@ -25,10 +24,9 @@ export default function LoginPage() {
   const handleGuestSignIn = async () => {
     setIsLoading(true);
     try {
-      console.log("Iniciando sesión como invitado...");
       await signInAsGuest();
     } catch (error) {
-      console.error("Error al iniciar sesión como invitado:", error);
+      throw new Error(error)
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +63,7 @@ export default function LoginPage() {
           className="loginPage__card-content-item"
           variant="secondary"
           onClick={handleGuestSignIn}
-          icon="IconSpyFilled"
+          icon="IconSpy"
           label="Entrar como Invitado"
           disabled={isLoading || state.isLoading}
         />

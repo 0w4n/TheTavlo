@@ -2,7 +2,7 @@ import type { DocumentReference, Timestamp } from "firebase/firestore";
 
 export interface Panel {
   id: string;
-  parentId: string;
+  parentId?: string;
   name: string;
   color: number;
   icon: string;

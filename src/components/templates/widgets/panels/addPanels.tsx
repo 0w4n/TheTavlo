@@ -6,6 +6,7 @@ import { Timestamp } from "firebase/firestore";
 
 import "./addPanels.css";
 import { returnTypes } from "#features/panels/presentation/context/panelsContext.types";
+import { Button } from "#components/atoms/button";
 
 interface AddPanelsForm {
   onClose: () => void;
@@ -40,11 +41,26 @@ export function AddPanels({ onClose }: AddPanelsForm) {
 
   async function handleCreatePanels(e: SyntheticEvent) {
     e.preventDefault();
+    try {
+      setIsLoading(true);
 
-    setIsLoading(true);
+      console.log("IsLoading: ", isLoading);
+      console.log("Panel: ", panel);
 
-    await createPanel(panel, {addToParent: true, return: returnTypes.DEFAULT});
-    onClose();
+      await createPanel(panel, {
+        addToParent: true,
+        return: returnTypes.DEFAULT,
+      });
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al crear el panel",
+      );
+    } finally {
+      setIsLoading(false);
+      onClose();
+    }
   }
 
   return (
@@ -87,7 +103,6 @@ export function AddPanels({ onClose }: AddPanelsForm) {
               step={1}
               onChange={(e) => {
                 setPanel((p) => ({ ...p, color: e.target.valueAsNumber }));
-
                 setErrors((er) => ({ ...er, color: undefined }));
               }}
             />
@@ -97,23 +112,22 @@ export function AddPanels({ onClose }: AddPanelsForm) {
       <Modal.Footer>
         <div className="add-panel__footer">
           {onClose && (
-            <button
+            <Button
               type="button"
               onClick={onClose}
+              label="Cancelar"
               className="add-panel__btn-ghost"
               disabled={isLoading}
-            >
-              Cancelar
-            </button>
+            />
           )}
 
-          <button
-            type="submit"
+          <Button
+            type="button"
             className="add-panel__btn-primary"
+            label={isLoading ? "Creando..." : "Crear panel"}
             disabled={isLoading}
-          >
-            {isLoading ? "Creando..." : "Crear panel"}
-          </button>
+            onClick={handleCreatePanels}
+          />
         </div>
       </Modal.Footer>
     </>

@@ -22,6 +22,7 @@ export default function AddWidget({
 }: AddWidgetProps) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(false);
+  const [errorIs, setError] = useState<unknown>();
 
   const categories = [
     { key: "tasks", icon: "IconCheckbox", isHome: false },
@@ -39,8 +40,12 @@ export default function AddWidget({
   const handleAddWidget = async (type: WidgetType) => {
     setLoading(true);
     try {
-      await onAddWidget(type);
+      const res = await onAddWidget(type);
+
       onClose();
+      return res
+    } catch(error) {
+      setError(error)
     } finally {
       setLoading(false);
     }
@@ -55,7 +60,6 @@ export default function AddWidget({
       <Modal.Body>
         <div className="CategoriasDialog">
           {categories
-            .filter((cat) => cat.isHome === !isHome)
             .map((cat) => (
               <Button
                 key={cat.key}
@@ -76,16 +80,14 @@ export default function AddWidget({
 
         <div className="ContentDialog">
           {filteredTemplates.map((template) => (
-            <button
+            <Button
               key={template.type}
               disabled={loading}
+              label={`${template.title} ${errorIs}`}
+              icon={template.icon}
               onClick={() => handleAddWidget(template.type)}
               className="ContentDialog-Item"
-            >
-              <div className="icon">{template.icon}</div>
-              <div className="title">{template.title}</div>
-              <div className="desc">{template.description}</div>
-            </button>
+            />
           ))}
         </div>
       </Modal.Body>

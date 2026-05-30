@@ -42,15 +42,16 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   private setPanelDefault(): CreatePanelDTO {
+    const now = Timestamp.now();
     const defaultPanel: CreatePanelDTO = {
-      name: "home",
-      color: 0,
+      name: "",
+      color: -1,
       icon: "",
       isDefault: true,
       subPanelsId: [],
       sharedWith: "",
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      createdAt: now,
+      updatedAt: now,
     };
 
     return defaultPanel;
@@ -63,7 +64,7 @@ export class FirebasePanelsRepository implements PanelRepository {
   private mapDocumentToPanel(id: string, data: DocumentData): Panel {
     return {
       id,
-      parentId: data.parentId || "root",
+      parentId: data.parentId ?? undefined,
       name: data.name,
       icon: data.icon,
       color: data.color,
@@ -106,47 +107,51 @@ export class FirebasePanelsRepository implements PanelRepository {
     // Limpiar campos que no pertenecen al documento
     delete data.id;
 
-    console.log("Panel data:", data);
-
     return data as DocumentData;
   }
 
   // *C* = Crear
-  async create(data: CreatePanelDTO, parentId: string): Promise<Panel> {
+  async create(data: CreatePanelDTO, parentId?: string): Promise<Panel> {
     const collectionPath = this.getCollectionPath();
+    const ref = doc(collection(this.firestore, collectionPath));
+    const batch = writeBatch(this.firestore);
+    const panelDoc = this.mapPanelToDocument(data);
+    const now = Timestamp.now();
 
-    const parentRef = doc(this.firestore, collectionPath, parentId);
-    const parentSnap = await getDoc(parentRef);
-    if (!parentSnap.exists()) {
-      throw new Error(`Panel padre con id "${parentId}" no encontrado`);
-    }
-
-    const childRef = doc(collection(this.firestore, collectionPath));
     if (data.createdAt == undefined || data.updatedAt == undefined) {
       data = {
         ...data,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
+        createdAt: now,
+        updatedAt: now,
       };
     }
 
-    const panelDoc = this.mapPanelToDocument(data);
-    const batch = writeBatch(this.firestore);
+    if (parentId === undefined) {
+      batch.set(ref, panelDoc);
+    } else {
+      const parentRef = doc(this.firestore, collectionPath, parentId);
+      const parentSnap = await getDoc(parentRef);
+      if (!parentSnap.exists()) {
+        throw new Error(`Panel padre con id "${parentId}" no encontrado`);
+      }
 
-    batch.set(childRef, panelDoc);
+      console.log(panelDoc);
 
-    batch.update(parentRef, {
-      // CAMBIO: Guardamos 'childRef' (DocumentReference) en lugar de 'childRef.id'
-      subPanelsId: arrayUnion(childRef),
-      updatedAt: Timestamp.now(),
-    });
+      batch.set(ref, panelDoc);
+
+      batch.update(parentRef, {
+        subPanelsId: arrayUnion(ref),
+        updatedAt: Timestamp.now(),
+      });
+    }
 
     await batch.commit();
 
-    const createdSnap = await getDoc(childRef);
+    const createdSnap = await getDoc(ref);
     if (!createdSnap.exists()) {
       throw new Error("No se pudo recuperar el panel recién creado");
     }
+    
     return this.mapDocumentToPanel(createdSnap.id, createdSnap.data()!);
   }
 
@@ -171,17 +176,16 @@ export class FirebasePanelsRepository implements PanelRepository {
     const q = query(
       collection(this.firestore, colPath),
       where("isDefault", "==", true),
+      where("name", "==", ""),
+      where("color", "==", -1),
+      where("icon", "==", ""),
     );
-
-    console.log("findHomePanel - q: ", q);
 
     const querySnapshot = await getDocs(q);
 
-    console.log("findHomePanel - querySnapshot: ", querySnapshot);
-
     if (querySnapshot.empty) {
       console.info("No tienes nada, pero se está creando uno por defecto");
-      return this.create(this.setPanelDefault(), "root");
+      return this.create(this.setPanelDefault());
     }
 
     if (querySnapshot.size > 1) {
@@ -208,7 +212,6 @@ export class FirebasePanelsRepository implements PanelRepository {
       this.mapDocumentToPanel(docSnap.id, docSnap.data()),
     );
 
-    console.log("panels: ", panels);
     return panels;
   }
 
@@ -229,7 +232,6 @@ export class FirebasePanelsRepository implements PanelRepository {
     const collectionPath = this.getCollectionPath();
 
     const docRef = doc(this.firestore, collectionPath, ref.id);
-    console.log("Ref:", ref, "ref:", ref.id, "docRef: ", docRef);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {

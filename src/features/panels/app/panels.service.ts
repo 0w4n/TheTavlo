@@ -12,7 +12,6 @@ export class PanelsService {
 
   async getAllPanels(): Promise<Panel[]> {
     const panels = await this.repository.findAll();
-    console.log("Panels retrieved from repository:", panels);
 
     // Si no hay paneles, crear el panel por defecto
     if (panels.length === 0) {
@@ -45,9 +44,12 @@ export class PanelsService {
   ): Promise<Panel | Error> {
     const nameError = PanelRules.validateName(data.name);
     if (nameError) return Error(nameError);
+    console.log(nameError);
 
     try {
+      console.log("Try, servicePanels: ", {data, parentId});
       const panel = await this.repository.create(data, parentId);
+      console.log("panelService: ", panel);
 
       return panel;
     } catch (error) {

@@ -22,12 +22,8 @@ function getCurrentUser(auth: Auth) {
 }
 
 export default async function panelsLoader({ params }: { params: any }) {
-  console.log("Params recibidos en el loader:", params);
 
   const { pid, "*": nestedPath } = params;
-
-  // nestedPath puede ser: "calendar", "settings/profile", etc.
-  console.log("Ruta anidada:", nestedPath, "y pid:", pid);
 
   if (!pid) {
     throw new Response("[(ts)panel.loader:37]@Panel ID no proporcionado", {
@@ -81,7 +77,6 @@ async function fetchPanel(user: User, db: Firestore, pid: string) {
 
     return { ...snapshot.data(), id: pid } as Panel;
   } catch (error) {
-    console.error("Error al cargar el panel:", error);
     throw new Response(
       "[(ts)panel.loader-fetchPanel:89]@Error al cargar el panel",
       { status: 500 },
@@ -113,14 +108,6 @@ async function fetchSubPanel(
     for (let index = 0; index < arraySubPanel.length; index++) {
       const element = arraySubPanel[index];
       const subPanelPath = `panels/${subPanelRef.id}`
-      console.log(
-        "Element:",
-        element.path,
-        ", subPanelRef: ",
-        subPanelPath,
-        "equals:",
-        element.path === subPanelPath,
-      );
 
 
       if (element.path == subPanelPath) {
@@ -131,7 +118,6 @@ async function fetchSubPanel(
       }
     }
   } catch (error) {
-    console.error("Error al cargar el panel:", error);
     throw new Response(
       "[(ts)panel.loader-fetchSubPanel:130]@Error al cargar el panel",
       { status: 500 },

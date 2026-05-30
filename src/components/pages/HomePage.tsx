@@ -57,9 +57,7 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
   // const { config, isDark, setMode } = useTheme();
   const { state: widgetsState, toggleEditMode } = useWidgets();
 
-  console.log("HomePage - widgetsState: ", widgetsState);
-
-    // function toggleTheme() {
+  // function toggleTheme() {
   //   if (config.mode === "system") {
   //     setMode(isDark ? "light" : "dark");
   //   } else {

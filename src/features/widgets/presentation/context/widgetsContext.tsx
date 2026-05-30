@@ -52,7 +52,6 @@ export function WidgetsProvider({
         const widgets = await widgetService.getPanelWidgets(_panelId);
         dispatch({ type: "FETCH_SUCCESS", payload: widgets });
       } catch (error) {
-        console.error("WidgetsContext fetchWidgets:", error);
         dispatch({ type: "FETCH_ERROR", payload: "Error al cargar widgets" });
       }
     },
@@ -65,8 +64,8 @@ export function WidgetsProvider({
 
       if (result.error || !result.widget) {
         const msg = result.error ?? "widget undefined";
-        dispatch({ type: "FETCH_ERROR", payload: msg });
-        throw new Error(msg);
+        dispatch({ type: "FETCH_ERROR", payload: msg as string});
+        throw new Error(msg as string);
       }
 
       dispatch({ type: "ADD_WIDGET", payload: result.widget });
@@ -91,11 +90,9 @@ export function WidgetsProvider({
 
   const updateLayout = useCallback(
     async (layouts: ResponsiveLayouts) => {
-      console.log("WidgetsContext - updateLayout called with:", layouts);
       const result = await widgetService.updateWidgetLayout(layouts);
 
       if (!result.success) {
-        console.error("Error updating widget layout:", result.error);
         const msg = result.error ?? "Error al actualizar layout";
         dispatch({ type: "FETCH_ERROR", payload: msg });
         throw new Error(msg);

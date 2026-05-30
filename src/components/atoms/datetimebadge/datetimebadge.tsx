@@ -40,8 +40,6 @@ export const DateTimeBadge: React.FC<DateTimeBadgeProps> = ({
       showSeconds ? 500 : 15000
     );
 
-    console.log(currentDate);
-
     return () => clearInterval(interval);
   }, [showLiveTime, showSeconds]);
 

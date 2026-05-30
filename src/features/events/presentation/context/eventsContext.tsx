@@ -17,7 +17,9 @@ type EventsContextValue = {
   fetchEvents: () => Promise<void>;
 };
 
-export const EventsContext = createContext<EventsContextValue | undefined>(undefined);
+export const EventsContext = createContext<EventsContextValue | undefined>(
+  undefined,
+);
 
 type EventsProviderProp = PropsWithChildren<{ eventsService: EventsService }>;
 
@@ -31,11 +33,8 @@ export function EventsProvider({
     dispatch({ type: "FETCH_EVENTS_START" });
 
     try {
-        console.log("Hola, momento previos al eventService");
-        
       const events = await eventsService.getAllEvents();
-      console.log("Firebase-EventContex: ", events);
-      
+
       dispatch({ type: "FETCH_EVENTS_SUCCESS", payload: events });
     } catch (error) {
       dispatch({ type: "FETCH_EVENTS_ERROR", payload: error as string });

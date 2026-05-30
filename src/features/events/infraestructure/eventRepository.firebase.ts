@@ -115,8 +115,6 @@ export class FirebaseEventRepository implements EventRepository {
       where("makeAt", ">", Timestamp.now()),
     );
 
-    console.log("Query: ", q);
-
     const querySnapshot = await getDocs(q);
 
     return querySnapshot.docs.map((doc) =>

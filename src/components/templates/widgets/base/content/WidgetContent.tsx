@@ -21,14 +21,10 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
 
     const panel = state.currentPanel;
 
-    console.log("Cargando subpaneles para el panel:", panel.id);
-
     const loadSubPanels = async () => {
       const resolved = await Promise.all(
         panel.subPanelsId?.map((id) => findByRef(id)) || [],
       );
-
-      console.log("Subpaneles resueltos:", resolved);
 
       setSubPanels(resolved.filter(Boolean) as Panel[]);
     };

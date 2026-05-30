@@ -15,7 +15,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     type: "task-list",
     title: "Lista de Tareas",
     description: "Visualiza tus tareas en formato lista",
-    icon: "✓",
+    icon: "IconCheckbox",
     category: "tasks",
     isHome: false,
     defaultConfig: {
@@ -138,11 +138,11 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     type: "panels-list",
     title: "Lista de Paneles",
     description: "Acceso rápido a tus paneles",
-    icon: "🗂️",
+    icon: "IconFolderFilled",
     category: "other",
     isHome: true,
     defaultConfig: {
       showIcons: true,
     },
-  }
+  },
 ];

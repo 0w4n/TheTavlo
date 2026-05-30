@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 import "./panelsWidget.css";
 
 export default function PanelsWidget({ items }: { items: Panel[] }) {
-  console.info("Items: ", items);
-
   return <>{items.map((item) => panelsItem(item))}</>;
 }
 

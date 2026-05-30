@@ -11,7 +11,6 @@ export function TaskWidget() {
   const { state: taskState } = useTasks();
   const { state: panelState } = usePanels();
 
-  console.log("Task-State:", taskState.tasks);
   const currentPanel = panelState.currentPanel;
 
   if (taskState.loading || panelState.isLoading) {

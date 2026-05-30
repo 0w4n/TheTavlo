@@ -41,14 +41,12 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
       const loader = iconsMap[path];
 
       if (!loader) {
-        console.error(`Tabler icon "${name}" not found → "${file}"`);
         return;
       }
 
       loader().then((raw: string) => {
         svgCache.set(path, raw);
         setSvg(raw);
-        console.debug(`Loaded Tabler icon "${name}" from "${path}"`);
       });
     }, [name]);
 

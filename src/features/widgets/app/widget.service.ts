@@ -14,7 +14,7 @@ export class WidgetService {
 
   async addWidget(
     type: WidgetType,
-  ): Promise<{ widget?: Widget; error?: string }> {
+  ): Promise<{ widget?: Widget; error?: unknown }> {
     const template = WIDGET_TEMPLATES.find((t) => t.type === type);
     if (!template) {
       return { error: "Tipo de widget no encontrado" };
@@ -34,8 +34,7 @@ export class WidgetService {
       });
       return { widget };
     } catch (error) {
-      console.error(error);
-      return { error: "Error al crear el widget" };
+      return { error };
     }
   }
 
@@ -58,7 +57,6 @@ export class WidgetService {
       for (const item of items ?? []) {
         const error = WidgetRules.validateLayout(item);
         if (error) {
-          console.error("Layout validation error:", error);
           return { success: false, error };
         }
       }

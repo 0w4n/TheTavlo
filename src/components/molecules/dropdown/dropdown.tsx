@@ -40,8 +40,6 @@ export function Dropdown({
         ?.contains(event.target as Node);
 
       if (isInsidePortal) return;
-      console.log("isInsidePortal:", isInsidePortal);
-      console.log("CLICK OUTSIDE DROPDOWN", event.target, event.currentTarget);
 
       if (
         dropdownRef.current &&
