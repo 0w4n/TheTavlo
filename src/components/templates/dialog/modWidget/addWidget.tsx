@@ -10,13 +10,11 @@ import { Modal } from "#components/molecules/modal";
 import "./addWidget.css";
 
 interface AddWidgetProps {
-  isHome: boolean;
   onClose: () => void;
   onAddWidget: (type: WidgetType) => Promise<Widget>;
 }
 
 export default function AddWidget({
-  isHome,
   onClose,
   onAddWidget,
 }: AddWidgetProps) {

@@ -23,7 +23,7 @@ export default async function invitationsLoader({ params }: { params: any }) {
     });
   }
 
-  const db = firebaseService.firestore;
+  //const db = firebaseService.firestore;
   const auth = firebaseService.auth;
 
   const user = await getCurrentUser(auth);
