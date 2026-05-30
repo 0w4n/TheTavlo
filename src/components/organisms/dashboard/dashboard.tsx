@@ -179,7 +179,6 @@ export function Dashboard({ widgetState }: Props) {
           <ModalPortal label="Añadir tu próximo widget" iconName="IconPlus">
             {(onClose: () => void) => (
               <AddWidget
-                isHome={true}
                 onAddWidget={handleAddWidget}
                 onClose={onClose}
               />

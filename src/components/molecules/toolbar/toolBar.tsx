@@ -13,11 +13,9 @@ import type {
 interface EditModeButtonProps {
   editMode: boolean;
   onToggle: () => void;
-  isHome: boolean;
 }
 
 export function EditModeButton({
-  isHome = false,
   editMode,
   onToggle,
 }: EditModeButtonProps) {
@@ -37,7 +35,6 @@ export function EditModeButton({
       {editMode &&
         createPortal(
           <DashboardEditPanel
-            isHome={isHome}
             onAdd={(type:WidgetType) => addWidget(type)}
           />,
           document.body,
@@ -47,12 +44,10 @@ export function EditModeButton({
 }
 
 interface DashboardEditPanelProps {
-  isHome: boolean;
   onAdd: (type: WidgetType) => Promise<Widget>;
 }
 
 function DashboardEditPanel({
-  isHome = false,
   onAdd,
 }: DashboardEditPanelProps) {
   return (
@@ -61,7 +56,6 @@ function DashboardEditPanel({
       <ModalPortal iconName="IconLayoutGridAdd">
         {(onClose) => (
           <AddWidget
-            isHome={isHome}
             onAddWidget={onAdd}
             onClose={onClose}
           />

@@ -26,7 +26,7 @@ export default function LoginPage() {
     try {
       await signInAsGuest();
     } catch (error) {
-      throw new Error(error)
+      throw new Error(error as string)
     } finally {
       setIsLoading(false);
     }
