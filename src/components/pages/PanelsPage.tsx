@@ -44,7 +44,6 @@ export default function PanelsPage() {
             type: "children",
             children: (
               <EditModeButton
-                isHome={true}
                 editMode={editMode}
                 onToggle={() => setEditMode(!editMode)}
               />

@@ -73,7 +73,6 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
             type: "children",
             children: (
               <EditModeButton
-                isHome={true}
                 editMode={widgetsState.editMode}
                 onToggle={toggleEditMode}
               />
