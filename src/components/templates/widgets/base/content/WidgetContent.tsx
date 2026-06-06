@@ -22,11 +22,10 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     const panel = state.currentPanel;
 
     const loadSubPanels = async () => {
-      if (panel.parentId) {
-        const children = await fetchSubPanels(panel.parentId);
-        console.log("Sub-panels fetched:", children);
-        setSubPanels(children);
-      }
+      console.log(panel.parentId);
+      const children = await fetchSubPanels(panel.parentId ?? panel.id);
+      console.log("Sub-panels fetched:", children);
+      setSubPanels(children);
     };
 
     loadSubPanels();

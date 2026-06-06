@@ -27,7 +27,10 @@ export const PanelsContext = createContext<PanelsContextValue | undefined>(
 );
 // ─── Provider ────────────────────────────────────────────────────────────────
 
-export function PanelsProvider({ children, panelsService }: PanelsProviderProps) {
+export function PanelsProvider({
+  children,
+  panelsService,
+}: PanelsProviderProps) {
   const [state, dispatch] = useReducer(panelsReducer, initialPanelsState);
   const { state: authState } = useAuth();
 
@@ -77,20 +80,17 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
 
   // ─── fetchHomePanel ───────────────────────────────────────────────────────
 
-  const fetchHomePanel = useCallback(
-    async (): Promise<void> => {
-      dispatch({ type: "FETCH_PANELS_START" });
+  const fetchHomePanel = useCallback(async (): Promise<void> => {
+    dispatch({ type: "FETCH_PANELS_START" });
 
-      const result = await panelsService.getHomePanel();
+    const result = await panelsService.getHomePanel();
 
-      if (isOk(result)) {
-        dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [result.value] });
-      } else {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
-      }
-    },
-    [panelsService],
-  );
+    if (isOk(result)) {
+      dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [result.value] });
+    } else {
+      dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+    }
+  }, [panelsService]);
 
   // ─── fetchPanels ──────────────────────────────────────────────────────────
 
@@ -110,7 +110,10 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
   // ─── createPanel ──────────────────────────────────────────────────────────
 
   const createPanel = useCallback(
-    async (data: CreatePanelDTO, opt?: CreatePanelOpt): Promise<CreatePanelResult> => {
+    async (
+      data: CreatePanelDTO,
+      opt?: CreatePanelOpt,
+    ): Promise<CreatePanelResult> => {
       // Sin opciones: crea en root y dispatch interno.
       if (!opt) {
         const result = await panelsService.createPanel(data);
@@ -121,15 +124,16 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
           dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
         }
 
-        return result.success
-          ? { success: true, value: undefined }
-          : result;
+        return result.success ? { success: true, value: undefined } : result;
       }
 
       // Con opciones: el parentId viene del currentPanel activo.
       if (opt.addToParent && state.currentPanel) {
         const currentRef = await panelsService.getDocRef(state.currentPanel.id);
-        const result = await panelsService.createPanel(data, currentRef.success ? currentRef.value : undefined);
+        const result = await panelsService.createPanel(
+          data,
+          currentRef.success ? currentRef.value : undefined,
+        );
 
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
@@ -159,7 +163,9 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
 
       // addToParent=true pero no hay currentPanel.
       return err(
-        unexpectedErr("No hay un currentPanel seleccionado para añadir el sub-panel"),
+        unexpectedErr(
+          "No hay un currentPanel seleccionado para añadir el sub-panel",
+        ),
       );
     },
     [panelsService, state.currentPanel],
@@ -168,7 +174,10 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
   // ─── addSubPanel (deprecated) ─────────────────────────────────────────────
 
   const addSubPanel = useCallback(
-    async (parentRef: DocumentReference, childRef: DocumentReference): Promise<void> => {
+    async (
+      parentRef: DocumentReference,
+      childRef: DocumentReference,
+    ): Promise<void> => {
       const result = await panelsService.addSubPanel(parentRef, childRef);
       if (isErr(result)) {
         dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
@@ -180,15 +189,34 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
   // ─── getSubPanels ─────────────────────────────────────────────────────────
 
   const fetchSubPanels = useCallback(
-    async (parentId: DocumentReference): Promise<Panel[]> => {
-      const result = await panelsService.getSubPanels(parentId);
+    async (parentId: DocumentReference | string): Promise<Panel[]> => {
+      if (typeof parentId === "string") {
+        const parentRef = await panelsService.getDocRef(parentId);
+        if (isErr(parentRef)) {
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: parentRef.err });
+          return [];
+        }
 
-      if (isErr(result)) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
-        return [];
+        console.log(parentRef.value);
+
+        const result = await panelsService.getSubPanels(parentRef.value);
+
+        if (isErr(result)) {
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+          return [];
+        }
+
+        return result.value;
+      } else {
+        const result = await panelsService.getSubPanels(parentId);
+
+        if (isErr(result)) {
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+          return [];
+        }
+
+        return result.value;
       }
-
-      return result.value;
     },
     [panelsService],
   );
