@@ -128,7 +128,8 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
 
       // Con opciones: el parentId viene del currentPanel activo.
       if (opt.addToParent && state.currentPanel) {
-        const result = await panelsService.createPanel(data, state.currentPanel.id);
+        const currentRef = await panelsService.getDocRef(state.currentPanel.id);
+        const result = await panelsService.createPanel(data, currentRef.success ? currentRef.value : undefined);
 
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
