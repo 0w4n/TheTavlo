@@ -10,12 +10,11 @@ import usePanels from "#features/panels/presentation/hooks/usePanels";
 
 export default function HomePage() {
   const [riseOpen, setRiseOpen] = useState(false);
-  const { fetchHomePanel, selectPanel } = usePanels();
+  const { fetchHomePanel } = usePanels();
 
   useEffect(() => {
     const loadHomePanel = async () => {
-      const homePanel = await fetchHomePanel();
-      selectPanel(homePanel);
+      await fetchHomePanel();
     };
 
     loadHomePanel();

@@ -103,7 +103,7 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
           iconName="IconEye"
         >
           {(onClose) => (
-            <WidgetPreview onClose={onClose} widget={selectedWidget!} />
+            <WidgetPreview onClose={onClose} type={selectedWidget!} />
           )}
         </ModalPortal>
         <Button
