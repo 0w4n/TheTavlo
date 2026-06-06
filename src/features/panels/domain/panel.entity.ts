@@ -6,9 +6,8 @@ export interface Panel {
   name: string;
   color: number;
   icon: string;
-  isDefault: boolean;
   subPanelsId: DocumentReference[];
-  sharedWith: string;
+  sharedWith?: DocumentReference;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

@@ -39,6 +39,8 @@ export function GlobalContextProvider({ children }: PropsWithChildren) {
 
   useMemo(() => {
     if (!user || !currentPanel) return null;
+    console.log("user: ", user);
+    console.log("currentPanel: ", currentPanel);
 
     setState({
       user: {

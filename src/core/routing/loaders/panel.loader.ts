@@ -39,6 +39,7 @@ export default async function panelsLoader({ params }: { params: any }) {
 
   if (nestedPath) {
     const segments = nestedPath.split("/");
+    console.info("nestedPath segments:", segments);
 
     switch (segments[0]) {
       case "calendar":
@@ -97,7 +98,7 @@ async function fetchSubPanel(
     }
 
     const arraySubPanel: DocumentReference[] =
-      snapshot.get("subPanelsId") ?? [];
+    snapshot.get("subPanelsId") ?? [];
     console.info(arraySubPanel);
 
     for (const ref of arraySubPanel) {
@@ -106,7 +107,9 @@ async function fetchSubPanel(
       if (ref.id === subPid) {
         // Use the DocumentReference directly so shared refs resolve correctly.
         const subSnapshot = await getDoc(ref);
-        console.info(subSnapshot);
+        console.info("subSnapshot:", subSnapshot);
+        console.info("subSnapshot-data:", subSnapshot.data());
+        
 
         if (!subSnapshot.exists()) {
           throw new Response(

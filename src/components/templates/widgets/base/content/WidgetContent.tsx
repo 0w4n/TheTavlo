@@ -9,7 +9,7 @@ import type { Panel } from "#features/panels/domain/panel.entity";
 import { TaskWidget } from "../../task/taskWidget";
 
 export default function WidgetContent({ widget }: { widget: Widget }) {
-  const { state, findByRef } = usePanels();
+  const { state, findByRef, findBySharedId } = usePanels();
 
   const [subPanels, setSubPanels] = useState<Panel[]>([]);
 
@@ -21,20 +21,48 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
 
     const panel = state.currentPanel;
 
+    console.log(
+      panel.subPanelsId
+    );
+
     const loadSubPanels = async () => {
       const resolved = await Promise.all(
-        panel.subPanelsId?.map((id) => findByRef(id)) || [],
+        panel.subPanelsId?.map(async (ref) => {
+          try {
+            if (ref.path.includes("panels")) {
+              console.log("Buscando subPanel por referencia:", ref);
+              const subPanel = await findByRef(ref);
+              console.log("SubPanel encontrado por referencia:", subPanel);
+              return subPanel;
+            } else if (ref.path.includes("shared")) {
+              const subPanel = await findBySharedId(ref);
+              console.log("SubPanel encontrado por ID compartido:", subPanel);
+              return subPanel;
+            } else {
+              console.warn("Referencia desconocida:", ref);
+              return [];
+            }
+          } catch (error) {
+            console.error("Error al cargar el subPanel:", error);
+            return null;
+          }
+        }),
       );
 
       setSubPanels(resolved.filter(Boolean) as Panel[]);
     };
+
+    console.info("Cargando subPaneles para el panel actual:", subPanels);
 
     loadSubPanels();
   }, [state.currentPanel]);
 
   switch (widget.type) {
     case "task-list":
-      return <TaskWidget /* panelId={state.currentPanel!} config={widget.config} */ />;
+      return (
+        <TaskWidget /* panelId={state.currentPanel!} config={widget.config} */
+        />
+      );
 
     case "panels-list":
       return (
@@ -54,9 +82,7 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     //   );
 
     case "exam-timeline":
-      return (
-        <ExamsTimelineWidget />
-      );
+      return <ExamsTimelineWidget />;
 
     // case "exam-countdown":
     //   return (

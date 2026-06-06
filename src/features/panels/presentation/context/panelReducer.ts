@@ -1,5 +1,6 @@
 import { DocumentReference } from "firebase/firestore";
 import { type Panel } from "../../domain/panel.entity";
+import type { AppErr } from "#core/appCore/domain/AppCore.type";
 
 /**
  * @param subPanelsId Los paneles que se encuentran en la base de datos
@@ -13,13 +14,13 @@ export type PanelsState = {
   selectedPanel?: Panel;
   currentPanel?: Panel;
   isLoading: boolean;
-  error?: Error;
+  error?: AppErr;
 };
 
 type PanelsAction =
   | { type: "FETCH_PANELS_START" }
   | { type: "FETCH_PANELS_SUCCESS"; payload: Panel[] }
-  | { type: "FETCH_PANELS_ERROR"; payload: Error }
+  | { type: "FETCH_PANELS_ERROR"; payload: AppErr }
   | { type: "CREATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
@@ -47,17 +48,14 @@ export function panelsReducer(
       return {
         ...state,
         isLoading: false,
-        currentPanel: state.currentPanel || action.payload[0],
+        currentPanel: state.currentPanel ?? action.payload[0],
       };
 
     case "FETCH_PANELS_ERROR":
       return { ...state, isLoading: false, error: action.payload };
 
     case "CREATE_PANEL_SUCCESS":
-      return {
-        ...state,
-        error: undefined,
-      };
+      return { ...state, error: undefined };
 
     case "UPDATE_PANEL_SUCCESS":
       return {
@@ -66,12 +64,24 @@ export function panelsReducer(
           state.selectedPanel?.id === action.payload.id
             ? action.payload
             : state.selectedPanel,
+        currentPanel:
+          state.currentPanel?.id === action.payload.id
+            ? action.payload
+            : state.currentPanel,
         error: undefined,
       };
 
     case "DELETE_PANEL_SUCCESS":
       return {
         ...state,
+        selectedPanel:
+          state.selectedPanel?.id === action.payload
+            ? undefined
+            : state.selectedPanel,
+        currentPanel:
+          state.currentPanel?.id === action.payload
+            ? undefined
+            : state.currentPanel,
         error: undefined,
       };
 
@@ -83,10 +93,7 @@ export function panelsReducer(
       };
 
     case "FETCH_SUB_PANELS":
-      return {
-        ...state,
-        subPanelsId: action.payload,
-      };
+      return { ...state, subPanelsId: action.payload };
 
     case "CLEAR_ERROR":
       return { ...state, error: undefined };

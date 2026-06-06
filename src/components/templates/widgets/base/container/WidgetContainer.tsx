@@ -100,6 +100,8 @@ export default function WidgetContainer({
 
   const { removeWidget } = useWidgets();
 
+  console.log("Por aquí paso");
+
   const handleRemoving = async () => {
     removeWidget(widget.id);
   };
@@ -113,9 +115,13 @@ export default function WidgetContainer({
         <div>
           <BreadCrumb />
           {editMode && !widget.locked && (
-            <Button variant="danger" onClick={handleRemoving}>
-              <Icon name="IconTrash" />
-            </Button>
+            <Button
+              variant="danger"
+              onClick={handleRemoving}
+              iconSize={16}
+              icon="IconTrash"
+              className="configButton"
+            />
           )}
 
           <Dropdown
@@ -125,7 +131,7 @@ export default function WidgetContainer({
                 size="sm"
                 iconSize={16}
                 icon="IconDotsVertical"
-                className="configButton "
+                className="configButton"
               />
             }
           >
@@ -157,7 +163,7 @@ export default function WidgetContainer({
         <WidgetContent widget={widget} />
         <ModalPortal label={type} iconName="IconPlus">
           {(onClose: () => void) => (
-            <GetDialogWdigetType widgetType={type} onClose={onClose}/>
+            <GetDialogWdigetType widgetType={type} onClose={onClose} />
           )}
         </ModalPortal>
         {/* <div className="widget__content-add">

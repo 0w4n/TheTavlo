@@ -13,6 +13,7 @@ import {
   writeBatch,
   arrayUnion,
   where,
+  collectionGroup,
 } from "firebase/firestore";
 import type { PanelRepository } from "../app/panelsRepository.interface";
 import type {
@@ -21,6 +22,13 @@ import type {
   UpdatePanelDTO,
 } from "../domain/panel.entity";
 import type { User } from "#core/auth/domain/user.entity";
+import {
+  err,
+  ok,
+  type ResultApp,
+  type AppErr,
+  firebaseErr,
+} from "#core/appCore/domain/AppCore.type";
 
 export class FirebasePanelsRepository implements PanelRepository {
   constructor(
@@ -47,9 +55,8 @@ export class FirebasePanelsRepository implements PanelRepository {
       name: "",
       color: -1,
       icon: "",
-      isDefault: true,
       subPanelsId: [],
-      sharedWith: "",
+      sharedWith: undefined,
       createdAt: now,
       updatedAt: now,
     };
@@ -68,9 +75,8 @@ export class FirebasePanelsRepository implements PanelRepository {
       name: data.name,
       icon: data.icon,
       color: data.color,
-      isDefault: !!data.isDefault,
       subPanelsId: data.subPanelsId,
-      sharedWith: data.sharedWith ?? "",
+      sharedWith: data.sharedWith ?? undefined,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };
@@ -111,7 +117,10 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   // *C* = Crear
-  async create(data: CreatePanelDTO, parentId?: string): Promise<Panel> {
+  async create(
+    data: CreatePanelDTO,
+    parentId?: string,
+  ): Promise<ResultApp<Panel, AppErr>> {
     const collectionPath = this.getCollectionPath();
     const ref = doc(collection(this.firestore, collectionPath));
     const batch = writeBatch(this.firestore);
@@ -152,40 +161,53 @@ export class FirebasePanelsRepository implements PanelRepository {
       throw new Error("No se pudo recuperar el panel recién creado");
     }
 
-    return this.mapDocumentToPanel(createdSnap.id, createdSnap.data()!);
+    return ok(this.mapDocumentToPanel(createdSnap.id, createdSnap.data()!));
   }
 
   async addSubPanel(
     parentRef: DocumentReference,
     childRef: DocumentReference,
-  ): Promise<boolean | Error> {
+  ): Promise<ResultApp<void, AppErr>> {
     try {
       await updateDoc(parentRef, {
         subPanelsId: arrayUnion(childRef),
         updatedAt: Timestamp.now(),
       });
-      return true;
+      return ok(undefined);
     } catch (error) {
-      return Error("Error al añadir el subPanel al padre");
+      return err(firebaseErr("Error al añadir el subPanel al padre"));
     }
   }
 
   // *R* = Leer
-  async findHomePanel(): Promise<Panel> {
-    const colPath = this.getCollectionPath();
+  async findHomePanel(): Promise<ResultApp<Panel, AppErr>> {
+    const { accountType, id } = this.getUser();
+
     const q = query(
-      collection(this.firestore, colPath),
-      where("isDefault", "==", true),
-      where("name", "==", ""),
+      collection(this.firestore, accountType, id, "panels"),
       where("color", "==", -1),
       where("icon", "==", ""),
+      where("name", "==", ""),
+      where("sharedWith", "==", null),
     );
+
+    console.log("Query para panel por defecto: ", q);
 
     const querySnapshot = await getDocs(q);
 
+    console.log(
+      "QuerySnapshot obtenido para panel por defecto:",
+      querySnapshot,
+    );
+
     if (querySnapshot.empty) {
-      console.info("No tienes nada, pero se está creando uno por defecto");
-      return this.create(this.setPanelDefault());
+      const def = await this.create(this.setPanelDefault());
+
+      if (def.success) {
+        return ok(def.value);
+      } else {
+        return err(def.err);
+      }
     }
 
     if (querySnapshot.size > 1) {
@@ -194,15 +216,15 @@ export class FirebasePanelsRepository implements PanelRepository {
       );
     }
 
-    // TODO(Hacer dialog para decidir cual de ellos poner y el resto ponerlos en false directamente)
-    // devolver el primero (caso normal o con warning)
-    return this.mapDocumentToPanel(
-      querySnapshot.docs[0].id,
-      querySnapshot.docs[0].data(),
+    return ok(
+      this.mapDocumentToPanel(
+        querySnapshot.docs[0].id,
+        querySnapshot.docs[0].data(),
+      ),
     );
   }
 
-  async findAll(): Promise<Panel[]> {
+  async findAll(): Promise<ResultApp<Panel[], AppErr>> {
     const collectionPath = this.getCollectionPath();
 
     const q = query(collection(this.firestore, collectionPath));
@@ -212,51 +234,73 @@ export class FirebasePanelsRepository implements PanelRepository {
       this.mapDocumentToPanel(docSnap.id, docSnap.data()),
     );
 
-    return panels;
+    return ok(panels);
   }
 
-  async findById(id: string): Promise<Panel | undefined> {
+  async findById(id: string): Promise<ResultApp<Panel | undefined, AppErr>> {
     const collectionPath = this.getCollectionPath();
 
     const docRef = doc(this.firestore, collectionPath, id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
-      return undefined;
+      return ok(undefined);
     }
 
-    return this.mapDocumentToPanel(docSnap.id, docSnap.data());
+    return ok(this.mapDocumentToPanel(docSnap.id, docSnap.data()));
   }
 
-  async findByRef(ref: DocumentReference): Promise<Panel | undefined> {
+  async findByRef(ref: DocumentReference): Promise<ResultApp<Panel | undefined, AppErr>> {
     // Use the ref's own path directly — it may point to the user's "panels"
     // collection or to the global "shared" collection; either way the ref
     // already carries the correct Firestore path.
     const docSnap = await getDoc(ref);
 
     if (docSnap.exists()) {
-      return this.mapDocumentToPanel(docSnap.id, docSnap.data());
+      return ok(this.mapDocumentToPanel(docSnap.id, docSnap.data()));
     }
 
-    return undefined;
+    return err(firebaseErr("Panel no encontrado"));
   }
 
-  async findDocRef(id: string): Promise<DocumentReference | Error> {
+  async findDocRef(id: string): Promise<ResultApp<DocumentReference, AppErr>> {
     try {
       const collectionPath = this.getCollectionPath();
-      return doc(this.firestore, collectionPath, id);
+      return ok(doc(this.firestore, collectionPath, id));
     } catch (error) {
-      return Error("No se pudo generar la referencia del documento");
+      return err(firebaseErr("No se pudo generar la referencia del documento"));
     }
+  }
+
+  async findBySharedId(
+    sharedId: DocumentReference,
+  ): Promise<ResultApp<Panel | undefined, AppErr>> {
+    const q = query(
+      collectionGroup(this.firestore, "panels"),
+      where("sharedWith", "==", sharedId.id),
+    );
+    console.log("Query: ", q);
+
+    const querySnapshot = await getDocs(q);
+
+    console.log("QuerySnapshot obtenido:", querySnapshot);
+
+    if (querySnapshot.empty) {
+      return ok(undefined);
+    }
+    return ok(this.mapDocumentToPanel(
+      querySnapshot.docs[0].id,
+      querySnapshot.docs[0].data(),
+    ));
   }
 
   // *U* = Actualizar
-  async update(id: string, data: UpdatePanelDTO): Promise<Panel> {
+  async update(id: string, data: UpdatePanelDTO): Promise<ResultApp<Panel, AppErr>> {
     const collectionPath = this.getCollectionPath();
 
     const existingPanel = await this.findById(id);
     if (!existingPanel) {
-      throw new Error("Panel no encontrado");
+      return err(firebaseErr("Panel no encontrado"));
     }
 
     // No debemos sobrescribir createdAt en la actualización.
@@ -273,18 +317,18 @@ export class FirebasePanelsRepository implements PanelRepository {
     // Leer documento actualizado y devolver la entidad actualizada
     const updatedSnap = await getDoc(docRef);
     if (!updatedSnap.exists()) {
-      throw new Error("Error al leer el panel actualizado");
+      return err(firebaseErr("Error al leer el panel actualizado"));
     }
-    return this.mapDocumentToPanel(updatedSnap.id, updatedSnap.data());
+    return ok(this.mapDocumentToPanel(updatedSnap.id, updatedSnap.data()));
   }
 
   // *D* = Eliminar
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<ResultApp<void, AppErr>> {
     const collectionPath = this.getCollectionPath();
 
     const existingPanel = await this.findById(id);
     if (!existingPanel) {
-      throw new Error("Panel no encontrado");
+      return err(firebaseErr("Panel no encontrado"));
     }
 
     const docRef = doc(this.firestore, collectionPath, id);
@@ -292,5 +336,6 @@ export class FirebasePanelsRepository implements PanelRepository {
 
     // TODO: Aquí deberías manejar qué hacer con las tareas/eventos/exámenes del panel
     // Opciones: moverlos a otro panel, eliminarlos, etc.
+    return ok(undefined);
   }
 }

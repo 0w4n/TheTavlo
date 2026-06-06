@@ -4,23 +4,23 @@ import type {
 } from "#features/widgets/domain/widget.entity";
 import { WIDGET_TEMPLATES } from "#features/widgets/domain/widgetTemplates";
 import { useState } from "react";
-import Icon from "#shared/ui/atoms/icons";
 import { Button } from "../../../atoms/button";
 import { Modal } from "#components/molecules/modal";
 import "./addWidget.css";
+import WidgetPreview from "#components/templates/widgets/base/preview/widgetPreview";
+import ModalPortal from "#components/molecules/modal/portal";
 
 interface AddWidgetProps {
   onClose: () => void;
   onAddWidget: (type: WidgetType) => Promise<Widget>;
 }
 
-export default function AddWidget({
-  onClose,
-  onAddWidget,
-}: AddWidgetProps) {
+export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedWidget, setSelectedWidget] = useState<WidgetType>();
   const [loading, setLoading] = useState(false);
   const [errorIs, setError] = useState<unknown>();
+  const [isSelected, setSelected] = useState(false);
 
   const categories = [
     { key: "tasks", icon: "IconCheckbox", isHome: false },
@@ -40,13 +40,20 @@ export default function AddWidget({
     try {
       const res = await onAddWidget(type);
 
+      setSelected(false);
       onClose();
-      return res
-    } catch(error) {
-      setError(error)
+
+      return res;
+    } catch (error) {
+      setError(error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSelectedWidget = (type: WidgetType) => {
+    setSelected(true);
+    setSelectedWidget(type);
   };
 
   return (
@@ -56,25 +63,23 @@ export default function AddWidget({
       </Modal.Header>
 
       <Modal.Body>
-        <div className="CategoriasDialog">
-          {categories
-            .map((cat) => (
-              <Button
-                key={cat.key}
-                variant="secondary"
-                className={
-                  selectedCategory === cat.key ? "selected" : undefined
-                }
-                onClick={() =>
-                  setSelectedCategory(
-                    cat.key === selectedCategory ? "all" : cat.key,
-                  )
-                }
-              >
-                <Icon name={cat.icon} size={28} />
-              </Button>
-            ))}
-        </div>
+        <aside className="CategoriasDialog">
+          {categories.map((cat) => (
+            <Button
+              key={cat.key}
+              variant="secondary"
+              className={selectedCategory === cat.key ? "selected" : undefined}
+              icon={cat.icon}
+              iconSize={28}
+              label={cat.key}
+              onClick={() =>
+                setSelectedCategory(
+                  cat.key === selectedCategory ? "all" : cat.key,
+                )
+              }
+            />
+          ))}
+        </aside>
 
         <div className="ContentDialog">
           {filteredTemplates.map((template) => (
@@ -83,15 +88,31 @@ export default function AddWidget({
               disabled={loading}
               label={`${template.title} ${errorIs}`}
               icon={template.icon}
-              onClick={() => handleAddWidget(template.type)}
-              className="ContentDialog-Item"
+              onClick={() => handleSelectedWidget(template.type)}
+              className={`ContentDialog-Item ${selectedWidget === template.type ? " :focus" : ""}`}
             />
           ))}
         </div>
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose} label="Cancelar" />
+        <ModalPortal
+          variant="secondary"
+          disabled={!isSelected || loading}
+          label={isSelected ? "Vista previa" : "Seleccione un widget"}
+          iconName="IconEye"
+        >
+          {(onClose) => (
+            <WidgetPreview onClose={onClose} widget={selectedWidget!} />
+          )}
+        </ModalPortal>
+        <Button
+          variant="primary"
+          onClick={() => handleAddWidget(selectedWidget!)}
+          disabled={!isSelected || loading}
+          label={isSelected ? "Añadir widget" : "Seleccione un widget"}
+          icon="IconPlus"
+        />
       </Modal.Footer>
     </>
   );

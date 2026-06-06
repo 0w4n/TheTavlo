@@ -8,174 +8,226 @@ import type {
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import { DocumentReference } from "firebase/firestore";
 import {
-  returnTypes,
-  type createOpt,
+  ReturnType,
+  type CreatePanelOpt,
+  type CreatePanelResult,
   type PanelsContextValue,
   type PanelsProviderProps,
 } from "./panelsContext.types";
+import {
+  isErr,
+  isOk,
+  unexpectedErr,
+  err,
+  notFoundErr,
+} from "#core/appCore/domain/AppCore.type";
 
 export const PanelsContext = createContext<PanelsContextValue | undefined>(
   undefined,
 );
+// ─── Provider ────────────────────────────────────────────────────────────────
 
-export function PanelsProvider({
-  children,
-  panelsService,
-}: PanelsProviderProps) {
+export function PanelsProvider({ children, panelsService }: PanelsProviderProps) {
   const [state, dispatch] = useReducer(panelsReducer, initialPanelsState);
   const { state: authState } = useAuth();
 
+  // ─── findByRef ────────────────────────────────────────────────────────────
+
   const findByRef = useCallback(
     async (ref: DocumentReference): Promise<Panel | undefined> => {
-      if (ref.parent.id === "panels") {
-        try {
-          const panel = await panelsService.getPanelByRef(ref);
-          return panel || undefined;
-        } catch (error) {
-          dispatch({
-            type: "FETCH_PANELS_ERROR",
-            payload: Error(`Error al buscar panel por referencia: ${error}`),
-          });
-          return undefined;
-        }
-      } else if (ref.parent.id === "shared") {
-        try {
-          const panel = await panelsService.getPanelByRef(ref);
-          return panel || undefined;
-        } catch (error) {
-          dispatch({
-            type: "FETCH_PANELS_ERROR",
-            payload: Error(`Error al buscar panel por referencia: ${error}`),
-          });
-          return undefined;
-        }
+      const collectionId = ref.parent.id;
+
+      if (collectionId !== "panels" && collectionId !== "shared") {
+        // Referencia con colección desconocida: error de programación, no de red.
+        dispatch({
+          type: "FETCH_PANELS_ERROR",
+          payload: notFoundErr(
+            `Referencia con colección padre desconocida: ${collectionId}`,
+          ),
+        });
+        return undefined;
+      }
+
+      const result = await panelsService.getPanelByRef(ref);
+
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+        return undefined;
+      }
+
+      return result.value;
+    },
+    [panelsService],
+  );
+
+  // ─── findBySharedId ───────────────────────────────────────────────────────
+
+  const findBySharedId = useCallback(
+    async (sharedId: DocumentReference): Promise<Panel | undefined> => {
+      const result = await panelsService.getPanelBySharedId(sharedId);
+
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+        return undefined;
+      }
+
+      return result.value;
+    },
+    [panelsService],
+  );
+
+  // ─── fetchHomePanel ───────────────────────────────────────────────────────
+
+  const fetchHomePanel = useCallback(
+    async (): Promise<void> => {
+      dispatch({ type: "FETCH_PANELS_START" });
+
+      const result = await panelsService.getHomePanel();
+
+      if (isOk(result)) {
+        dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [result.value] });
       } else {
-        throw new Error(
-          `Referencia con colección padre desconocida: ${ref.parent.id}`,
-        );
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
       }
     },
     [panelsService],
   );
 
-  const fetchHomePanel = useCallback(async (): Promise<Panel> => {
+  // ─── fetchPanels ──────────────────────────────────────────────────────────
+
+  const fetchPanels = useCallback(async (): Promise<void> => {
     dispatch({ type: "FETCH_PANELS_START" });
 
-    try {
-      const homePanel = await panelsService.getHomePanel();
-      dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [homePanel] });
-      return homePanel;
-    } catch (error) {
-      dispatch({
-        type: "FETCH_PANELS_ERROR",
-        payload: Error(`Error al cargar el panel home: ${error}`),
-      });
-      throw error;
+    const result = await panelsService.getAllPanels();
+
+    if (isErr(result)) {
+      dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+      return;
     }
+
+    dispatch({ type: "FETCH_PANELS_SUCCESS", payload: result.value });
   }, [panelsService]);
 
-  const fetchPanels = useCallback(async () => {
-    dispatch({ type: "FETCH_PANELS_START" });
-
-    try {
-      const panels = await panelsService.getAllPanels();
-
-      dispatch({ type: "FETCH_PANELS_SUCCESS", payload: panels });
-    } catch (error) {
-      dispatch({
-        type: "FETCH_PANELS_ERROR",
-        payload: Error(`Error al cargar paneles: ${error}`),
-      });
-    }
-  }, [panelsService]);
+  // ─── createPanel ──────────────────────────────────────────────────────────
 
   const createPanel = useCallback(
-    async (data: CreatePanelDTO, opt?: createOpt) => {
-      if (opt == undefined) {
+    async (data: CreatePanelDTO, opt?: CreatePanelOpt): Promise<CreatePanelResult> => {
+      // Sin opciones: crea en root y dispatch interno.
+      if (!opt) {
         const result = await panelsService.createPanel(data);
 
-        if (result instanceof Error) {
-          dispatch({ type: "FETCH_PANELS_ERROR", payload: result });
+        if (isErr(result)) {
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         } else {
-          dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
+          dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
         }
-      } else {
-        console.log("Creando panel con opciones:", opt);
-        // 2. Si se solicita, vinculamos el panel con su padre obteniendo sus DocumentReferences reales
-        if (opt.addToParent && state.currentPanel) {
-          const result = await panelsService.createPanel(data, state.currentPanel.id);
 
-          if (result instanceof Error) {
-            console.error(result);
-            dispatch({ type: "FETCH_PANELS_ERROR", payload: result });
+        // ReturnType.DEFAULT implícito: retornamos void-like encapsulado en ok
+        return result.success
+          ? { success: true, value: undefined }
+          : result;
+      }
+
+      // Con opciones: el parentId viene del currentPanel activo.
+      if (opt.addToParent && state.currentPanel) {
+        const result = await panelsService.createPanel(data, state.currentPanel.id);
+
+        if (isErr(result)) {
+          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+          return result;
+        }
+
+        switch (opt.return) {
+          case ReturnType.PANEL:
+            dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
             return result;
-          }
 
-          // 3. Manejamos los distintos tipos de retorno solicitados de forma segura
-          switch (opt.return) {
-            case returnTypes.PANEL:
-              return result;
-
-            case returnTypes.DOCREF: {
-              const ref = await panelsService.getDocRef(result.id);
-              if (ref instanceof Error) throw ref;
-              return ref;
+          case ReturnType.DOCREF: {
+            const refResult = await panelsService.getDocRef(result.value.id);
+            if (isErr(refResult)) {
+              dispatch({ type: "FETCH_PANELS_ERROR", payload: refResult.err });
+              return refResult;
             }
-
-            case returnTypes.DEFAULT:
-            default:
-              dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result });
+            return refResult;
           }
+
+          case ReturnType.DEFAULT:
+          default:
+            dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
+            return { success: true, value: undefined };
         }
       }
+
+      // addToParent=true pero no hay currentPanel.
+      return err(
+        unexpectedErr("No hay un currentPanel seleccionado para añadir el sub-panel"),
+      );
     },
     [panelsService, state.currentPanel],
   );
 
+  // ─── addSubPanel ──────────────────────────────────────────────────────────
+
   const addSubPanel = useCallback(
-    async (parentRef: DocumentReference, childId: DocumentReference) => {
-      const parentDoc = await panelsService.getPanelByRef(parentRef);
-      if (!parentDoc) return;
+    async (parentRef: DocumentReference, childRef: DocumentReference): Promise<void> => {
+      const parentResult = await panelsService.getPanelByRef(parentRef);
 
-      const already = parentDoc.subPanelsId.includes(childId);
-      if (already) return;
+      if (isErr(parentResult)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: parentResult.err });
+        return;
+      }
 
-      const result = await panelsService.updatePanel(parentRef.id, {
-        subPanelsId: [...parentDoc.subPanelsId, childId],
+      const parentDoc = parentResult.value;
+      if (!parentDoc) {
+        dispatch({
+          type: "FETCH_PANELS_ERROR",
+          payload: notFoundErr(`Panel padre con ref "${parentRef.id}" no encontrado`),
+        });
+        return;
+      }
+
+      // Evitar duplicados
+      const alreadyLinked = parentDoc.subPanelsId.some(
+        (ref) => ref.id === childRef.id,
+      );
+      if (alreadyLinked) return;
+
+      const updateResult = await panelsService.updatePanel(parentRef.id, {
+        subPanelsId: [...parentDoc.subPanelsId, childRef],
       });
 
-      if (result instanceof Error) {
-        dispatch({
-          type: "FETCH_PANELS_ERROR",
-          payload: result,
-        });
+      if (isErr(updateResult)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: updateResult.err });
       }
     },
     [panelsService],
   );
+
+  // ─── updatePanel ──────────────────────────────────────────────────────────
 
   const updatePanel = useCallback(
-    async (id: string, data: UpdatePanelDTO) => {
+    async (id: string, data: UpdatePanelDTO): Promise<void> => {
       const result = await panelsService.updatePanel(id, data);
 
-      if (result instanceof Error) {
-        dispatch({
-          type: "FETCH_PANELS_ERROR",
-          payload: result,
-        });
-      } else {
-        dispatch({ type: "UPDATE_PANEL_SUCCESS", payload: result });
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+        return;
       }
+
+      dispatch({ type: "UPDATE_PANEL_SUCCESS", payload: result.value });
     },
     [panelsService],
   );
 
+  // ─── deletePanel ──────────────────────────────────────────────────────────
+
   const deletePanel = useCallback(
-    async (id: string) => {
+    async (id: string): Promise<void> => {
       const result = await panelsService.deletePanel(id);
 
-      if (result.error) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.error });
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+        return;
       }
 
       dispatch({ type: "DELETE_PANEL_SUCCESS", payload: id });
@@ -183,23 +235,38 @@ export function PanelsProvider({
     [panelsService],
   );
 
+  // ─── removeSubPanel ───────────────────────────────────────────────────────
+
   const removeSubPanel = useCallback(
-    async (parentRef: DocumentReference, childRef: DocumentReference) => {
-      const parent = await panelsService.getPanelByRef(parentRef);
+    async (parentRef: DocumentReference, childRef: DocumentReference): Promise<void> => {
+      const parentResult = await panelsService.getPanelByRef(parentRef);
+
+      if (isErr(parentResult)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: parentResult.err });
+        return;
+      }
+
+      const parent = parentResult.value;
       if (!parent) return;
 
-      await panelsService.updatePanel(parentRef.id, {
-        subPanelsId: parent.subPanelsId.filter((id) => id !== childRef),
+      const updateResult = await panelsService.updatePanel(parentRef.id, {
+        subPanelsId: parent.subPanelsId.filter((ref) => ref.id !== childRef.id),
       });
+
+      if (isErr(updateResult)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: updateResult.err });
+      }
     },
     [panelsService],
   );
 
-  const selectPanel = useCallback((panel: Panel) => {
+  // ─── selectPanel ─────────────────────────────────────────────────────────
+
+  const selectPanel = useCallback((panel: Panel): void => {
     if (!panel) {
       dispatch({
         type: "FETCH_PANELS_ERROR",
-        payload: Error(`Error al seleccionar panel: Panel no encontrado`),
+        payload: notFoundErr("Panel no encontrado al intentar seleccionarlo"),
       });
       return;
     }
@@ -207,17 +274,24 @@ export function PanelsProvider({
     dispatch({ type: "SELECT_PANEL", payload: panel });
   }, []);
 
-  const clearError = useCallback(() => {
+  // ─── clearError ──────────────────────────────────────────────────────────
+
+  const clearError = useCallback((): void => {
     dispatch({ type: "CLEAR_ERROR" });
   }, []);
+
+  // ─── Efecto de carga inicial ──────────────────────────────────────────────
 
   useEffect(() => {
     if (!authState.user) return;
     fetchHomePanel();
   }, [fetchHomePanel, authState.user]);
 
+  // ─── Valor del contexto ───────────────────────────────────────────────────
+
   const value: PanelsContextValue = {
     state,
+    findBySharedId,
     findByRef,
     fetchPanels,
     fetchHomePanel,

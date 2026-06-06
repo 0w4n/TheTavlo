@@ -4,9 +4,11 @@ import Icon from "#shared/ui/atoms/icons";
 
 import "./button.css";
 
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: ButtonVariant;
   size?: "sm" | "md" | "lg";
   icon?: string;
   label?: string;

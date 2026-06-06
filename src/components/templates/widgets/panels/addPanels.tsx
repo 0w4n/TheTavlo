@@ -5,7 +5,7 @@ import usePanels from "#features/panels/presentation/hooks/usePanels";
 import { Timestamp } from "firebase/firestore";
 
 import "./addPanels.css";
-import { returnTypes } from "#features/panels/presentation/context/panelsContext.types";
+import { ReturnType } from "#features/panels/presentation/context/panelsContext.types";
 import { Button } from "#components/atoms/button";
 
 interface AddPanelsForm {
@@ -25,8 +25,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
     name: "",
     color: 0,
     icon: "",
-    isDefault: false,
-    sharedWith: "",
+    sharedWith: undefined,
     subPanelsId: [],
     createdAt: now,
     updatedAt: now,
@@ -49,7 +48,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
 
       await createPanel(panel, {
         addToParent: true,
-        return: returnTypes.DEFAULT,
+        return: ReturnType.DEFAULT,
       });
     } catch (error) {
       throw new Error(
@@ -94,18 +93,26 @@ export function AddPanels({ onClose }: AddPanelsForm) {
               }}
             />
           </Field>
-          <Field label="Colores" required error={errors.color?.toString()}>
+          <Field label="Color" required error={errors.color?.toString()}>
             <input
               type="number"
               value={panel?.color}
+              placeholder="Color del panel (0-360)"
               min={0}
               max={360}
-              step={1}
+              step={2}
               onChange={(e) => {
                 setPanel((p) => ({ ...p, color: e.target.valueAsNumber }));
                 setErrors((er) => ({ ...er, color: undefined }));
               }}
             />
+            <div
+              style={{
+                backgroundColor: `hsl(${panel?.color}, 100%, 80%)`,
+                width: "20px",
+                height: "20px",
+              }}
+            ></div>
           </Field>
         </form>
       </Modal.Body>
@@ -152,7 +159,7 @@ function Field({
   return (
     <div className="field">
       <label className="field__label">
-        {label}
+        {label + "   "}
 
         {required && (
           <span className="field__required" aria-hidden="true">

@@ -15,19 +15,23 @@ import type { ModalPortalProps } from "./modalPortal.types";
  * ```
  */
 export default function ModalPortal({
+  variant,
+  disabled,
   iconName,
   label,
   className,
-  children,
+  children
 }: ModalPortalProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Button
+        variant={variant}
         onClick={() => setOpen(true)}
         icon={iconName}
         label={label}
+        disabled={disabled}
         className={className}
       />
 

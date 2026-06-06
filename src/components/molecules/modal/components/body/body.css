@@ -2,6 +2,7 @@
   padding: var(--spacing-4);
   margin: var(--spacing-2);
   overflow-y: auto;
+  display: flex;
   flex: 1;
   color: var(--color-textSecondary);
   line-height: var(--line-height-relaxed);

@@ -118,7 +118,6 @@ export function Dashboard({ widgetState }: Props) {
     return addWidget(type);
   };
 
-  /** 🧠 Sync inicial cuando cambian widgets */
   useEffect(() => {
     const next = buildInitialLayouts(widgetList);
     setLayouts(next);
@@ -126,23 +125,10 @@ export function Dashboard({ widgetState }: Props) {
     hasChangesRef.current = false;
   }, [widgetList]);
 
-  /** ✏️ Toggle edición */
   useEffect(() => {
     setLayouts((prev) => toggleEditMode(prev, editMode));
   }, [editMode]);
 
-  /** 🔁 Captura cambios SIN setState */
-  // const handleLayoutChange = useCallback(
-  //   (_: Layout, all: ResponsiveLayouts) => {
-  //     layoutsRef.current = all;
-  //     hasChangesRef.current = true;
-  //     setLayouts(all);
-  //     console.log("Layout: ", _, "all: ", all);
-  //   },
-  //   [],
-  // );
-
-  /** 💾 Guardar SOLO al salir de editMode */
   useEffect(() => {
     if (prevEditModeRef.current && !editMode && hasChangesRef.current) {
       updateLayout(layoutsRef.current);
@@ -150,6 +136,8 @@ export function Dashboard({ widgetState }: Props) {
     }
     prevEditModeRef.current = editMode;
   }, [editMode]);
+
+  console.log("widgetList length: ", widgetList.length);
 
   return (
     <div className="dashboard" data-edit-mode={editMode} ref={containerRef}>
@@ -176,7 +164,7 @@ export function Dashboard({ widgetState }: Props) {
       ) : (
         <div className="dashboard-empty">
           <span>Dashboard vacio</span>
-          <ModalPortal label="Añadir tu próximo widget" iconName="IconPlus">
+          <ModalPortal label="Añadir tu primer widget" iconName="IconPlus">
             {(onClose: () => void) => (
               <AddWidget
                 onAddWidget={handleAddWidget}
