@@ -47,11 +47,16 @@ export class PanelsService {
     return this.repository.findDocRef(id);
   }
 
+  /** Devuelve los paneles hijos de un panel dado su id. */
+  async getSubPanels(parentId: DocumentReference): Promise<ResultApp<Panel[], AppErr>> {
+    return this.repository.findByParentId(parentId);
+  }
+
   // ─── Create ──────────────────────────────────────────────────────────────
 
   async createPanel(
     data: CreatePanelDTO,
-    parentId: string = "root",
+    parentId?: DocumentReference,
   ): Promise<ResultApp<Panel, AppErr>> {
     const nameError = PanelRules.validateName(data.name);
     if (nameError) {
@@ -64,6 +69,7 @@ export class PanelsService {
 
   // ─── Sub-panel linking ───────────────────────────────────────────────────
 
+  /** @deprecated Usar parentId en createPanel() en su lugar. */
   async addSubPanel(
     parentRef: DocumentReference,
     childRef: DocumentReference,

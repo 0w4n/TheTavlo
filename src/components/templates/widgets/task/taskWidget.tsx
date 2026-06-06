@@ -33,6 +33,7 @@ function taskItem(item: AnyTask) {
           <div className="task__item-content">
             <span>{item.endAt.toDate().getDate()}</span>
             <div className="task__item-content--text">
+              <Icon name="IconUsersGroup" color="hsl(0, 0%, 80%)" size={18} />
               <span>{item.title}</span>
               <Icon name="IconArrowNarrowRightDashed" color="#fff" />
             </div>

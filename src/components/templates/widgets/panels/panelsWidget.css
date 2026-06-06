@@ -11,6 +11,12 @@
   scroll-snap-align: start;
 }
 
+.panels__widget--item__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
 .panels__widget--item__icon {
   background-color: hsl(var(--panels__widget--color), 100%, 70%);
   display: flex;

@@ -27,6 +27,7 @@ export function EditModeButton({
         <Button
           variant="primary"
           onClick={onToggle}
+          label={editMode ? "Guardar dashboard" : "Editar dashboard"}
           icon={editMode ? "IconCheck" : "IconPencil"}
           iconSize={16}
         ></Button>

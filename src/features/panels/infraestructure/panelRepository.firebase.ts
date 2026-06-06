@@ -11,7 +11,6 @@ import {
   DocumentReference,
   Firestore,
   writeBatch,
-  arrayUnion,
   where,
   collectionGroup,
 } from "firebase/firestore";
@@ -52,10 +51,10 @@ export class FirebasePanelsRepository implements PanelRepository {
   private setPanelDefault(): CreatePanelDTO {
     const now = Timestamp.now();
     const defaultPanel: CreatePanelDTO = {
+      parentId: undefined,
       name: "",
       color: -1,
       icon: "",
-      subPanelsId: [],
       sharedWith: undefined,
       createdAt: now,
       updatedAt: now,
@@ -66,7 +65,6 @@ export class FirebasePanelsRepository implements PanelRepository {
 
   /**
    * Convierte un DocumentData (con Timestamp) a la entidad Panel.
-   * Se devuelve createdAt/updatedAt como Date | undefined y se incluye id.
    */
   private mapDocumentToPanel(id: string, data: DocumentData): Panel {
     return {
@@ -75,7 +73,6 @@ export class FirebasePanelsRepository implements PanelRepository {
       name: data.name,
       icon: data.icon,
       color: data.color,
-      subPanelsId: data.subPanelsId,
       sharedWith: data.sharedWith ?? undefined,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
@@ -84,29 +81,25 @@ export class FirebasePanelsRepository implements PanelRepository {
 
   /**
    * Convierte una entidad Panel (o DTO parcial) a DocumentData para Firestore.
-   * Soporta createdAt/updatedAt como Date o Timestamp. Elimina campos locales no persistibles.
    */
   private mapPanelToDocument(
     panel: Partial<Panel> | Partial<CreatePanelDTO>,
   ): DocumentData {
     const data: any = { ...panel };
 
-    // createdAt/updatedAt: si son Date -> Timestamp.fromDate(date), si ya son Timestamp dejar
     if (data.createdAt) {
       if (data.createdAt instanceof Date) {
         data.createdAt = Timestamp.fromDate(data.createdAt);
-      } // si ya es Timestamp, OK
+      }
     } else {
-      // si no existe createdAt, dejar vacío (create() añadirá createdAt)
       delete data.createdAt;
     }
 
     if (data.updatedAt) {
       if (data.updatedAt instanceof Date) {
         data.updatedAt = Timestamp.fromDate(data.updatedAt);
-      } // si ya es Timestamp, OK
+      }
     } else {
-      // si no existe, no forzamos
       delete data.updatedAt;
     }
 
@@ -119,12 +112,11 @@ export class FirebasePanelsRepository implements PanelRepository {
   // *C* = Crear
   async create(
     data: CreatePanelDTO,
-    parentId?: string,
+    parentId?: DocumentReference,
   ): Promise<ResultApp<Panel, AppErr>> {
     const collectionPath = this.getCollectionPath();
     const ref = doc(collection(this.firestore, collectionPath));
     const batch = writeBatch(this.firestore);
-    const panelDoc = this.mapPanelToDocument(data);
     const now = Timestamp.now();
 
     if (data.createdAt == undefined || data.updatedAt == undefined) {
@@ -135,24 +127,13 @@ export class FirebasePanelsRepository implements PanelRepository {
       };
     }
 
-    if (parentId === undefined) {
-      batch.set(ref, panelDoc);
-    } else {
-      const parentRef = doc(this.firestore, collectionPath, parentId);
-      const parentSnap = await getDoc(parentRef);
-      if (!parentSnap.exists()) {
-        throw new Error(`Panel padre con id "${parentId}" no encontrado`);
-      }
+    // Adjuntar parentId al documento que se va a guardar
+    const panelDoc = this.mapPanelToDocument({
+      ...data,
+      parentId: parentId ?? undefined,
+    });
 
-      console.log(panelDoc);
-
-      batch.set(ref, panelDoc);
-
-      batch.update(parentRef, {
-        subPanelsId: arrayUnion(ref),
-        updatedAt: Timestamp.now(),
-      });
-    }
+    batch.set(ref, panelDoc);
 
     await batch.commit();
 
@@ -166,16 +147,17 @@ export class FirebasePanelsRepository implements PanelRepository {
 
   async addSubPanel(
     parentRef: DocumentReference,
-    childRef: DocumentReference,
+    _childRef: DocumentReference,
   ): Promise<ResultApp<void, AppErr>> {
+    // Kept for backwards compat — no longer used in the main flow.
+    // Sub-panels are now linked via the parentId field on the child document.
     try {
       await updateDoc(parentRef, {
-        subPanelsId: arrayUnion(childRef),
         updatedAt: Timestamp.now(),
       });
       return ok(undefined);
     } catch (error) {
-      return err(firebaseErr("Error al añadir el subPanel al padre"));
+      return err(firebaseErr("Error al actualizar el panel padre"));
     }
   }
 
@@ -191,14 +173,7 @@ export class FirebasePanelsRepository implements PanelRepository {
       where("sharedWith", "==", null),
     );
 
-    console.log("Query para panel por defecto: ", q);
-
     const querySnapshot = await getDocs(q);
-
-    console.log(
-      "QuerySnapshot obtenido para panel por defecto:",
-      querySnapshot,
-    );
 
     if (querySnapshot.empty) {
       const def = await this.create(this.setPanelDefault());
@@ -237,6 +212,25 @@ export class FirebasePanelsRepository implements PanelRepository {
     return ok(panels);
   }
 
+  /**
+   * Devuelve todos los paneles cuyo parentId coincide con el id dado.
+   */
+  async findByParentId(parentId: DocumentReference): Promise<ResultApp<Panel[], AppErr>> {
+    const collectionPath = this.getCollectionPath();
+
+    const q = query(
+      collection(this.firestore, collectionPath),
+      where("parentId", "==", parentId),
+    );
+
+    const querySnapshot = await getDocs(q);
+    const panels = querySnapshot.docs.map((docSnap) =>
+      this.mapDocumentToPanel(docSnap.id, docSnap.data()),
+    );
+
+    return ok(panels);
+  }
+
   async findById(id: string): Promise<ResultApp<Panel | undefined, AppErr>> {
     const collectionPath = this.getCollectionPath();
 
@@ -251,9 +245,6 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   async findByRef(ref: DocumentReference): Promise<ResultApp<Panel | undefined, AppErr>> {
-    // Use the ref's own path directly — it may point to the user's "panels"
-    // collection or to the global "shared" collection; either way the ref
-    // already carries the correct Firestore path.
     const docSnap = await getDoc(ref);
 
     if (docSnap.exists()) {
@@ -279,11 +270,8 @@ export class FirebasePanelsRepository implements PanelRepository {
       collectionGroup(this.firestore, "panels"),
       where("sharedWith", "==", sharedId.id),
     );
-    console.log("Query: ", q);
 
     const querySnapshot = await getDocs(q);
-
-    console.log("QuerySnapshot obtenido:", querySnapshot);
 
     if (querySnapshot.empty) {
       return ok(undefined);
@@ -303,7 +291,6 @@ export class FirebasePanelsRepository implements PanelRepository {
       return err(firebaseErr("Panel no encontrado"));
     }
 
-    // No debemos sobrescribir createdAt en la actualización.
     const rawUpdate: any = {
       ...data,
       updatedAt: Timestamp.now(),
@@ -314,7 +301,6 @@ export class FirebasePanelsRepository implements PanelRepository {
     const docRef = doc(this.firestore, collectionPath, id);
     await updateDoc(docRef, updateData);
 
-    // Leer documento actualizado y devolver la entidad actualizada
     const updatedSnap = await getDoc(docRef);
     if (!updatedSnap.exists()) {
       return err(firebaseErr("Error al leer el panel actualizado"));
@@ -334,8 +320,6 @@ export class FirebasePanelsRepository implements PanelRepository {
     const docRef = doc(this.firestore, collectionPath, id);
     await deleteDoc(docRef);
 
-    // TODO: Aquí deberías manejar qué hacer con las tareas/eventos/exámenes del panel
-    // Opciones: moverlos a otro panel, eliminarlos, etc.
     return ok(undefined);
   }
 }

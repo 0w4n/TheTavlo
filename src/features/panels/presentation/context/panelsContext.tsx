@@ -38,7 +38,6 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
       const collectionId = ref.parent.id;
 
       if (collectionId !== "panels" && collectionId !== "shared") {
-        // Referencia con colección desconocida: error de programación, no de red.
         dispatch({
           type: "FETCH_PANELS_ERROR",
           payload: notFoundErr(
@@ -122,7 +121,6 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
           dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
         }
 
-        // ReturnType.DEFAULT implícito: retornamos void-like encapsulado en ok
         return result.success
           ? { success: true, value: undefined }
           : result;
@@ -166,39 +164,30 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
     [panelsService, state.currentPanel],
   );
 
-  // ─── addSubPanel ──────────────────────────────────────────────────────────
+  // ─── addSubPanel (deprecated) ─────────────────────────────────────────────
 
   const addSubPanel = useCallback(
     async (parentRef: DocumentReference, childRef: DocumentReference): Promise<void> => {
-      const parentResult = await panelsService.getPanelByRef(parentRef);
+      const result = await panelsService.addSubPanel(parentRef, childRef);
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+      }
+    },
+    [panelsService],
+  );
 
-      if (isErr(parentResult)) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: parentResult.err });
-        return;
+  // ─── getSubPanels ─────────────────────────────────────────────────────────
+
+  const fetchSubPanels = useCallback(
+    async (parentId: DocumentReference): Promise<Panel[]> => {
+      const result = await panelsService.getSubPanels(parentId);
+
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+        return [];
       }
 
-      const parentDoc = parentResult.value;
-      if (!parentDoc) {
-        dispatch({
-          type: "FETCH_PANELS_ERROR",
-          payload: notFoundErr(`Panel padre con ref "${parentRef.id}" no encontrado`),
-        });
-        return;
-      }
-
-      // Evitar duplicados
-      const alreadyLinked = parentDoc.subPanelsId.some(
-        (ref) => ref.id === childRef.id,
-      );
-      if (alreadyLinked) return;
-
-      const updateResult = await panelsService.updatePanel(parentRef.id, {
-        subPanelsId: [...parentDoc.subPanelsId, childRef],
-      });
-
-      if (isErr(updateResult)) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: updateResult.err });
-      }
+      return result.value;
     },
     [panelsService],
   );
@@ -231,31 +220,6 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
       }
 
       dispatch({ type: "DELETE_PANEL_SUCCESS", payload: id });
-    },
-    [panelsService],
-  );
-
-  // ─── removeSubPanel ───────────────────────────────────────────────────────
-
-  const removeSubPanel = useCallback(
-    async (parentRef: DocumentReference, childRef: DocumentReference): Promise<void> => {
-      const parentResult = await panelsService.getPanelByRef(parentRef);
-
-      if (isErr(parentResult)) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: parentResult.err });
-        return;
-      }
-
-      const parent = parentResult.value;
-      if (!parent) return;
-
-      const updateResult = await panelsService.updatePanel(parentRef.id, {
-        subPanelsId: parent.subPanelsId.filter((ref) => ref.id !== childRef.id),
-      });
-
-      if (isErr(updateResult)) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: updateResult.err });
-      }
     },
     [panelsService],
   );
@@ -297,9 +261,9 @@ export function PanelsProvider({ children, panelsService }: PanelsProviderProps)
     fetchHomePanel,
     createPanel,
     addSubPanel,
+    fetchSubPanels,
     updatePanel,
     deletePanel,
-    removeSubPanel,
     selectPanel,
     clearError,
   };

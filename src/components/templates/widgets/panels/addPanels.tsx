@@ -3,10 +3,10 @@ import type { CreatePanelDTO } from "#features/panels/domain/panel.entity";
 import { useState, type SyntheticEvent } from "react";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import { Timestamp } from "firebase/firestore";
-
-import "./addPanels.css";
 import { ReturnType } from "#features/panels/presentation/context/panelsContext.types";
 import { Button } from "#components/atoms/button";
+
+import "./addPanels.css";
 
 interface AddPanelsForm {
   onClose: () => void;
@@ -26,7 +26,6 @@ export function AddPanels({ onClose }: AddPanelsForm) {
     color: 0,
     icon: "",
     sharedWith: undefined,
-    subPanelsId: [],
     createdAt: now,
     updatedAt: now,
   };
@@ -42,9 +41,6 @@ export function AddPanels({ onClose }: AddPanelsForm) {
     e.preventDefault();
     try {
       setIsLoading(true);
-
-      console.log("IsLoading: ", isLoading);
-      console.log("Panel: ", panel);
 
       await createPanel(panel, {
         addToParent: true,

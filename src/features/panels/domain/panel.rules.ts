@@ -28,7 +28,6 @@ export default class PanelRules {
       name: "",
       color: -1,
       icon: "",
-      subPanelsId: [],
       sharedWith: undefined,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),

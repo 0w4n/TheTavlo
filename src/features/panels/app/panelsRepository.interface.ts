@@ -26,16 +26,22 @@ export interface PanelRepository {
     sharedId: DocumentReference,
   ): Promise<ResultApp<Panel | undefined, AppErr>>;
 
+  /** Devuelve todos los paneles hijos de un panel padre por su id. */
+  findByParentId(parentId: DocumentReference): Promise<ResultApp<Panel[], AppErr>>;
+
   /** Obtiene la DocumentReference de un panel por su id. */
   findDocRef(id: string): Promise<ResultApp<DocumentReference, AppErr>>;
 
-  /** Crea un nuevo panel. */
+  /**
+   * Crea un nuevo panel.
+   * @param parentId Si se proporciona, el nuevo panel queda como hijo de ese panel.
+   */
   create(
     data: CreatePanelDTO,
-    parentId: string,
+    parentId?: DocumentReference,
   ): Promise<ResultApp<Panel, AppErr>>;
 
-  /** Añade childRef al array subPanelsId de parentRef. */
+  /** @deprecated Usar parentId en create() en su lugar. */
   addSubPanel(
     parentRef: DocumentReference,
     childRef: DocumentReference,

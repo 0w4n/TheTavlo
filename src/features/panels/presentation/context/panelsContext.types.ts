@@ -52,14 +52,14 @@ export type PanelsContextValue = {
    * - Sin `opt`: crea en root, dispatch interno, retorna void.
    * - Con `opt.return = PANEL`: retorna el Panel creado.
    * - Con `opt.return = DOCREF`: retorna la DocumentReference del panel.
-   * - Con `opt.addToParent = true`: añade el panel al currentPanel como sub-panel.
+   * - Con `opt.addToParent = true`: usa el id del currentPanel como parentId.
    */
   createPanel: (
     data: CreatePanelDTO,
     opt?: CreatePanelOpt,
   ) => Promise<CreatePanelResult>;
 
-  /** Añade childRef al array subPanelsId de parentRef. */
+  /** @deprecated Usar parentId en createPanel() en su lugar. */
   addSubPanel: (
     parentRef: DocumentReference,
     childRef: DocumentReference,
@@ -71,11 +71,8 @@ export type PanelsContextValue = {
   /** Elimina un panel por id (respeta la regla isDefault). */
   deletePanel: (id: string) => Promise<void>;
 
-  /** Elimina childRef del array subPanelsId de parentRef. */
-  removeSubPanel: (
-    parentRef: DocumentReference,
-    childRef: DocumentReference,
-  ) => Promise<void>;
+  /** Devuelve los paneles hijos del panel con el id dado. */
+  fetchSubPanels: (parentId: DocumentReference) => Promise<Panel[]>;
 
   /** Establece el panel seleccionado (para edición/detalle). */
   selectPanel: (panel: Panel) => void;
