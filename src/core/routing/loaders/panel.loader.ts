@@ -6,7 +6,6 @@ import {
   collection,
   query,
   where,
-  DocumentReference,
 } from "firebase/firestore";
 import { onAuthStateChanged, type Auth, type User } from "firebase/auth";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
@@ -71,6 +70,7 @@ export default async function panelsLoader({ params }: { params: any }) {
 async function fetchPanel(user: User, db: Firestore, pid: string) {
   try {
     const panelRef = doc(db, "users", user.uid, "panels", pid);
+    console.log("PanelRef: ", panelRef, "PID: ", pid, );
     const snapshot = await getDoc(panelRef);
 
     if (!snapshot.exists()) {
@@ -92,18 +92,24 @@ async function fetchPanel(user: User, db: Firestore, pid: string) {
 async function fetchSubPanel(
   user: User,
   db: Firestore,
-  pid: DocumentReference,
-  subPid: DocumentReference,
+  pid: string,
+  subPid: string,
 ) {
   try {
-    // Query sub-panel by its parentId field — no longer relies on subPanelsId array.
     const panelsCol = collection(db, "users", user.uid, "panels");
-    const q = query(panelsCol, where("parentId", "==", pid));
+
+    const parentRef = doc(db, "users", user.uid, "panels", pid);
+
+    const q = query(panelsCol, where("parentId", "==", parentRef));
+
     const querySnapshot = await getDocs(q);
 
     for (const docSnap of querySnapshot.docs) {
-      if (docSnap.id === subPid.id) {
-        return { ...docSnap.data(), id: subPid.id } as Panel;
+      if (docSnap.id === subPid) {
+        return {
+          ...docSnap.data(),
+          id: subPid,
+        } as Panel;
       }
     }
 
@@ -113,6 +119,7 @@ async function fetchSubPanel(
     );
   } catch (error) {
     if (error instanceof Response) throw error;
+
     throw new Response(
       "[(ts)panel.loader-fetchSubPanel:129]@Error al cargar el panel",
       { status: 500 },

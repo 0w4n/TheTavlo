@@ -61,7 +61,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
   return (
     <>
       <Modal.Header onClose={onClose}>
-        <p>Crear panel</p>
+        <span>Crear panel</span>
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={handleCreatePanels} method="post">
