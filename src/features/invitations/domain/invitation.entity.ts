@@ -1,14 +1,20 @@
 import type { DocumentReference, Timestamp } from "firebase/firestore";
 
-export enum statusinvitation {
+export enum statusInvitation {
   PENDING = "pending",
   ACCEPTED = "accepted",
   REJECTED = "rejected",
+  EXPIRED = "expired",
 }
 
 export enum userRole {
   EDITOR = "editor",
   VIEWER = "viewer",
+}
+
+export enum visibility {
+  PUBLIC = "public",
+  PRIVATE = "private",
 }
 
 export interface Invitation {
@@ -18,7 +24,15 @@ export interface Invitation {
   token: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  grantedAt: Timestamp;
+  grantedBy: string;
   sharedUser: Map<number, sharedUser>;
+  /**
+   * La visibilidad de la invitación, puede ser "public" o "private"
+   * @default "private"
+   */
+  sharedVisibility: visibility;
+  sharedRef: DocumentReference;
 }
 
 export interface sharedUser {
@@ -27,7 +41,7 @@ export interface sharedUser {
    * El estado de la invitación para este usuario, puede ser "pending", "accepted" o "rejected"
    * @default "pending"
    */
-  status: statusinvitation;
+  status: statusInvitation;
   statusAt: Timestamp;
   updatedAt: Timestamp;
   /**
@@ -50,4 +64,4 @@ export interface CreateInvitationDTO{
   sharedUser: Map<number, CreatedSharedUserDTO>;
 }
 
-export type UpdateInvitationDTO = Omit<CreateInvitationDTO, "createdAt">;
+export type UpdateInvitationDTO = Omit<CreateInvitationDTO, "createdAt" | "token">;

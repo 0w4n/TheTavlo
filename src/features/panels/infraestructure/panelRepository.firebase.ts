@@ -51,11 +51,11 @@ export class FirebasePanelsRepository implements PanelRepository {
   private setPanelDefault(): CreatePanelDTO {
     const now = Timestamp.now();
     const defaultPanel: CreatePanelDTO = {
-      parentId: undefined,
+      parentId: null,
       name: "",
       color: -1,
       icon: "",
-      sharedWith: undefined,
+      sharedWith: null,
       createdAt: now,
       updatedAt: now,
     };
@@ -69,11 +69,11 @@ export class FirebasePanelsRepository implements PanelRepository {
   private mapDocumentToPanel(id: string, data: DocumentData): Panel {
     return {
       id,
-      parentId: data.parentId ?? undefined,
+      parentId: data.parentId ?? null,
       name: data.name,
       icon: data.icon,
       color: data.color,
-      sharedWith: data.sharedWith ?? undefined,
+      sharedWith: data.sharedWith ?? null,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };

@@ -22,10 +22,11 @@ export function AddPanels({ onClose }: AddPanelsForm) {
   const now = Timestamp.now();
 
   const initPanel: CreatePanelDTO = {
+    parentId: null,
     name: "",
     color: 0,
     icon: "",
-    sharedWith: undefined,
+    sharedWith: null,
     createdAt: now,
     updatedAt: now,
   };

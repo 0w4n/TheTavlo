@@ -25,6 +25,7 @@ import {
 export const PanelsContext = createContext<PanelsContextValue | undefined>(
   undefined,
 );
+
 // ─── Provider ────────────────────────────────────────────────────────────────
 
 export function PanelsProvider({
