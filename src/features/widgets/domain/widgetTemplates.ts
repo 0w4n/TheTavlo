@@ -6,7 +6,7 @@ export interface WidgetTemplate {
   description: string;
   icon: string;
   category: "tasks" | "events" | "exams" | "productivity" | "other";
-  isHome: boolean
+  commingSoon: boolean
   defaultConfig: Record<string, any>;
 }
 
@@ -17,7 +17,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Visualiza tus tareas en formato lista",
     icon: "IconCheckbox",
     category: "tasks",
-    isHome: false,
+    commingSoon: false,
     defaultConfig: {
       showCompleted: false,
       sortBy: "dueDate",
@@ -30,7 +30,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Vista de calendario mensual",
     icon: "📅",
     category: "events",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       view: "month",
       showWeekends: true,
@@ -42,7 +42,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Lista de eventos ordenados por fecha",
     icon: "📆",
     category: "events",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       daysAhead: 7,
     },
@@ -53,7 +53,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Línea de tiempo de próximos exámenes",
     icon: "📝",
     category: "exams",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       daysAhead: 30,
     },
@@ -64,7 +64,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Cuenta regresiva para próximo examen",
     icon: "⏰",
     category: "exams",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       showNextExam: true,
     },
@@ -75,7 +75,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Resumen de tu productividad",
     icon: "📊",
     category: "productivity",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       period: "week",
     },
@@ -86,7 +86,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Crea tareas/eventos rápidamente",
     icon: "➕",
     category: "other",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {},
   },
   {
@@ -95,7 +95,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Últimas acciones realizadas",
     icon: "🕒",
     category: "other",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       limit: 10,
     },
@@ -106,7 +106,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Alertas de fechas límite",
     icon: "⚠️",
     category: "productivity",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       daysAhead: 3,
     },
@@ -117,7 +117,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Visualiza tu progreso",
     icon: "📈",
     category: "productivity",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       chartType: "line",
       period: "week",
@@ -129,7 +129,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     description: "Bloc de notas del panel",
     icon: "📝",
     category: "other",
-    isHome: true,
+    commingSoon: true,
     defaultConfig: {
       content: "",
     },
@@ -139,8 +139,8 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     title: "Lista de Paneles",
     description: "Acceso rápido a tus paneles",
     icon: "IconFolderFilled",
-    category: "other",
-    isHome: true,
+    category: "productivity",
+    commingSoon: false,
     defaultConfig: {
       showIcons: true,
     },

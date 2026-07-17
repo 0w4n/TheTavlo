@@ -6,6 +6,7 @@ export interface GlobalContextProps {
     accountType: AccountType;
   };
   panel: {
+    ownerId?: string;
     panelId: string;
   };
   // theme: {

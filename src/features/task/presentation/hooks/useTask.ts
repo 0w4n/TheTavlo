@@ -5,7 +5,7 @@ export default function useTasks() {
   const context = useContext(TasksContext);
 
   if (!context) {
-    throw new Error("useTasks debe usarse dentro de WidgetsProvider");
+    throw new Error("useTasks debe usarse dentro de TasksProvider");
   }
 
   return context;

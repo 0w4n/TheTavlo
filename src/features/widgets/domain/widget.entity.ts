@@ -37,20 +37,11 @@ export interface Widget {
   type: WidgetType;
   layout: Record<Breakpoint, LayoutItemDTO>;
   config: Record<string, any>; // Configuración específica del widget
-  isHome: boolean;
   locked: boolean; // Si está bloqueado, no se puede mover
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
 
-export interface CreateWidgetDTO {
-  type: WidgetType;
-  layout: Record<Breakpoint, LayoutItemDTO>;
-  config: Record<string, any>; // Configuración específica del widget
-  isHome: boolean;
-  locked: boolean; // Si está bloqueado, no se puede mover
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
+export type CreateWidgetDTO = Omit<Widget, "id">
 
 export type UpdateWidgetDTO = Partial<Omit<CreateWidgetDTO, "createdAt">>;

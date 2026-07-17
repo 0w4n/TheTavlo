@@ -2,26 +2,20 @@ import { Header } from "#components/organisms/header";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import { Rise } from "#components/molecules/rise";
-import usePanels from "#features/panels/presentation/hooks/usePanels";
+import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 
 export default function HomePage() {
   const [riseOpen, setRiseOpen] = useState(false);
-  const { fetchHomePanel } = usePanels();
-
-  useEffect(() => {
-    const loadHomePanel = async () => {
-      await fetchHomePanel();
-    };
-
-    loadHomePanel();
-  }, [fetchHomePanel]);
 
   return (
     <>
+      <NeedsPanelModal />
+      <InvalidPanelNotice />
       {riseOpen ? (
         <Rise
           onClose={() => setRiseOpen(false)}
@@ -48,6 +42,68 @@ export default function HomePage() {
         <HomePageComponent onOpenRise={() => setRiseOpen(true)} />
       )}
     </>
+  );
+}
+
+/**
+ * Red de seguridad para URLs como "/home/task" que no existen como página
+ * real (las tareas siempre pertenecen a un panel). `panel.loader.ts`
+ * redirige acá con `?openModal=...` en vez de dejar navegar a esa ruta.
+ * En el flujo normal esto nunca debería dispararse — la navegación real
+ * pasa por `useOpenTaskList`, que ni siquiera intenta ir ahí.
+ */
+function NeedsPanelModal() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openModal = searchParams.get("openModal");
+
+  if (!openModal) return null;
+
+  const close = () => {
+    searchParams.delete("openModal");
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  return (
+    <Modal onClose={close}>
+      <ModalHeader title="Elegí un panel" onClose={close} />
+      <ModalBody>
+        <p>
+          Las tareas y el calendario pertenecen a un panel. Elegí uno desde el
+          dashboard para verlas.
+        </p>
+      </ModalBody>
+    </Modal>
+  );
+}
+
+/**
+ * `panel.loader.ts` redirige acá con `?invalidPanel=1` cuando la cadena de
+ * `:pid` de la URL no existe o no respeta la jerarquía real de paneles
+ * (alguien la escribió a mano, o un panel fue borrado mientras la tenía
+ * abierta). Nunca es un error de la app — solo avisamos y volvemos al
+ * dashboard limpio.
+ */
+function InvalidPanelNotice() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const invalidPanel = searchParams.get("invalidPanel");
+
+  if (!invalidPanel) return null;
+
+  const close = () => {
+    searchParams.delete("invalidPanel");
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  return (
+    <Modal onClose={close}>
+      <ModalHeader title="Ese panel ya no existe" onClose={close} />
+      <ModalBody>
+        <p>
+          El enlace que abriste apunta a un panel que fue eliminado o movido.
+          Te trajimos de vuelta al dashboard.
+        </p>
+      </ModalBody>
+    </Modal>
   );
 }
 
@@ -87,6 +143,13 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
                 onClick: () => {
                   console.log("Hola");
                 },
+              },
+              {
+                icon: "IconSettings",
+                label: "Ajustes",
+                onClick: () => {
+                  window.location.href = "/settings";
+                }
               },
               {
                 icon: "IconLogout",

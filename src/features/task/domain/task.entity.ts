@@ -26,7 +26,7 @@ export enum TaskSubmission {
 interface TaskBase {
   id: string;
   title: string;
-  openAt?: Timestamp;
+  openAt: Timestamp | null;
   endAt: Timestamp;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -36,7 +36,7 @@ interface TaskBase {
 interface TaskFields {
   progress: TaskProgress;
   phase: TaskPhase;
-  submission?: TaskSubmission;
+  submission: TaskSubmission | null;
 }
 
 // ─── Nodos ────────────────────────────────────────────────────────────────────

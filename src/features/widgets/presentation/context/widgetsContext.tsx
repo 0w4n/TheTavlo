@@ -32,18 +32,38 @@ type WidgetsContextValue = {
   clearError: () => void;
 };
 
-export const WidgetsContext = createContext<WidgetsContextValue | undefined>(undefined);
+export const WidgetsContext = createContext<WidgetsContextValue | undefined>(
+  undefined,
+);
 
 export function WidgetsProvider({
   children,
   widgetService,
-}: PropsWithChildren<{
-  widgetService: WidgetService;
-}>) {
+}: PropsWithChildren<{ widgetService: WidgetService }>) {
   const [state, dispatch] = useReducer(widgetsReducer, initialState);
   const { state: stateGlobal } = useGlobalContext();
   const panelId = stateGlobal.panel.panelId;
   const userId = stateGlobal.user.userId;
+
+  // ─── Suscripción en tiempo real ──────────────────────────────────────────
+  // Se crea cuando panelId cambia y se limpia automáticamente al desmontar
+  // o cuando panelId vuelve a cambiar.
+
+  useEffect(() => {
+    if (!panelId) return;
+
+    dispatch({ type: "FETCH_START" });
+
+    const unsubscribe = widgetService.subscribeToPanel(
+      (widgets) => dispatch({ type: "FETCH_SUCCESS", payload: widgets }),
+      (error) => dispatch({ type: "FETCH_ERROR", payload: error }),
+    );
+
+    // Limpieza: cancela la suscripción de Firestore
+    return unsubscribe;
+  }, [panelId, widgetService]);
+
+  // ─── Fetch puntual (por compatibilidad / refresh manual) ─────────────────
 
   const fetchWidgets = useCallback(
     async (_panelId: string) => {
@@ -51,23 +71,25 @@ export function WidgetsProvider({
       try {
         const widgets = await widgetService.getPanelWidgets(_panelId);
         dispatch({ type: "FETCH_SUCCESS", payload: widgets });
-      } catch (error) {
+      } catch {
         dispatch({ type: "FETCH_ERROR", payload: "Error al cargar widgets" });
       }
     },
     [widgetService],
   );
 
+  // ─── Mutaciones ──────────────────────────────────────────────────────────
+
   const addWidget = useCallback(
     async (type: WidgetType): Promise<Widget> => {
       const result = await widgetService.addWidget(type);
-
       if (result.error || !result.widget) {
-        const msg = result.error ?? "widget undefined";
-        dispatch({ type: "FETCH_ERROR", payload: msg as string});
-        throw new Error(msg as string);
+        const msg = (result.error ?? "widget undefined") as string;
+        dispatch({ type: "FETCH_ERROR", payload: msg });
+        throw new Error(msg);
       }
-
+      // onSnapshot actualizará el estado automáticamente;
+      // el dispatch local es para respuesta inmediata (optimistic)
       dispatch({ type: "ADD_WIDGET", payload: result.widget });
       return result.widget;
     },
@@ -91,14 +113,12 @@ export function WidgetsProvider({
   const updateLayout = useCallback(
     async (layouts: ResponsiveLayouts) => {
       const result = await widgetService.updateWidgetLayout(layouts);
-
       if (!result.success) {
         const msg = result.error ?? "Error al actualizar layout";
         dispatch({ type: "FETCH_ERROR", payload: msg });
         throw new Error(msg);
       }
-
-      // Optimistic update: reflect the new positions in local state
+      // Actualización optimista — onSnapshot confirma después
       dispatch({ type: "UPDATE_LAYOUTS", payload: layouts });
     },
     [widgetService],
@@ -107,13 +127,9 @@ export function WidgetsProvider({
   const removeWidget = useCallback(
     async (widgetId: string) => {
       if (!userId) return;
-
       await widgetService.removeWidget(widgetId);
-
-      dispatch({
-        type: "REMOVE_WIDGET",
-        payload: { panelId, widgetId },
-      });
+      // Optimistic: onSnapshot también lo reflejará
+      dispatch({ type: "REMOVE_WIDGET", payload: { panelId, widgetId } });
     },
     [widgetService, userId, panelId],
   );
@@ -125,11 +141,6 @@ export function WidgetsProvider({
   const clearError = useCallback(() => {
     dispatch({ type: "CLEAR_ERROR" });
   }, []);
-
-  useEffect(() => {
-    if (!panelId) return;
-    fetchWidgets(panelId);
-  }, [panelId, fetchWidgets]);
 
   const value: WidgetsContextValue = {
     state,

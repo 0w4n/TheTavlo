@@ -26,8 +26,6 @@ export const PanelsContext = createContext<PanelsContextValue | undefined>(
   undefined,
 );
 
-// ─── Provider ────────────────────────────────────────────────────────────────
-
 export function PanelsProvider({
   children,
   panelsService,
@@ -35,12 +33,42 @@ export function PanelsProvider({
   const [state, dispatch] = useReducer(panelsReducer, initialPanelsState);
   const { state: authState } = useAuth();
 
+  useEffect(() => {
+    console.log("state cambió a:", state);
+  }, [state]);
+
+  // ─── Suscripción en tiempo real al panel home ─────────────────────────────
+  // Se activa cuando hay usuario autenticado y se cancela al desmontar
+  // o cuando el usuario cambia.
+
+  console.log("1. useEffect");
+  console.log("authState: ", authState);
+
+  useEffect(() => {
+    if (authState.status === "error") return;
+    if (authState.status === "initializing") return;
+    if (authState.status === "migration-pending") return;
+    if (authState.status === "unauthenticated") return;
+
+    dispatch({ type: "FETCH_PANELS_START" });
+
+    const unsubscribe = panelsService.subscribeToHomePanel(
+      (panel) => {
+        console.log("Panel recibido: ", panel);
+        dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [panel] });
+      },
+      (err) => {console.log("Panel err: ", err); dispatch({ type: "FETCH_PANELS_ERROR", payload: err });},
+    );
+
+    // Limpieza: cancela la suscripción de Firestore
+    return unsubscribe;
+  }, [panelsService, authState.status]);
+
   // ─── findByRef ────────────────────────────────────────────────────────────
 
   const findByRef = useCallback(
     async (ref: DocumentReference): Promise<Panel | undefined> => {
       const collectionId = ref.parent.id;
-
       if (collectionId !== "panels" && collectionId !== "shared") {
         dispatch({
           type: "FETCH_PANELS_ERROR",
@@ -52,12 +80,10 @@ export function PanelsProvider({
       }
 
       const result = await panelsService.getPanelByRef(ref);
-
       if (isErr(result)) {
         dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         return undefined;
       }
-
       return result.value;
     },
     [panelsService],
@@ -68,26 +94,23 @@ export function PanelsProvider({
   const findBySharedId = useCallback(
     async (sharedId: DocumentReference): Promise<Panel | undefined> => {
       const result = await panelsService.getPanelBySharedId(sharedId);
-
       if (isErr(result)) {
         dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         return undefined;
       }
-
       return result.value;
     },
     [panelsService],
   );
 
-  // ─── fetchHomePanel ───────────────────────────────────────────────────────
+  // ─── fetchHomePanel (puntual, por compatibilidad) ─────────────────────────
 
   const fetchHomePanel = useCallback(async (): Promise<void> => {
     dispatch({ type: "FETCH_PANELS_START" });
-
     const result = await panelsService.getHomePanel();
-
     if (isOk(result)) {
       dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [result.value] });
+      console.log("Hola, ahí te va el homeId: ", result.value);
     } else {
       dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
     }
@@ -97,14 +120,11 @@ export function PanelsProvider({
 
   const fetchPanels = useCallback(async (): Promise<void> => {
     dispatch({ type: "FETCH_PANELS_START" });
-
     const result = await panelsService.getAllPanels();
-
     if (isErr(result)) {
       dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
       return;
     }
-
     dispatch({ type: "FETCH_PANELS_SUCCESS", payload: result.value });
   }, [panelsService]);
 
@@ -115,21 +135,17 @@ export function PanelsProvider({
       data: CreatePanelDTO,
       opt?: CreatePanelOpt,
     ): Promise<CreatePanelResult> => {
-      // Sin opciones: crea en root y dispatch interno.
       if (!opt) {
         const result = await panelsService.createPanel(data);
-
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         } else {
           dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
         }
-
         return result.success ? { success: true, value: undefined } : result;
       }
 
-      // Con opciones: el parentId viene del currentPanel activo.
-      if (opt.addToParent && state.currentPanel) {
+      if (opt.addToParent && state.status === "panel" && state.currentPanel) {
         const currentRef = await panelsService.getDocRef(state.currentPanel.id);
         const result = await panelsService.createPanel(
           data,
@@ -145,7 +161,6 @@ export function PanelsProvider({
           case ReturnType.PANEL:
             dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
             return result;
-
           case ReturnType.DOCREF: {
             const refResult = await panelsService.getDocRef(result.value.id);
             if (isErr(refResult)) {
@@ -154,7 +169,6 @@ export function PanelsProvider({
             }
             return refResult;
           }
-
           case ReturnType.DEFAULT:
           default:
             dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
@@ -162,17 +176,16 @@ export function PanelsProvider({
         }
       }
 
-      // addToParent=true pero no hay currentPanel.
       return err(
         unexpectedErr(
           "No hay un currentPanel seleccionado para añadir el sub-panel",
         ),
       );
     },
-    [panelsService, state.currentPanel],
+    [panelsService, state.status],
   );
 
-  // ─── addSubPanel (deprecated) ─────────────────────────────────────────────
+  // ─── addSubPanel ──────────────────────────────────────────────────────────
 
   const addSubPanel = useCallback(
     async (
@@ -187,7 +200,7 @@ export function PanelsProvider({
     [panelsService],
   );
 
-  // ─── getSubPanels ─────────────────────────────────────────────────────────
+  // ─── fetchSubPanels ───────────────────────────────────────────────────────
 
   const fetchSubPanels = useCallback(
     async (parentId: DocumentReference | string): Promise<Panel[]> => {
@@ -197,25 +210,18 @@ export function PanelsProvider({
           dispatch({ type: "FETCH_PANELS_ERROR", payload: parentRef.err });
           return [];
         }
-
-        console.log(parentRef.value);
-
         const result = await panelsService.getSubPanels(parentRef.value);
-
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
           return [];
         }
-
         return result.value;
       } else {
         const result = await panelsService.getSubPanels(parentId);
-
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
           return [];
         }
-
         return result.value;
       }
     },
@@ -227,12 +233,10 @@ export function PanelsProvider({
   const updatePanel = useCallback(
     async (id: string, data: UpdatePanelDTO): Promise<void> => {
       const result = await panelsService.updatePanel(id, data);
-
       if (isErr(result)) {
         dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         return;
       }
-
       dispatch({ type: "UPDATE_PANEL_SUCCESS", payload: result.value });
     },
     [panelsService],
@@ -243,13 +247,29 @@ export function PanelsProvider({
   const deletePanel = useCallback(
     async (id: string): Promise<void> => {
       const result = await panelsService.deletePanel(id);
-
       if (isErr(result)) {
         dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         return;
       }
-
       dispatch({ type: "DELETE_PANEL_SUCCESS", payload: id });
+    },
+    [panelsService],
+  );
+
+  // ─── deletePanelCascade ─────────────────────────────────────────────────
+
+  const deletePanelCascade = useCallback(
+    async (id: string): Promise<string[]> => {
+      const result = await panelsService.deletePanelCascade(id);
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+        return [];
+      }
+      dispatch({
+        type: "DELETE_PANEL_CASCADE_SUCCESS",
+        payload: result.value,
+      });
+      return result.value.deletedIds;
     },
     [panelsService],
   );
@@ -264,7 +284,6 @@ export function PanelsProvider({
       });
       return;
     }
-
     dispatch({ type: "SELECT_PANEL", payload: panel });
   }, []);
 
@@ -273,15 +292,6 @@ export function PanelsProvider({
   const clearError = useCallback((): void => {
     dispatch({ type: "CLEAR_ERROR" });
   }, []);
-
-  // ─── Efecto de carga inicial ──────────────────────────────────────────────
-
-  useEffect(() => {
-    if (!authState.user) return;
-    fetchHomePanel();
-  }, [fetchHomePanel, authState.user]);
-
-  // ─── Valor del contexto ───────────────────────────────────────────────────
 
   const value: PanelsContextValue = {
     state,
@@ -294,6 +304,7 @@ export function PanelsProvider({
     fetchSubPanels,
     updatePanel,
     deletePanel,
+    deletePanelCascade,
     selectPanel,
     clearError,
   };

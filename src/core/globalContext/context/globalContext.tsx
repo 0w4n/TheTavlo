@@ -1,6 +1,7 @@
 import {
   createContext,
   type PropsWithChildren,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -12,7 +13,9 @@ export type GlobalContextValue = {
   state: GlobalContextProps;
 };
 
-export const GlobalContext = createContext<GlobalContextValue | undefined>(undefined);
+export const GlobalContext = createContext<GlobalContextValue | undefined>(
+  undefined,
+);
 
 const initialGlobalContext: GlobalContextProps = {
   user: {
@@ -34,31 +37,32 @@ const initialGlobalContext: GlobalContextProps = {
 export function GlobalContextProvider({ children }: PropsWithChildren) {
   const [state, setState] = useState<GlobalContextProps>(initialGlobalContext);
   // const theme = useTheme();
-  const user = useAuth().state.user;
-  const currentPanel = usePanels().state.currentPanel;
+  const status = useAuth().state;
+  const panelState = usePanels().state;
 
   useMemo(() => {
-    if (!user || !currentPanel) return null;
-    console.log("user: ", user);
-    console.log("currentPanel: ", currentPanel);
+    if (status.status !== "authenticated") return;
+
+    const user = status.user;
 
     setState({
+      ...state,
       user: {
         userId: user.id,
         accountType: user.accountType,
       },
-      // theme: {
-      //   mode: theme.config.mode,
-      //   preset: theme.config.preset,
-      //   fontSize: theme.config.fontSize,
-      //   borderRadius: theme.config.borderRadius,
-      //   animations: theme.config.animations,
-      // },
-      panel: {
-        panelId: currentPanel.id,
-      },
     });
-  }, [user, currentPanel]);
+  }, [status.status === "authenticated" ? status.user.id : null]);
+
+  useEffect(() => {
+    if (panelState.status !== "panel") return;
+
+    const currentPanel = panelState.currentPanel;
+    setState((prev) => ({
+      ...prev,
+      panel: { ownerId: currentPanel.ownerId, panelId: currentPanel.id },
+    }));
+  }, [panelState.status === "panel" ? panelState.currentPanel.id : null]);
 
   return (
     <GlobalContext.Provider value={{ state }}>

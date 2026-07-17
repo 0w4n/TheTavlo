@@ -1,7 +1,6 @@
 import Icon from "#shared/ui/atoms/icons";
 import type { Panel } from "#features/panels/domain/panel.entity";
 import { Link } from "react-router-dom";
-
 import "./panelsWidget.css";
 
 export default function PanelsWidget({ items }: { items: Panel[] }) {
@@ -15,7 +14,7 @@ function panelsItem(panel: Panel) {
 
   return (
     <Link
-      to={`${id}`}
+      to={id}
       key={id}
       className="panels__widget--item"
       style={{ "--panels__widget--color": color } as React.CSSProperties}
@@ -25,7 +24,7 @@ function panelsItem(panel: Panel) {
           <Icon name={icon} color={darkColor} size={32} />
         </div>
         {sharedWith && (
-            <Icon name="IconUsersGroup" color={lightColor} size={24} />
+          <Icon name="IconUsersGroup" color={lightColor} size={24} />
         )}
       </div>
       <div className="panels__widget--item__name">

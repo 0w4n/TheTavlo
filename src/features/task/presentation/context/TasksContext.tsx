@@ -34,12 +34,28 @@ export const TasksContext = createContext<TasksContextValue | undefined>(
   undefined,
 );
 
-type TasksProviderProps = PropsWithChildren<{
-  tasksService: TasksService;
-}>;
+type TasksProviderProps = PropsWithChildren<{ tasksService: TasksService }>;
 
 export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const [state, dispatch] = useReducer(tasksReducer, initialTasksState);
+
+  // ─── Suscripción en tiempo real ──────────────────────────────────────────
+  // tasksService cambia cuando panelId cambia (ver App.tsx / ProviderApp),
+  // lo que recrea la suscripción automáticamente para el nuevo panel.
+
+  useEffect(() => {
+    dispatch({ type: "FETCH_TASKS_START" });
+
+    const unsubscribe = tasksService.subscribe(
+      (tasks) => dispatch({ type: "FETCH_TASKS_SUCCESS", payload: tasks }),
+      (error) => dispatch({ type: "FETCH_TASKS_ERROR", payload: error }),
+    );
+
+    // Limpieza: cancela la suscripción de Firestore
+    return unsubscribe;
+  }, [tasksService]);
+
+  // ─── Fetch puntual (por compatibilidad / refresh manual) ─────────────────
 
   const fetchTasks = useCallback(async () => {
     dispatch({ type: "FETCH_TASKS_START" });
@@ -54,18 +70,17 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     }
   }, [tasksService]);
 
+  // ─── Mutaciones ──────────────────────────────────────────────────────────
+
   const createTask = useCallback(
     async (data: CreateAnyTaskDTO[]) => {
-      for (let index = 0; index < data.length; index++) {
-        const element = data[index];
+      for (const element of data) {
         let result: AnyTask | Error;
 
-        if (isCreateNodeTask(element)) {
-          result = await tasksService.createAnyTask(element);
-        } else if (isCreateTask(element)) {
+        if (isCreateNodeTask(element) || isCreateTask(element)) {
           result = await tasksService.createAnyTask(element);
         } else {
-          result = Error("Something");
+          result = Error("Tipo de tarea desconocido");
         }
 
         if (result instanceof Error) {
@@ -73,9 +88,8 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
           throw result;
         }
 
-        if (result) {
-          dispatch({ type: "CREATE_TASK_SUCCESS", payload: result });
-        }
+        // Optimistic: onSnapshot también lo reflejará
+        dispatch({ type: "CREATE_TASK_SUCCESS", payload: result });
       }
     },
     [tasksService],
@@ -84,15 +98,11 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const updateTask = useCallback(
     async (id: string, data: UpdateAnyTaskDTO) => {
       const result = await tasksService.updateAnyTask(id, data);
-
       if (result instanceof Error) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
         throw result;
       }
-
-      if (result) {
-        dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
-      }
+      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
     },
     [tasksService],
   );
@@ -100,15 +110,11 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const completeTask = useCallback(
     async (id: string) => {
       const result = await tasksService.completeTask(id);
-
       if (result instanceof Error) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
         throw result;
       }
-
-      if (result) {
-        dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
-      }
+      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
     },
     [tasksService],
   );
@@ -116,12 +122,10 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const deleteTask = useCallback(
     async (id: string) => {
       const result = await tasksService.deleteTask(id);
-
       if (result instanceof Error) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
-        throw result ;
+        throw result;
       }
-
       dispatch({ type: "DELETE_TASK_SUCCESS", payload: id });
     },
     [tasksService],
@@ -134,10 +138,6 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const clearError = useCallback(() => {
     dispatch({ type: "CLEAR_ERROR" });
   }, []);
-
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
 
   const value: TasksContextValue = {
     state,

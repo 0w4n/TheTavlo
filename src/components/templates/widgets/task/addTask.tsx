@@ -5,7 +5,7 @@ import {
   TaskPhase,
   type CreateAnyTaskDTO,
   type CreateNodeTaskDTO,
-  type CreateTaskDTO,
+  type CreateTaskDTO
 } from "#features/task/domain/task.entity";
 import { Modal } from "#components/molecules/modal";
 import useTasks from "#features/task/presentation/hooks/useTask";
@@ -37,7 +37,7 @@ function toLocalDatetimeString(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
+    date.getDate(),
   )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
@@ -98,7 +98,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
         const nodeTaskDTO: CreateNodeTaskDTO = {
           subTaskId: new Map<number, DocumentReference>(),
           title: title.trim(),
-          ...(openAt && { openAt: toTimestamp(openAt) }),
+          openAt: toTimestamp(openAt) || null,
           endAt: toTimestamp(endAt),
           createdAt: now,
           updatedAt: now,
@@ -107,9 +107,10 @@ export function AddTask({ onClose }: AddTaskFormProps) {
         for (const element of subtasks) {
           const taskDTO: CreateTaskDTO = {
             title: element.title.trim(),
-            ...(element.openAt && { openAt: element.openAt }),
             phase: TaskPhase.UNSCHEDULED,
             progress: TaskProgress.NOTSTARTED,
+            submission: null,
+            openAt: element.openAt,
             endAt: element.endAt,
             createdAt: element.createdAt,
             updatedAt: element.updatedAt,
@@ -123,9 +124,9 @@ export function AddTask({ onClose }: AddTaskFormProps) {
         const taskDTO: CreateTaskDTO = {
           title: title.trim(),
           phase: TaskPhase.UNSCHEDULED,
-          // Hacemos un cast porque ya sabemos que pasó la validación
           progress: progress as TaskProgress,
-          ...(openAt && { openAt: toTimestamp(openAt) }),
+          submission: null,
+          openAt: toTimestamp(openAt) || null,
           endAt: toTimestamp(endAt),
           createdAt: now,
           updatedAt: now,
@@ -147,30 +148,14 @@ export function AddTask({ onClose }: AddTaskFormProps) {
 
   return (
     <>
-      <Modal.Header onClose={onClose}>
-        <div className="add-task__header">
-          <div className="add-task__header-icon">
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <path d="M9 11l3 3L22 4" />
-              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-            </svg>
-          </div>
-
-          <div>
-            <p className="add-task__header-title">Nueva tarea</p>
-            <p className="add-task__header-sub">
+      <Modal.Header
+        onClose={onClose}
+        title="Nueva tarea"
+        icon="IconSquareRoundedCheck"
+      >
+        {/* <p className="add-task__header-sub">
               Los campos con * son obligatorios
-            </p>
-          </div>
-        </div>
+            </p> */}
       </Modal.Header>
 
       <Modal.Body>
@@ -191,7 +176,7 @@ export function AddTask({ onClose }: AddTaskFormProps) {
                     title: undefined,
                   }));
                 }}
-                placeholder="Ej. Diseñar pantalla de onboarding"
+                placeholder="Ej. Diseñar pantalla de onBoarding"
                 aria-required="true"
                 aria-invalid={!!errors.title}
               />
@@ -366,9 +351,11 @@ function SubTaskItems({ subtasks, setSubtasks }: SubTaskItemsProps) {
       title: "",
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
+      openAt: null,
       endAt: Timestamp.now(),
       phase: TaskPhase.UNSCHEDULED,
       progress: TaskProgress.NOTSTARTED,
+      submission: null,
     };
     setSubtasks((prev) => [...prev, task]);
   }
@@ -385,8 +372,8 @@ function SubTaskItems({ subtasks, setSubtasks }: SubTaskItemsProps) {
               ...task,
               title: value,
             }
-          : task
-      )
+          : task,
+      ),
     );
   }
 

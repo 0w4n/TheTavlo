@@ -7,12 +7,19 @@ import type { AppErr } from "#core/appCore/domain/AppCore.type";
  * @param isLoading Si se encuentra cargando o no
  * @param error Error que devuelve
  */
-export type PanelsState = {
-  selectedPanel?: Panel;
-  currentPanel?: Panel;
-  isLoading: boolean;
-  error?: AppErr;
-};
+export type PanelsState =
+  | {
+      status: "loading";
+    }
+  | {
+      status: "panel";
+      selectedPanel?: Panel;
+      currentPanel: Panel;
+    }
+  | {
+      status: "error";
+      error?: AppErr;
+    };
 
 type PanelsAction =
   | { type: "FETCH_PANELS_START" }
@@ -21,38 +28,54 @@ type PanelsAction =
   | { type: "CREATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
+  | { type: "DELETE_PANEL_CASCADE_SUCCESS"; payload: { deletedIds: string[] } }
   | { type: "SELECT_PANEL"; payload: Panel }
   | { type: "CLEAR_ERROR" };
 
 export const initialPanelsState: PanelsState = {
-  selectedPanel: undefined,
-  currentPanel: undefined,
-  isLoading: false,
-  error: undefined,
+  status: "loading",
 };
 
 export function panelsReducer(
   state: PanelsState,
   action: PanelsAction,
-): PanelsState {
+): PanelsState {    
+  console.log("Reducer:", action);
+
   switch (action.type) {
     case "FETCH_PANELS_START":
-      return { ...state, isLoading: true, error: undefined };
-
-    case "FETCH_PANELS_SUCCESS":
       return {
-        ...state,
-        isLoading: false,
-        currentPanel: state.currentPanel ?? action.payload[0],
+        status: "loading",
       };
 
+    case "FETCH_PANELS_SUCCESS": {
+      const incoming = action.payload;
+
+      console.log("FETCH_PANELS_SUCCESS@incoming: ", incoming);
+
+      const currentPanel = incoming[0]
+
+      console.log("FETCH_PANELS_SUCCESS@currentPanel: ", currentPanel);
+
+      return {
+        status: "panel",
+        currentPanel,
+        selectedPanel: undefined,
+      };
+    }
+
     case "FETCH_PANELS_ERROR":
-      return { ...state, isLoading: false, error: action.payload };
+      return {
+        status: "error",
+        error: action.payload,
+      };
 
     case "CREATE_PANEL_SUCCESS":
-      return { ...state, error: undefined };
+      return state;
 
     case "UPDATE_PANEL_SUCCESS":
+      if (state.status !== "panel") return state;
+
       return {
         ...state,
         selectedPanel:
@@ -63,32 +86,36 @@ export function panelsReducer(
           state.currentPanel?.id === action.payload.id
             ? action.payload
             : state.currentPanel,
-        error: undefined,
       };
 
     case "DELETE_PANEL_SUCCESS":
+      if (state.status !== "panel") return state;
+
       return {
-        ...state,
-        selectedPanel:
-          state.selectedPanel?.id === action.payload
-            ? undefined
-            : state.selectedPanel,
-        currentPanel:
-          state.currentPanel?.id === action.payload
-            ? undefined
-            : state.currentPanel,
-        error: undefined,
+        status: "loading",
+      };
+
+    case "DELETE_PANEL_CASCADE_SUCCESS":
+      // Mismo criterio que DELETE_PANEL_SUCCESS: cualquiera de los ids
+      // borrados (el panel objetivo o alguno de sus descendientes) pudo ser
+      // el currentPanel/selectedPanel — la forma segura de no dejar la UI
+      // apuntando a un panel fantasma es volver a "loading" y dejar que la
+      // suscripción al panel home la repueble.
+      if (state.status !== "panel") return state;
+
+      return {
+        status: "loading",
       };
 
     case "SELECT_PANEL":
       return {
-        ...state,
+        status: "panel",
         currentPanel: action.payload,
         selectedPanel: undefined,
       };
 
     case "CLEAR_ERROR":
-      return { ...state, error: undefined };
+      return state.status === "error" ? { status: "loading" } : state;
 
     default:
       return state;

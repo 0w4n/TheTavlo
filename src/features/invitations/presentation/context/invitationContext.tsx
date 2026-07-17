@@ -57,9 +57,9 @@ export function InvitationProvider({
             ...data,
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now(),
-            token:
-              Math.random().toString(36).substring(2, 15) +
+            token: Math.random().toString(36).substring(2, 15) +
               Math.random().toString(36).substring(2, 15),
+            grantedBy: "hola",
           },
           parentRef,
         );
@@ -97,7 +97,8 @@ export function InvitationProvider({
   );
 
   const acceptInvitation = async (token: string) => {
-    const invitationResult = await invitationService.getInvitationByToken(token);
+    const invitationResult =
+      await invitationService.getInvitationByToken(token);
 
     if (invitationResult.error) {
       dispatch({
@@ -109,7 +110,8 @@ export function InvitationProvider({
   };
 
   const rejectInvitation = async (token: string) => {
-    const invitationResult = await invitationService.getInvitationByToken(token);
+    const invitationResult =
+      await invitationService.getInvitationByToken(token);
 
     if (invitationResult.error) {
       dispatch({

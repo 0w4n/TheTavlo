@@ -6,12 +6,16 @@ import {
   query,
   where,
   writeBatch,
+  setDoc,
+  Timestamp,
   type Firestore,
 } from "firebase/firestore";
 import type { InvitationRepository } from "../app/invitationRepository.interface";
 import type {
   Invitation,
   CreateInvitationDTO,
+  CreateSharedUserDTO,
+  SharedUser,
   UpdateInvitationDTO,
 } from "../domain/invitation.entity";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
@@ -43,7 +47,7 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     return getDocs(q)
       .then((snapshot) => {
         const doc = snapshot.docs[0];
-        return doc ? (doc.data() as Invitation) : undefined;
+        return doc ? ({ id: doc.id, ...doc.data() } as Invitation) : undefined;
       })
       .catch((e) => {
         throw new Error(`Error fetching invitation by token: ${e.message}`);
@@ -55,11 +59,15 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     parentRef: string,
   ): Promise<Invitation> {
     const collectionPath = this.getCollectionPath();
-    const { userId } = this.getContext().state.user;
+    // OJO: "users" (plural) — antes decía "user" y la búsqueda del panel
+    // padre fallaba siempre. Además usamos el accountType real del
+    // propietario (puede ser un "guest" compartiendo su propio panel),
+    // en vez de asumir siempre "users".
+    const { userId, accountType } = this.getContext().state.user;
 
     const parentDocRef = doc(
       this.firestore,
-      `user/${userId}/panels/${parentRef}`,
+      `${accountType}/${userId}/panels/${parentRef}`,
     );
     const parentSnap = await getDoc(parentDocRef);
     if (!parentSnap.exists()) {
@@ -70,9 +78,18 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     const batch = writeBatch(this.firestore);
     batch.set(newDocRef, {
       ...data,
-      objRef: parentDocRef.path,
+      // targetRef se fija aquí, en servidor/cliente de confianza, en vez de
+      // confiar en lo que mande el llamador — siempre debe apuntar al panel
+      // que se acaba de validar arriba.
+      targetRef: parentDocRef,
     });
     await batch.commit();
+
+    // También dejamos constancia en el propio panel para que
+    // findBySharedId (collectionGroup) pueda encontrarlo por su id.
+    await writeBatch(this.firestore)
+      .update(parentDocRef, { sharedWith: newDocRef.id })
+      .commit();
 
     const createdSnap = await getDoc(newDocRef); // ← leer el doc recién creado
     if (!createdSnap.exists()) {
@@ -81,7 +98,6 @@ export class FirebaseInvitationRepository implements InvitationRepository {
 
     return {
       id: createdSnap.id,
-      objRef: newDocRef,
       ...createdSnap.data(),
     } as Invitation;
   }
@@ -94,7 +110,7 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     }
 
     const batch = writeBatch(this.firestore);
-    batch.update(docRef, data);
+    batch.update(docRef, { ...data, updatedAt: Timestamp.now() });
     await batch.commit();
 
     const updatedSnap = await getDoc(docRef);
@@ -104,7 +120,6 @@ export class FirebaseInvitationRepository implements InvitationRepository {
 
     return {
       id: updatedSnap.id,
-      objRef: docRef,
       ...updatedSnap.data(),
     } as Invitation;
   }
@@ -126,5 +141,58 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     });
 
     await batch.commit();
+  }
+
+  // ─── Sub-colección invitedUsers ───────────────────────────────────────────
+  // path: shared/{invitationId}/invitedUsers/{userId}
+
+  private invitedUsersCollectionPath(invitationId: string): string {
+    return `${this.getCollectionPath()}/${invitationId}/invitedUsers`;
+  }
+
+  async findSharedUser(
+    invitationId: string,
+    userId: string,
+  ): Promise<SharedUser | undefined> {
+    const docRef = doc(
+      this.firestore,
+      this.invitedUsersCollectionPath(invitationId),
+      userId,
+    );
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return undefined;
+    return snap.data() as SharedUser;
+  }
+
+  async listSharedUsers(invitationId: string): Promise<SharedUser[]> {
+    const snap = await getDocs(
+      collection(this.firestore, this.invitedUsersCollectionPath(invitationId)),
+    );
+    return snap.docs.map((d) => d.data() as SharedUser);
+  }
+
+  async upsertSharedUser(
+    invitationId: string,
+    data: CreateSharedUserDTO,
+  ): Promise<SharedUser> {
+    const docRef = doc(
+      this.firestore,
+      this.invitedUsersCollectionPath(invitationId),
+      data.userId,
+    );
+    const existing = await getDoc(docRef);
+    const now = Timestamp.now();
+
+    const payload: SharedUser = {
+      ...data,
+      createdAt: existing.exists()
+        ? (existing.data() as SharedUser).createdAt
+        : now,
+      updatedAt: now,
+      statusUpdatedAt: now,
+    };
+
+    await setDoc(docRef, payload, { merge: true });
+    return payload;
   }
 }

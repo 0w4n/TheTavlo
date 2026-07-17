@@ -4,7 +4,7 @@ export interface ModalHeaderProps extends HTMLAttributes<HTMLDivElement> {
   /**
    * Content of the header
    */
-  children: React.ReactNode;
   onClose: (open: boolean) => void;
+  title: string;
   icon?: string;
 }

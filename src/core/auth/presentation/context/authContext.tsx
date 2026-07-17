@@ -14,12 +14,7 @@ import {
 import { authReducer, type AuthState } from "./authReducer";
 
 const initialAuthState: AuthState = {
-  user: null,
-  isLoading: true,
-  error: null,
-  initialized: false,
-  migrationPending: false,
-  migrationData: null,
+  status: "initializing",
 };
 
 type AuthContextValue = {
@@ -32,7 +27,9 @@ type AuthContextValue = {
   clearError: () => void;
 };
 
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | undefined>(
+  undefined,
+);
 
 export function AuthProvider({
   children,
@@ -42,73 +39,79 @@ export function AuthProvider({
 
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged((user) => {
-      dispatch({ type: "AUTH_STATE_CHANGED", payload: user });
+      dispatch({
+        type: "AUTH_STATE_CHANGED",
+        payload: user,
+      });
     });
+
     return unsubscribe;
   }, [authService]);
 
   const signInAsGuest = useCallback(async () => {
-    dispatch({ type: "AUTH_LOADING", payload: true });
     const result = await authService.signInAsGuest();
 
     if (result.error) {
-      dispatch({ type: "AUTH_ERROR", payload: result.error });
+      dispatch({
+        type: "AUTH_ERROR",
+        payload: result.error,
+      });
+
       throw new Error(result.error);
     }
-
-    dispatch({ type: "AUTH_LOADING", payload: false });
   }, [authService]);
 
   const signInWithGoogle = useCallback(async () => {
-    dispatch({ type: "AUTH_LOADING", payload: true });
     const result = await authService.signInWithGoogle();
 
     if (result.error) {
-      dispatch({ type: "AUTH_ERROR", payload: result.error });
+      dispatch({
+        type: "AUTH_ERROR",
+        payload: result.error,
+      });
+
       throw new Error(result.error);
     }
-
-    dispatch({ type: "AUTH_LOADING", payload: false });
   }, [authService]);
 
   const upgradeToGoogle = useCallback(async () => {
-    if (!state.user || state.user.accountType !== "guests") {
+    if (
+      state.status !== "authenticated" ||
+      state.user.accountType !== "guests"
+    ) {
       throw new Error("Solo se puede actualizar desde una cuenta de invitado");
     }
 
-    dispatch({ type: "AUTH_LOADING", payload: true });
-    const result = await authService.upgradeToGoogle(
-      state.user as unknown as GuestUser
-    );
+    const guestUser = state.user as unknown as GuestUser;
+
+    const result = await authService.upgradeToGoogle(guestUser);
 
     if (result.error) {
-      dispatch({ type: "AUTH_ERROR", payload: result.error });
+      dispatch({
+        type: "AUTH_ERROR",
+        payload: result.error,
+      });
+
       throw new Error(result.error);
     }
 
     if (result.needsMigrationDecision && result.user) {
-      // Requiere decisión del usuario
       dispatch({
         type: "MIGRATION_PENDING",
         payload: {
-          hasExistingData: result.hasExistingData!,
+          hasExistingData: result.hasExistingData ?? false,
           googleUser: result.user,
-          guestId: (state.user as unknown as GuestUser).guestId,
+          guestId: guestUser.guestId,
         },
       });
-    } else {
-      // Migración automática completada
-      dispatch({ type: "AUTH_LOADING", payload: false });
     }
-  }, [authService, state.user]);
+  }, [authService, state]);
 
   const completeMigration = useCallback(
     async (strategy: MigrationStrategy) => {
-      if (!state.migrationData) {
+      if (state.status !== "migration-pending") {
         throw new Error("No hay migración pendiente");
       }
-
-      dispatch({ type: "AUTH_LOADING", payload: true });
 
       const decision: MigrationDecision = {
         strategy,
@@ -124,25 +127,34 @@ export function AuthProvider({
           type: "AUTH_ERROR",
           payload: result.error || "Error en la migración",
         });
+
         throw new Error(result.error);
       }
 
-      dispatch({ type: "MIGRATION_COMPLETED" });
-      dispatch({ type: "AUTH_LOADING", payload: false });
+      dispatch({
+        type: "MIGRATION_COMPLETED",
+      });
     },
-    [authService, state.migrationData]
+    [authService, state],
   );
 
   const signOut = useCallback(async () => {
     const result = await authService.signOut();
+
     if (result.error) {
-      dispatch({ type: "AUTH_ERROR", payload: result.error });
+      dispatch({
+        type: "AUTH_ERROR",
+        payload: result.error,
+      });
+
       throw new Error(result.error);
     }
   }, [authService]);
 
   const clearError = useCallback(() => {
-    dispatch({ type: "CLEAR_ERROR" });
+    dispatch({
+      type: "CLEAR_ERROR",
+    });
   }, []);
 
   return (

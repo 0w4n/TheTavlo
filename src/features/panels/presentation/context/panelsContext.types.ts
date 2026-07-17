@@ -71,6 +71,13 @@ export type PanelsContextValue = {
   /** Elimina un panel por id (respeta la regla isDefault). */
   deletePanel: (id: string) => Promise<void>;
 
+  /**
+   * Elimina un panel y TODOS sus sub-paneles descendientes de forma
+   * atómica. Respeta la misma regla que `deletePanel`: nunca borra el panel
+   * por defecto. Devuelve la lista de ids efectivamente eliminados.
+   */
+  deletePanelCascade: (id: string) => Promise<string[]>;
+
   /** Devuelve los paneles hijos del panel con el id dado. */
   fetchSubPanels: (parentId: DocumentReference | string) => Promise<Panel[]>;
 

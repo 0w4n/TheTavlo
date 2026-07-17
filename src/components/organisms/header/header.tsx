@@ -4,6 +4,7 @@ import "./header.css";
 import { Button } from "#components/atoms/button";
 import ModalPortal from "#components/molecules/modal/portal";
 import { Dropdown } from "#components/molecules/dropdown";
+import { Link } from "react-router-dom";
 
 export const Header: React.FC<HeaderProps> = ({
   logo,
@@ -19,10 +20,10 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="header" {...props}>
       {/* Logo */}
-      <a href={logoHref} className="header__logo">
+      <Link to={logoHref} className="header__logo">
         {logo && <span className="header__logo-icon">{logo}</span>}
         <span>{logoText}</span>
-      </a>
+      </Link>
 
       {/* Right Side */}
       <div className="header__right">

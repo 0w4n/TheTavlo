@@ -19,7 +19,6 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedWidget, setSelectedWidget] = useState<WidgetType>();
   const [loading, setLoading] = useState(false);
-  const [errorIs, setError] = useState<unknown>();
   const [isSelected, setSelected] = useState(false);
 
   const categories = [
@@ -45,7 +44,7 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
 
       return res;
     } catch (error) {
-      setError(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -58,9 +57,7 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
 
   return (
     <>
-      <Modal.Header onClose={onClose}>
-        <h2 id="modal__title">Agregar Widget</h2>
-      </Modal.Header>
+      <Modal.Header onClose={onClose} title="Añade un widget"></Modal.Header>
 
       <Modal.Body>
         <aside className="CategoriasDialog">
@@ -85,10 +82,11 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
           {filteredTemplates.map((template) => (
             <Button
               key={template.type}
-              disabled={loading}
-              label={`${template.title} ${errorIs}`}
-              icon={template.icon}
+              disabled={loading || template.commingSoon}
+              label={template.commingSoon ? "Comming Soon" : template.title}
+              icon={template.commingSoon ? undefined : template.icon}
               onClick={() => handleSelectedWidget(template.type)}
+              onDoubleClick={() => handleAddWidget(template.type)}
               className={`ContentDialog-Item ${selectedWidget === template.type ? " :focus" : ""}`}
             />
           ))}

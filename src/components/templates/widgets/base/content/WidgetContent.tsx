@@ -10,12 +10,16 @@ import { TaskWidget } from "../../task/taskWidget";
 
 export default function WidgetContent({ widget }: { widget: Widget }) {
   const { state, fetchSubPanels } = usePanels();
-
   const [subPanels, setSubPanels] = useState<Panel[]>([]);
 
   useEffect(() => {
-    if (!state.currentPanel) {
+    if (state.status === "loading") {
       console.warn("No hay panel seleccionado");
+      return;
+    }
+
+    if (state.status === "error") {
+      console.error(state.error)
       return;
     }
 
@@ -32,7 +36,7 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     };
 
     loadSubPanels();
-  }, [state.currentPanel, fetchSubPanels]);
+  }, [state, fetchSubPanels]);
 
   switch (widget.type) {
     case "task-list":

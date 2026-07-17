@@ -5,11 +5,16 @@ import { FirebaseMigrationRepository } from "#core/auth/infraestructure/migratio
 import { AuthProvider } from "#core/auth/presentation/context/authContext";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import LoadingPage from "#components/pages/LoadingPage";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
 import { PanelsProvider } from "#features/panels/presentation/context/panelsContext";
 import { WidgetsProvider } from "#features/widgets/presentation/context/widgetsContext";
 import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
+import { CachedPanelsRepository } from "#features/panels/infraestructure/panelRepository.cached";
+import {
+  clearPanelsCache,
+  getPanelsCacheKey,
+} from "#features/panels/infraestructure/panelsCache";
 import { FirebaseWidgetRepository } from "#features/widgets/infraestructure/widgetRepository.firebase";
 import { PanelsService } from "#features/panels/app/panels.service";
 import { WidgetService } from "#features/widgets/app/widget.service";
@@ -26,14 +31,19 @@ import { TasksProvider } from "#features/task/presentation/context/TasksContext"
 import { EventsProvider } from "#features/events/presentation/context/eventsContext";
 import { FirebaseEventRepository } from "#features/events/infraestructure/eventRepository.firebase";
 import { EventsService } from "#features/events/app/events.service";
+import type { User } from "#core/auth/domain/user.entity";
 // import ComposeProviders from "#core/providers/composeProviders";
 
 export default function App() {
-  const authRepository = new FirebaseAuthRepository(firebaseService.auth);
-  const migrationRepository = new FirebaseMigrationRepository(
-    firebaseService.firestore,
-  );
-  const authService = new AuthService(authRepository, migrationRepository);
+  const authRepository = useMemo(() => {
+    return new FirebaseAuthRepository(firebaseService.auth);
+  }, [firebaseService.auth]);
+  const migrationRepository = useMemo(() => {
+    return new FirebaseMigrationRepository(firebaseService.firestore);
+  }, [firebaseService.firestore]);
+  const authService = useMemo(() => {
+    return new AuthService(authRepository, migrationRepository);
+  }, [authRepository, migrationRepository]);
 
   return (
     <>
@@ -47,109 +57,109 @@ export default function App() {
 export function ProtectedLayout() {
   const { state } = useAuth();
 
-  if (!state.initialized) {
-    return <LoadingPage />;
+  switch (state.status) {
+    case "initializing":
+      return <LoadingPage />;
+
+    case "unauthenticated":
+      return <Navigate to="/login" replace />;
+
+    case "migration-pending":
+      return <MigrationDialog />;
+
+    case "error":
+      return <div>{state.error}</div>;
+
+    case "authenticated":
+      return <AuthenticatedLayout user={state.user} />;
   }
+}
 
-  if (state.migrationPending) {
-    return <MigrationDialog />;
-  }
-
-  if (!state.user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const user = state.user;
-
-  if (!user) return;
-
-  // Usuario autenticado
-  // const themeRepository = new FirebaseThemeRepository(
-  //   firebaseService.firestore,
-  //   () => user,
-  // );
-
-  // Panels
-  const panelsRepository = new FirebasePanelsRepository(
-    firebaseService.firestore,
-    () => user,
+function AuthenticatedLayout({ user }: { user: User }) {
+  // Deps intencionalmente angostas: cacheKey solo debe cambiar si cambian
+  // accountType/id, no en cada nueva referencia de `user`.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const cacheKey = useMemo(
+    () => getPanelsCacheKey(user),
+    [user.accountType, user.id],
   );
 
-  const panelsService = new PanelsService(panelsRepository);
+  const panelsService = useMemo(() => {
+    const repository = new FirebasePanelsRepository(
+      firebaseService.firestore,
+      () => user,
+    );
+    // Caché progresiva en memoria: navegar por paneles ya visitados en esta
+    // sesión no vuelve a leer Firestore. Ver panelsCache.ts.
+    const cachedRepository = new CachedPanelsRepository(repository, cacheKey);
+
+    return new PanelsService(cachedRepository);
+  }, [user, cacheKey]);
+
+  // Al cerrar sesión (o cambiar de usuario) este layout se desmonta —
+  // limpiamos la caché de ESE usuario para no arrastrar datos viejos si
+  // alguien vuelve a loguearse con otra cuenta en la misma pestaña.
+  useEffect(() => {
+    return () => clearPanelsCache(cacheKey);
+  }, [cacheKey]);
 
   return (
-    <>
-      {/* <ThemeProvider themeRepository={themeRepository}> */}
-      <PanelsProvider panelsService={panelsService}>
-        <GlobalContextProvider>
-          <ProviderApp />
-        </GlobalContextProvider>
-      </PanelsProvider>
-      {/* </ThemeProvider> */}
-    </>
+    <PanelsProvider panelsService={panelsService}>
+      <GlobalContextProvider>
+        <ProviderApp />
+      </GlobalContextProvider>
+    </PanelsProvider>
   );
 }
 
 function ProviderApp() {
   const globalContext = useGlobalContext();
-
-  // Widgets
-  const widgetRepository = useMemo(() => {
-    return new FirebaseWidgetRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
-  }, [globalContext]);
+  console.log("GlobalContext:", globalContext);
 
   const widgetService = useMemo(() => {
-    return new WidgetService(widgetRepository);
-  }, [widgetRepository]);
-
-  const invitationRepository = useMemo(() => {
-    return new FirebaseInvitationRepository(
+    const widgetRepository = new FirebaseWidgetRepository(
       firebaseService.firestore,
       () => globalContext,
     );
+    return new WidgetService(widgetRepository);
   }, [globalContext]);
 
   const invitationService = useMemo(() => {
+    const invitationRepository = new FirebaseInvitationRepository(
+      firebaseService.firestore,
+      () => globalContext,
+    );
     return new InvitationService(invitationRepository);
-  }, [invitationRepository]);
-
-  const taskRepository = useMemo(() => {
-    return new FirebaseTaskRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
-  }, [globalContext]);
-
-  const taskService = useMemo(() => {
-    return new TasksService(taskRepository);
-  }, [taskRepository]);
-
-  const eventRepository = useMemo(() => {
-    return new FirebaseEventRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
   }, [globalContext]);
 
   const eventService = useMemo(() => {
+    const eventRepository = new FirebaseEventRepository(
+      firebaseService.firestore,
+      () => globalContext,
+    );
     return new EventsService(eventRepository);
-  }, [taskRepository]);
+  }, [globalContext]);
+
+  const taskService = useMemo(() => {
+    const taskRepository = new FirebaseTaskRepository(
+      firebaseService.firestore,
+      () => globalContext,
+    );
+    return new TasksService(taskRepository);
+  }, [globalContext]);
 
   return (
     <>
       {/*<ExamsProvider> */}
-      <EventsProvider eventsService={eventService}>
-        <TasksProvider tasksService={taskService}>
+      <WidgetsProvider widgetService={widgetService}>
+        <EventsProvider eventsService={eventService}>
           <InvitationProvider invitationService={invitationService}>
-            <WidgetsProvider widgetService={widgetService}>
+            <TasksProvider tasksService={taskService}>
               <Outlet />
-            </WidgetsProvider>
+            </TasksProvider>
           </InvitationProvider>
-        </TasksProvider>
-      </EventsProvider>
+        </EventsProvider>
+      </WidgetsProvider>
       {/* </ExamsProvider> */}
     </>
   );

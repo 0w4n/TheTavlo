@@ -1,150 +1,128 @@
-import {
-  doc,
-  Firestore,
-  getDoc,
-  getDocs,
-  collection,
-  query,
-  where,
-} from "firebase/firestore";
-import { onAuthStateChanged, type Auth, type User } from "firebase/auth";
+import { redirect, type LoaderFunctionArgs } from "react-router-dom";
+import type { Auth } from "firebase/auth";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
+import { PanelsService } from "#features/panels/app/panels.service";
+import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
+import { CachedPanelsRepository } from "#features/panels/infraestructure/panelRepository.cached";
+import { getPanelsCacheKey } from "#features/panels/infraestructure/panelsCache";
+import { isErr } from "#core/appCore/domain/AppCore.type";
 import type { Panel } from "#features/panels/domain/panel.entity";
-// import type { Task } from "#features/task/domain/task.entity";
+import type { User } from "#core/auth/domain/user.entity";
+import { parsePanelPath } from "../panelPath";
+import { getCurrentUser } from "./getCurrentUser";
 
-function getCurrentUser(auth: Auth) {
-  return new Promise<User | null>((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        unsubscribe();
-        resolve(user);
-      },
-      reject,
-    );
-  });
+export type PanelLoaderData =
+  | { kind: "dashboard"; panels: Panel[]; panel: Panel }
+  | { kind: "task-list"; panels: Panel[]; panel: Panel }
+  | { kind: "task-detail"; panels: Panel[]; panel: Panel; taskId: string }
+  | { kind: "calendar"; panels: Panel[]; panel: Panel }
+  | { kind: "event-detail"; panels: Panel[]; panel: Panel; eventId: string };
+
+interface PanelLoaderDeps {
+  /** Resuelve el usuario autenticado actual (o null). Inyectable para tests. */
+  getCurrentUser: (auth: Auth) => Promise<User | null>;
+  /** Arma el servicio de paneles ya envuelto en la caché progresiva para `user`. */
+  createPanelsService: (user: User) => PanelsService;
 }
 
-export default async function panelsLoader({ params }: { params: any }) {
-  const { pid, "*": nestedPath } = params;
+function defaultDeps(): PanelLoaderDeps {
+  return {
+    getCurrentUser,
+    createPanelsService: (user) =>
+      new PanelsService(
+        new CachedPanelsRepository(
+          new FirebasePanelsRepository(firebaseService.firestore, () => user),
+          getPanelsCacheKey(user),
+        ),
+      ),
+  };
+}
 
-  if (!pid) {
-    throw new Response("[(ts)panel.loader:37]@Panel ID no proporcionado", {
-      status: 400,
-    });
-  }
+/**
+ * Fábrica del loader — permite inyectar dependencias fake en tests
+ * (`panel.loader.test.ts`) sin necesitar una app de Firebase real ni una
+ * sesión de auth real. En producción, `routes.tsx` usa el `panelLoader`
+ * exportado por defecto más abajo, que ya viene con las dependencias reales.
+ */
+export function createPanelLoader(deps: PanelLoaderDeps = defaultDeps()) {
+  /**
+   * Loader único para toda la cadena `home/:pid[/:pid...][/task[/:tid] |
+   * /calendar[/:eid]]`. Reemplaza el switch manual anterior (que además
+   * tenía casos "calendar"/"task" que no devolvían nada) por:
+   *
+   *   1. Parseo puro de la URL (parsePanelPath) — separa la cadena de :pid
+   *      de la vista pedida (task/calendar/detalle).
+   *   2. Resolución + validación contra la base de datos (resolveChain) —
+   *      la URL nunca se confía a ciegas. Internamente usa una caché
+   *      progresiva en memoria (`CachedPanelsRepository`), así que
+   *      re-visitar una cadena ya conocida no genera lecturas nuevas a
+   *      Firestore.
+   *
+   * Cualquier cadena inválida o inventada a mano (panel inexistente, o que
+   * no está anidado donde la URL dice) redirige inmediatamente a `/home` en
+   * vez de romper la navegación con una pantalla de error.
+   */
+  return async function panelLoader({
+    params,
+  }: LoaderFunctionArgs): Promise<PanelLoaderData> {
+    const parsed = parsePanelPath(params["*"]);
 
-  const db = firebaseService.firestore;
-  const auth = firebaseService.auth;
+    if (!parsed.ok) {
+      // "home/task" (o cualquier variante sin :pid) no es una página real.
+      // No hay panel al que asociarle las tareas, así que nunca navegamos
+      // acá de verdad — esto es solo la red de seguridad para quien
+      // escriba la URL a mano. Volvemos a /home con una señal para abrir
+      // el modal correcto.
+      const modal =
+        parsed.reason === "no-panel" ? "task-needs-panel" : "invalid-url";
+      throw redirect(`/home?openModal=${modal}`);
+    }
 
-  const user = await getCurrentUser(auth);
+    const user = await deps.getCurrentUser(firebaseService.auth);
+    if (!user) throw redirect("/login");
 
-  if (!user) {
-    throw new Response("[(ts)panel.loader:48]@Usuario no autenticado", {
-      status: 401,
-    });
-  }
+    const panelsService = deps.createPanelsService(user);
 
-  if (nestedPath) {
-    const segments = nestedPath.split("/");
-    console.info("nestedPath segments:", segments);
+    console.log("Parsed path:", parsed);
 
-    switch (segments[0]) {
+    const homePanel = await panelsService.getHomePanel();
+
+    if (isErr(homePanel)) {
+      throw redirect("/home?invalidPanel=1");
+    }
+
+    let panelsIdParsed: string[] = [];
+
+    panelsIdParsed.push(homePanel.value.id);
+    panelsIdParsed.push(...parsed.path.panelIds);
+
+    const chainResult = await panelsService.resolveChain(panelsIdParsed);
+
+    console.log("Chain result: ", chainResult);
+    if (isErr(chainResult)) {
+      // Cadena inventada/rota (panel inexistente, o anidado en otro lado):
+      // nunca mostramos un error de pantalla completa por esto — es la
+      // consecuencia esperable de que alguien edite la URL a mano.
+      throw redirect("/home?invalidPanel=1");
+    }
+
+    const panels = chainResult.value;
+    const panel = panels[panels.length - 1];
+    const { view } = parsed.path;
+
+    switch (view.type) {
+      case "dashboard":
+        return { kind: "dashboard", panels, panel };
+      case "task-list":
+        return { kind: "task-list", panels, panel };
+      case "task-detail":
+        return { kind: "task-detail", panels, panel, taskId: view.taskId };
       case "calendar":
-        console.info("Calendar");
-        break;
-
-      case "task":
-        console.info("Task");
-        break;
-
-      default:
-        return fetchSubPanel(user, db, pid, segments[0]);
-        break;
+        return { kind: "calendar", panels, panel };
+      case "event-detail":
+        return { kind: "event-detail", panels, panel, eventId: view.eventId };
     }
-  } else {
-    return await fetchPanel(user, db, pid);
-  }
+  };
 }
 
-async function fetchPanel(user: User, db: Firestore, pid: string) {
-  try {
-    const panelRef = doc(db, "users", user.uid, "panels", pid);
-    console.log("PanelRef: ", panelRef, "PID: ", pid, );
-    const snapshot = await getDoc(panelRef);
-
-    if (!snapshot.exists()) {
-      throw new Response(
-        "[(ts)panel.loader-fetchPanel:80]@Panel no encontrado",
-        { status: 404 },
-      );
-    }
-
-    return { ...snapshot.data(), id: pid } as Panel;
-  } catch (error) {
-    throw new Response(
-      "[(ts)panel.loader-fetchPanel:89]@Error al cargar el panel",
-      { status: 500 },
-    );
-  }
-}
-
-async function fetchSubPanel(
-  user: User,
-  db: Firestore,
-  pid: string,
-  subPid: string,
-) {
-  try {
-    const panelsCol = collection(db, "users", user.uid, "panels");
-
-    const parentRef = doc(db, "users", user.uid, "panels", pid);
-
-    const q = query(panelsCol, where("parentId", "==", parentRef));
-
-    const querySnapshot = await getDocs(q);
-
-    for (const docSnap of querySnapshot.docs) {
-      if (docSnap.id === subPid) {
-        return {
-          ...docSnap.data(),
-          id: subPid,
-        } as Panel;
-      }
-    }
-
-    throw new Response(
-      "[(ts)panel.loader-fetchSubPanel:113]@SubPanel no encontrado",
-      { status: 404 },
-    );
-  } catch (error) {
-    if (error instanceof Response) throw error;
-
-    throw new Response(
-      "[(ts)panel.loader-fetchSubPanel:129]@Error al cargar el panel",
-      { status: 500 },
-    );
-  }
-}
-
-// async function fetchTask(user: User, db: Firestore, pid: string, tid: string) {
-//   try {
-//     const taskRef = doc(db, "users", user.uid, "panels", pid, "task", tid);
-//     const snapshot = await getDoc(taskRef);
-
-//     if (!snapshot.exists()) {
-//       throw new Response(
-//         "[(ts)panel.loader-fetchTask:143]@Panel no encontrado",
-//         { status: 404 },
-//       );
-//     }
-
-//     return { ...snapshot.data(), id: tid } as Task;
-//   } catch (error) {
-//     console.error("Error al cargar la task:", error);
-//     throw new Response(
-//       "[(ts)panel.loader-fetchTask:152]@Error al cargar la task",
-//       { status: 500 },
-//     );
-//   }
-// }
+export default createPanelLoader();

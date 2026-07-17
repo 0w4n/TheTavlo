@@ -13,6 +13,7 @@ export interface ButtonProps
   icon?: string;
   label?: string;
   iconSize?: number;
+  iconColor?: string;
   isLoading?: boolean;
   children?: ReactNode;
 }
@@ -23,6 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   label,
   iconSize,
+  iconColor,
   isLoading = false,
   className = "",
   disabled,
@@ -46,11 +48,11 @@ export const Button: React.FC<ButtonProps> = ({
         <span className="button__icon">Cargando...</span>
       ) : icon && label ? (
         <>
-          <Icon name={icon} size={iconSize ?? 24} />
+          <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
           <span>{label}</span>
         </>
       ) : icon != undefined ? (
-        <Icon name={icon} size={iconSize ?? 24} />
+        <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
       ) : label ? (
         <span>{label}</span>
       ) : null}

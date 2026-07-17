@@ -12,8 +12,9 @@ import {
   writeBatch,
   deleteDoc,
   DocumentReference,
+  onSnapshot,
+  type Unsubscribe,
 } from "firebase/firestore";
-
 import type { WidgetRepository } from "../app/widgetRepository.interface";
 import type {
   Widget,
@@ -32,23 +33,30 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   ) {}
 
   // -------------------------------------------------------
-  // 🔐 USER HELPERS
+  // 🔐 HELPERS
   // -------------------------------------------------------
 
   private getCollectionPath(): string {
+    // Igual que en events/task: usamos el propietario REAL del panel
+    // (state.panel.ownerId/ownerAccountType), no el usuario que está
+    // mirando. Si no, un invitado que entra por un enlace de invitación
+    // nunca encuentra los widgets del panel ajeno.
     const {
       user: { userId, accountType },
-      panel: { panelId },
+      panel: { panelId, ownerId },
     } = this.getContext().state;
 
-    return `${accountType}/${userId}/panels/${panelId}/widgets`;
+    if (ownerId !== null) {
+      return `${accountType}/${ownerId}/panels/${panelId}/widgets`;
+    } else {
+      return `${accountType}/${userId}/panels/${panelId}/widgets`;
+    }
+
   }
 
   private getContext(): GlobalContextValue {
     const ctx = this.getCurrentContext();
-    if (!ctx) {
-      throw new Error("GlobalContext no disponible");
-    }
+    if (!ctx) throw new Error("GlobalContext no disponible");
     return ctx;
   }
 
@@ -62,7 +70,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
       type: data.type,
       config: data.config ?? {},
       locked: data.locked ?? false,
-      isHome: data.isHome ?? false,
       layout: data.layout,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
@@ -72,46 +79,61 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   private mapWidgetToDocument(
     widget: Partial<Widget> | Partial<CreateWidgetDTO>,
   ): DocumentData {
-    // Spread a copy so we don't mutate the original
     const data: Record<string, any> = { ...widget };
-
-    // Timestamps are already Timestamp instances — no conversion needed
     delete data.id;
-
     return data as DocumentData;
   }
 
   // -------------------------------------------------------
-  // 📌 FIND
+  // 📡 SUSCRIPCIÓN EN TIEMPO REAL
   // -------------------------------------------------------
 
-  // panelId is resolved from context; the parameter keeps the interface contract
+  /**
+   * Escucha los widgets del panel activo en tiempo real.
+   * La primera emisión carga los datos actuales; las siguientes
+   * reflejan cualquier cambio en Firestore sin polling.
+   */
+  subscribe(
+    onData: (widgets: Widget[]) => void,
+    onError: (err: string) => void,
+  ): Unsubscribe {
+    const path = this.getCollectionPath();
+    const q = query(collection(this.firestore, path));
+
+    return onSnapshot(
+      q,
+      (snap) => {
+        const widgets = snap.docs.map((d) =>
+          this.mapDocumentToWidget(d.id, d.data()),
+        );
+        onData(widgets);
+      },
+      (error) => onError(error.message),
+    );
+  }
+
+  // -------------------------------------------------------
+  // 📌 QUERIES PUNTUALES
+  // -------------------------------------------------------
+
   async findByPanel(_panelId: string): Promise<Widget[]> {
     const path = this.getCollectionPath();
     const q = query(collection(this.firestore, path));
     const snap = await getDocs(q);
-
-    return snap.docs.map((docSnap) =>
-      this.mapDocumentToWidget(docSnap.id, docSnap.data()),
-    );
+    return snap.docs.map((d) => this.mapDocumentToWidget(d.id, d.data()));
   }
 
-  // panelId is resolved from context; the parameter keeps the interface contract
   async findById(id: string, _panelId?: string): Promise<Widget | null> {
     const path = this.getCollectionPath();
     const ref = doc(this.firestore, path, id);
     const snap = await getDoc(ref);
-
     if (!snap.exists()) return null;
-
     return this.mapDocumentToWidget(snap.id, snap.data());
   }
 
   async findByRef(documentRef: DocumentReference): Promise<Widget | null> {
     const snap = await getDoc(documentRef);
-
     if (!snap.exists()) throw new Error("Widget no encontrado");
-
     return this.mapDocumentToWidget(snap.id, snap.data());
   }
 
@@ -121,19 +143,18 @@ export class FirebaseWidgetRepository implements WidgetRepository {
 
   async create(data: CreateWidgetDTO): Promise<Widget> {
     const path = this.getCollectionPath();
+    const now = Timestamp.now();
 
-    const ref = await addDoc(collection(this.firestore, path), {
+    const payload = {
       ...data,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    });
+      createdAt: now,
+      updatedAt: now,
+    };
 
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      throw new Error("No se pudo crear el widget");
-    }
+    const ref = await addDoc(collection(this.firestore, path), payload);
 
-    return this.mapDocumentToWidget(snap.id, snap.data());
+    // Construimos el objeto local para no hacer un getDoc extra
+    return this.mapDocumentToWidget(ref.id, payload);
   }
 
   // -------------------------------------------------------
@@ -142,23 +163,18 @@ export class FirebaseWidgetRepository implements WidgetRepository {
 
   async update(id: string, data: UpdateWidgetDTO): Promise<Widget> {
     const path = this.getCollectionPath();
+    const now = Timestamp.now();
 
-    const rawUpdate = {
-      ...data,
-      updatedAt: Timestamp.now(),
-    };
-
+    const rawUpdate = { ...data, updatedAt: now };
     const updateData = this.mapWidgetToDocument(rawUpdate);
 
     const ref = doc(this.firestore, path, id);
     await updateDoc(ref, updateData);
 
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      throw new Error("Error al leer el widget actualizado");
-    }
-
-    return this.mapDocumentToWidget(snap.id, snap.data());
+    // Construimos el objeto local sin round-trip extra
+    const existing = await this.findById(id);
+    if (!existing) throw new Error("Widget no encontrado tras actualizar");
+    return { ...existing, ...data, updatedAt: now };
   }
 
   // -------------------------------------------------------
@@ -168,29 +184,21 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   async updateLayout(layouts: ResponsiveLayouts): Promise<Widget> {
     await this.updateBulkLayout(layouts);
 
-    // Resolve the widget id from the first breakpoint available
     const firstBreakpoint = Object.keys(layouts)[0];
     const items = layouts[firstBreakpoint];
+    if (!items?.length) throw new Error("No hay items de layout");
 
-    if (!items || items.length === 0) {
-      throw new Error("No hay items de layout para actualizar");
-    }
-
-    const widgetId = items[0].i;
-    const widget = await this.findById(widgetId);
-
-    if (!widget) {
+    const widget = await this.findById(items[0].i);
+    if (!widget)
       throw new Error("Widget no encontrado después de actualizar layout");
-    }
-
     return widget;
   }
 
   async updateBulkLayout(layouts: ResponsiveLayouts): Promise<void> {
     const batch = writeBatch(this.firestore);
     const path = this.getCollectionPath();
+    const now = Timestamp.now();
 
-    // Group layout items by widget id across all breakpoints
     const widgetLayouts = new Map<string, Record<string, LayoutItemDTO>>();
 
     for (const [breakpoint, items] of Object.entries(layouts)) {
@@ -203,12 +211,8 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     }
 
     for (const [id, layout] of widgetLayouts.entries()) {
-      
       const ref = doc(this.firestore, path, id);
-      batch.update(ref, {
-        layout: layout,
-        updatedAt: Timestamp.now(),
-      });
+      batch.update(ref, { layout, updatedAt: now });
     }
 
     await batch.commit();
@@ -220,12 +224,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
 
   async delete(id: string): Promise<void> {
     const path = this.getCollectionPath();
-
-    const existing = await this.findById(id);
-    if (!existing) {
-      throw new Error("Widget no encontrado");
-    }
-
     const ref = doc(this.firestore, path, id);
     await deleteDoc(ref);
   }

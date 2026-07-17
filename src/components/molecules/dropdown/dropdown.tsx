@@ -23,29 +23,31 @@ export function Dropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
-  function handleToggle() {
+  function handleToggle(e: Event | React.SyntheticEvent) {
     if (!disabled) setIsOpen(!isOpen);
+    e.stopPropagation();
   }
 
-  function handleClose() {
+  function handleClose(e: Event | React.SyntheticEvent) {
+    e.stopPropagation();
     setIsOpen(false);
   }
 
   useEffect(() => {
     if (!isOpen) return;
 
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(e: MouseEvent) {
       // Si el click fue dentro de un modal portal, no cerrar
       const isInsidePortal = document.querySelector('[data-modal-portal]')
-        ?.contains(event.target as Node);
+        ?.contains(e.target as Node);
 
       if (isInsidePortal) return;
 
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(e.target as Node)
       ) {
-        handleClose();
+        handleClose(e);
       }
     }
 
@@ -58,7 +60,7 @@ export function Dropdown({
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        handleClose();
+        handleClose(e);
         triggerRef.current?.focus();
       }
 
@@ -99,7 +101,7 @@ export function Dropdown({
       <div
         ref={triggerRef}
         className="dropdown__trigger"
-        onClick={handleToggle}
+        onClick={(e) => handleToggle(e)}
         role="button"
         aria-haspopup="true"
         aria-expanded={isOpen}
@@ -107,7 +109,8 @@ export function Dropdown({
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            handleToggle();
+            e.stopPropagation();
+            handleToggle(e);
           }
         }}
       >
@@ -126,9 +129,10 @@ export function Dropdown({
               if (React.isValidElement(child)) {
                 if (isDropdownItem(child)) {
                     return React.cloneElement(child, {
-                      onClick: (e: React.MouseEvent) => {
+                      onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
                         child.props.portalModal === false && child.props.onClick?.(e);
-                        handleClose();
+                        e.stopPropagation();
+                        handleClose(e);
                       }
                     });
                   }

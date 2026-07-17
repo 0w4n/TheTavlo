@@ -5,9 +5,9 @@ import { Button } from "#components/atoms/button";
 import "./header.css";
 
 export function ModalHeader({
-  children,
   className = "",
   onClose,
+  title,
   icon,
   ...props
 }: ModalHeaderProps) {
@@ -15,7 +15,7 @@ export function ModalHeader({
     <div className={`modal__header ${className}`} {...props}>
       <div className="modal__header--content">
         {icon && <Icon name={icon} />}
-        {children}
+        <span className="modal__header--content-title">{title}</span>
       </div>
 
       <Button

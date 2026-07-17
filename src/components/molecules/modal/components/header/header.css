@@ -16,7 +16,7 @@
   gap: var(--spacing-4);
 }
 
-.modal__header--content--title {
+.modal__header--content-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-textPrimary);

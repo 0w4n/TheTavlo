@@ -53,4 +53,19 @@ export default defineConfig({
       "#elements": path.resolve(__dirname, "src/elements"),
     },
   },
+  build: {
+    minify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          firebase: ["firebase/app", "firebase/firestore", "firebase/auth"],
+          d3: ["d3"],
+          gsap: ["gsap"],
+        },
+      },
+    },
+  },
+  // esbuild: {
+  //   drop: ["console", "debugger"],
+  // }
 });

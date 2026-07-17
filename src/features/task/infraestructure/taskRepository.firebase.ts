@@ -10,8 +10,14 @@ import {
   type Firestore,
   updateDoc,
   deleteDoc,
+  onSnapshot,
+  type Unsubscribe,
 } from "firebase/firestore";
-import type { CreateTaskDTO, Task, UpdateTaskDTO } from "../domain/task.entity";
+import type {
+  AnyTask,
+  CreateAnyTaskDTO,
+  UpdateAnyTaskDTO,
+} from "../domain/task.entity";
 import type { TaskRepository } from "../app/taskRepository.interface";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 
@@ -22,124 +28,118 @@ export class FirebaseTaskRepository implements TaskRepository {
   ) {}
 
   private getCollectionPath(): string {
-    const { userId, accountType } = this.getContext().state.user;
-    const { panelId } = this.getContext().state.panel;
-    return `${accountType}/${userId}/panels/${panelId}/task`;
+    const {
+      user: { userId, accountType },
+      panel: { panelId },
+    } = this.getContext().state;
+
+    if (panelId.length > 0) {
+      return `${accountType}/${userId}/panels/${panelId}/tasks`;
+    } else {
+      return `${accountType}/${userId}/panels`;
+    }
   }
 
   private getContext(): GlobalContextValue {
     const ctx = this.getCurrentContext();
-    if (!ctx) {
-      throw new Error("GlobalContext no disponible");
-    }
     return ctx;
   }
 
-  private mapDocumentToTask(id: string, data: DocumentData): Task {
-    const task: any = { ...data };
-
+  private mapDocumentToAnyTask(id: string, data: DocumentData): AnyTask {
     return {
-      id: id,
-      title: task.title,
-      progress: task.progress,
-      phase: task.phase,
-      endAt: task.endAt,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
+      id,
+      title: data.title,
+      progress: data.progress,
+      phase: data.phase,
+      endAt: data.endAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      openAt: data.openAt,
+      submission: data.submission,
     };
   }
 
-  private mapTaskToDocument(task: Partial<Task>): DocumentData {
+  private mapAnyTaskToDocument(task: Partial<AnyTask>): DocumentData {
     const data: any = { ...task };
-
-    if (task.endAt) {
-      data.dueDate = Timestamp.fromDate(task.endAt.toDate());
-    }
-    if (task.createdAt) {
-      data.createdAt = Timestamp.fromDate(task.createdAt.toDate());
-    }
-    if (task.updatedAt) {
-      data.updatedAt = Timestamp.fromDate(task.updatedAt.toDate());
-    }
-
-    delete data.id; // No guardar el id en el documento
-
+    if (task.endAt) data.endAt = task.endAt;
+    if (task.createdAt) data.createdAt = task.createdAt;
+    if (task.updatedAt) data.updatedAt = task.updatedAt;
+    delete data.id;
     return data;
   }
 
-  async findAll(): Promise<Task[]> {
-    const collectionName = this.getCollectionPath();
+  // ─── Suscripción en tiempo real ───────────────────────────────────────────
 
+  /**
+   * Escucha las tareas del panel activo en tiempo real.
+   * La primera emisión entrega todas las tareas actuales;
+   * las siguientes reflejan creates, updates y deletes sin polling.
+   */
+  subscribe(
+    onData: (tasks: AnyTask[]) => void,
+    onError: (err: Error) => void,
+  ): Unsubscribe {
+    const collectionName = this.getCollectionPath();
     const q = query(collection(this.firestore, collectionName));
 
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) =>
-      this.mapDocumentToTask(doc.id, { ...doc.data() }),
+    return onSnapshot(
+      q,
+      (snap) => {
+        const tasks = snap.docs.map((d) =>
+          this.mapDocumentToAnyTask(d.id, d.data()),
+        );
+        onData(tasks);
+      },
+      (error) => onError(new Error(error.message)),
     );
   }
 
-  async findById(id: string): Promise<Task | null> {
-    const collectionName = this.getCollectionPath();
+  // ─── Queries puntuales ────────────────────────────────────────────────────
 
-    const docRef = doc(this.firestore, collectionName, id);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      return null;
-    }
-
-    const task = this.mapDocumentToTask(docSnap.id, { ...docSnap });
-
-    return task;
+  async findAll(): Promise<AnyTask[]> {
+    const q = query(collection(this.firestore, this.getCollectionPath()));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => this.mapDocumentToAnyTask(d.id, d.data()));
   }
 
-  async create(data: CreateTaskDTO): Promise<Task> {
-    const collectionName = this.getCollectionPath();
+  async findById(id: string): Promise<AnyTask | null> {
+    const docRef = doc(this.firestore, this.getCollectionPath(), id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return null;
+    return this.mapDocumentToAnyTask(docSnap.id, docSnap.data());
+  }
 
-    const taskData = this.mapTaskToDocument({
+  // ─── Mutaciones ───────────────────────────────────────────────────────────
+
+  async create(data: CreateAnyTaskDTO): Promise<AnyTask> {
+    const now = Timestamp.now();
+    const taskData = this.mapAnyTaskToDocument({
       ...data,
-      createdAt: Timestamp.fromDate(new Date()),
-      updatedAt: Timestamp.fromDate(new Date()),
+      createdAt: now,
+      updatedAt: now,
     });
 
     const docRef = await addDoc(
-      collection(this.firestore, collectionName),
+      collection(this.firestore, this.getCollectionPath()),
       taskData,
     );
 
-    return this.mapDocumentToTask(docRef.id, { ...docRef });
+    return this.mapDocumentToAnyTask(docRef.id, { ...taskData });
   }
 
-  async update(id: string, data: UpdateTaskDTO): Promise<Task> {
+  async update(id: string, data: UpdateAnyTaskDTO): Promise<AnyTask> {
     const collectionName = this.getCollectionPath();
+    const now = Timestamp.fromDate(new Date());
 
-    // Verificar que la tarea existe y pertenece al usuario
-    const existingTask = await this.findById(id);
-    if (!existingTask) {
-      throw new Error("Tarea no encontrada");
-    }
-
-    const updateData = this.mapTaskToDocument({
-      ...data,
-      updatedAt: Timestamp.fromDate(new Date()),
-    });
-
+    const updateData = this.mapAnyTaskToDocument({ ...data, updatedAt: now });
     const docRef = doc(this.firestore, collectionName, id);
     await updateDoc(docRef, updateData);
 
-    return this.mapDocumentToTask(id, docRef);
+    return this.mapDocumentToAnyTask(updateData.id, updateData.data());
   }
 
   async delete(id: string): Promise<void> {
-    const collectionName = this.getCollectionPath();
-
-    // Verificar que la tarea existe y pertenece al usuario
-    const existingTask = await this.findById(id);
-    if (!existingTask) {
-      throw new Error("Tarea no encontrada");
-    }
-
-    const docRef = doc(this.firestore, collectionName, id);
+    const docRef = doc(this.firestore, this.getCollectionPath(), id);
     await deleteDoc(docRef);
   }
 }
