@@ -55,12 +55,10 @@ export function InvitationProvider({
         const newInvitation = await invitationService.createInvitation(
           {
             ...data,
-            createdAt: Timestamp.now(),
-            updatedAt: Timestamp.now(),
             token:
               Math.random().toString(36).substring(2, 15) +
               Math.random().toString(36).substring(2, 15),
-            grantedBy: "hola",
+            newOwnerId: data.newOwnerId ?? null,
           },
           parentRef,
         );

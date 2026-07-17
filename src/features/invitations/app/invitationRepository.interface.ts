@@ -1,6 +1,6 @@
 import type {
   CreatedInvitationDTO,
-  CreateSharedUserDTO,
+  CreatedSharedUserDTO,
   Invitation,
   SharedUser,
   UpdatedInvitationDTO,
@@ -26,6 +26,6 @@ export interface InvitationRepository {
   /** Crea o reemplaza la entrada de un usuario dentro de una invitación. */
   upsertSharedUser(
     invitationId: string,
-    data: CreateSharedUserDTO,
+    data: CreatedSharedUserDTO,
   ): Promise<SharedUser>;
 }

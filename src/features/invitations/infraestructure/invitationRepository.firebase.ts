@@ -14,7 +14,7 @@ import type { InvitationRepository } from "../app/invitationRepository.interface
 import type {
   Invitation,
   CreatedInvitationDTO,
-  CreateSharedUserDTO,
+  CreatedSharedUserDTO,
   SharedUser,
   UpdatedInvitationDTO,
 } from "../domain/invitation.entity";
@@ -173,7 +173,7 @@ export class FirebaseInvitationRepository implements InvitationRepository {
 
   async upsertSharedUser(
     invitationId: string,
-    data: CreateSharedUserDTO,
+    data: CreatedSharedUserDTO,
   ): Promise<SharedUser> {
     const docRef = doc(
       this.firestore,
