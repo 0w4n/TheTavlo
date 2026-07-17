@@ -33,7 +33,7 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    if (state.user && state.initialized) {
+    if (state.status === "authenticated") {
       navigate("/home", { replace: true });
     }
   });
@@ -46,7 +46,7 @@ export default function LoginPage() {
         {/* <i>Just, organise</i> */}
       </div>
 
-      {state.error && (
+      {state.status === "error" && (
         <div className="loginPage__card-error">{state.error}</div>
       )}
 
@@ -57,7 +57,7 @@ export default function LoginPage() {
           onClick={handleGoogleSignIn}
           icon="IconBrandGoogleFilled"
           label="Entrar con Google"
-          disabled={isLoading || state.isLoading}
+          disabled={isLoading || state.status === "initializing"}
         />
         <Button
           className="loginPage__card-content-item"
@@ -65,7 +65,7 @@ export default function LoginPage() {
           onClick={handleGuestSignIn}
           icon="IconSpy"
           label="Entrar como Invitado"
-          disabled={isLoading || state.isLoading}
+          disabled={isLoading || state.status === "initializing"}
         />
       </div>
 
