@@ -5,29 +5,27 @@ import type { AddSharedProps } from "./addShared.type";
 import { useState, type ChangeEvent } from "react";
 import useInvitation from "#features/invitations/presentation/hooks/useInvitation";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
-import {
-  InvitationStatus,
-  type CreatedSharedUserDTO,
-  type UserRole,
-} from "#features/invitations/domain/invitation.entity";
+import { InvitationType } from "#features/invitations/domain/invitation.entity";
 
 import "./addShared.css";
+import type { DocumentReference } from "firebase/firestore";
 
 export default function AddShared({ type, onClose }: AddSharedProps) {
   const { createInvitation } = useInvitation();
   const { state } = useGlobalContext();
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("editor");
 
   const handleSubmit = () => {
     const currentPanelId = state.panel.panelId;
     const currentUserId = state.user.userId;
 
-    const sharedUserMap = new Map<number, CreatedSharedUserDTO>();
-    sharedUserMap.set(0, { userId: email, role: role as UserRole, status: InvitationStatus.PENDING});
-
     const returnedInvitation = createInvitation(
-      { ownerId: currentUserId, sharedUser: sharedUserMap },
+      {
+        createdBy: currentUserId,
+        type: InvitationType.SHARE,
+        targetRef: currentPanelId as unknown as DocumentReference,
+        expiresAt: null,
+      },
       currentPanelId,
     );
 
@@ -38,9 +36,13 @@ export default function AddShared({ type, onClose }: AddSharedProps) {
 
   return (
     <>
-      <Modal.Header onClose={onClose} icon="IconShare">
-        <span>Compartir {type}</span>
-      </Modal.Header>
+      <Modal.Header
+        onClose={onClose}
+        icon="IconShare"
+        title={
+          type === "public" ? "Compartir públicamente" : "Compartir con usuario"
+        }
+      ></Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit} className="add-shared__form">
           <Input
@@ -49,16 +51,10 @@ export default function AddShared({ type, onClose }: AddSharedProps) {
             placeholder="Ingrese el correo electrónico"
             leftIcon="IconAt"
             value={email}
-            onChange={(e: ChangeEvent<HTMLInputElement, HTMLInputElement>) => setEmail(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement, HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
           />
-          <select
-            className="add-shared__select"
-            defaultValue="editor"
-            onChange={(e: ChangeEvent<HTMLSelectElement, HTMLSelectElement>) => setRole(e.target.value)}
-          >
-            <option value="editor">Editor</option>
-            <option value="viewer">Viewer</option>
-          </select>
         </form>
       </Modal.Body>
       <Modal.Footer>
