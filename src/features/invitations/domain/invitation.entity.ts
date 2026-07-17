@@ -94,25 +94,25 @@ export interface SharedUser {
 
 // ─── DTOs ──────────────────────────────────────────────────────────────────────────────────────────────
 
-export type CreatePublicSharedInvitationDTO = Omit<
+export type CreatedPublicSharedInvitationDTO = Omit<
   PublicInvitation,
   "id" | "createdAt" | "updatedAt"
 >;
-export type CreatePrivateSharedInvitationDTO = Omit<
+export type CreatedPrivateSharedInvitationDTO = Omit<
   PrivateInvitation,
   "id" | "createdAt" | "updatedAt"
 >;
-export type CreateChownInvitationDTO = Omit<
+export type CreatedChownInvitationDTO = Omit<
   ChownInvitation,
   "id" | "createdAt" | "updatedAt"
 >;
 
-export type CreateAnyInvitationDTO =
-  | CreatePublicSharedInvitationDTO
-  | CreatePrivateSharedInvitationDTO
-  | CreateChownInvitationDTO;
+export type CreatedAnyInvitationDTO =
+  | CreatedPublicSharedInvitationDTO
+  | CreatedPrivateSharedInvitationDTO
+  | CreatedChownInvitationDTO;
 
-export type CreateSharedUserDTO = Omit<
+export type CreatedSharedUserDTO = Omit<
   SharedUser,
   "createdAt" | "updatedAt" | "statusUpdatedAt"
 >;
@@ -121,8 +121,8 @@ export type CreateSharedUserDTO = Omit<
 // el servicio y el contexto de invitaciones. Antes se importaban sin existir
 // (rompía la compilación de toda la feature) — los añadimos aquí para que
 // apunten a los DTOs ya modelados arriba en vez de duplicar su forma.
-export type CreateInvitationDTO = CreateAnyInvitationDTO;
-export type UpdateInvitationDTO = Partial<
+export type CreatedInvitationDTO = CreatedAnyInvitationDTO;
+export type UpdatedInvitationDTO = Partial<
   Omit<ShareInvitation, "id" | "type" | "targetRef" | "createdAt" | "createdBy">
 >;
 

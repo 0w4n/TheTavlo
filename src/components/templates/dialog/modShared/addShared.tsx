@@ -5,9 +5,10 @@ import type { AddSharedProps } from "./addShared.type";
 import { useState, type ChangeEvent } from "react";
 import useInvitation from "#features/invitations/presentation/hooks/useInvitation";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
-import type {
-  CreatedSharedUserDTO,
-  userRole,
+import {
+  InvitationStatus,
+  type CreatedSharedUserDTO,
+  type UserRole,
 } from "#features/invitations/domain/invitation.entity";
 
 import "./addShared.css";
@@ -23,7 +24,7 @@ export default function AddShared({ type, onClose }: AddSharedProps) {
     const currentUserId = state.user.userId;
 
     const sharedUserMap = new Map<number, CreatedSharedUserDTO>();
-    sharedUserMap.set(0, { userId: email, role: role as userRole });
+    sharedUserMap.set(0, { userId: email, role: role as UserRole, status: InvitationStatus.PENDING});
 
     const returnedInvitation = createInvitation(
       { ownerId: currentUserId, sharedUser: sharedUserMap },
