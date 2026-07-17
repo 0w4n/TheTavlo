@@ -3,19 +3,21 @@ import {
   UserRole,
   isPublicSharedInvitation,
   isSharedInvitation,
-  type CreateInvitationDTO,
+  type CreatedInvitationDTO,
   type Invitation,
   type InvitationAccessResult,
   type PrivateInvitation,
   type SharedUser,
-  type UpdateInvitationDTO,
+  type UpdatedInvitationDTO,
 } from "../domain/invitation.entity";
 import type { InvitationRepository } from "./invitationRepository.interface";
 
 export class InvitationService {
   constructor(private invitationRepository: InvitationRepository) {}
 
-  async getInvitationByToken(token: string): Promise<{ invitation?: Invitation; error?: string }> {
+  async getInvitationByToken(
+    token: string,
+  ): Promise<{ invitation?: Invitation; error?: string }> {
     try {
       const invitation = await this.invitationRepository.findByToken(token);
       return { invitation };
@@ -25,18 +27,21 @@ export class InvitationService {
   }
 
   async createInvitation(
-    data: CreateInvitationDTO,
+    data: CreatedInvitationDTO,
     parentRef: string,
   ): Promise<{ invitation?: Invitation; error?: string }> {
     try {
-      const invitation = await this.invitationRepository.create(data, parentRef);
+      const invitation = await this.invitationRepository.create(
+        data,
+        parentRef,
+      );
       return { invitation };
     } catch (error) {
       return { error: "Error al crear la invitación" };
     }
   }
 
-  async updateInvitation(id: string, data: UpdateInvitationDTO) {
+  async updateInvitation(id: string, data: UpdatedInvitationDTO) {
     try {
       const invitation = await this.invitationRepository.update(id, data);
       return { invitation };
@@ -71,7 +76,10 @@ export class InvitationService {
 
       if (!invitation) return { result: { kind: "not-found" } };
 
-      if (invitation.expiresAt && invitation.expiresAt.toMillis() < Date.now()) {
+      if (
+        invitation.expiresAt &&
+        invitation.expiresAt.toMillis() < Date.now()
+      ) {
         return { result: { kind: "expired" } };
       }
 
@@ -90,19 +98,39 @@ export class InvitationService {
       );
 
       if (!sharedUser) {
-        return { result: { kind: "not-invited", invitation: privateInvitation } };
+        return {
+          result: { kind: "not-invited", invitation: privateInvitation },
+        };
       }
 
       if (sharedUser.status === InvitationStatus.REVOKED) {
         return { result: { kind: "revoked" } };
       }
       if (sharedUser.status === InvitationStatus.ACCEPTED) {
-        return { result: { kind: "private-accepted", invitation: privateInvitation, sharedUser } };
+        return {
+          result: {
+            kind: "private-accepted",
+            invitation: privateInvitation,
+            sharedUser,
+          },
+        };
       }
       if (sharedUser.status === InvitationStatus.REJECTED) {
-        return { result: { kind: "private-rejected", invitation: privateInvitation, sharedUser } };
+        return {
+          result: {
+            kind: "private-rejected",
+            invitation: privateInvitation,
+            sharedUser,
+          },
+        };
       }
-      return { result: { kind: "private-pending", invitation: privateInvitation, sharedUser } };
+      return {
+        result: {
+          kind: "private-pending",
+          invitation: privateInvitation,
+          sharedUser,
+        },
+      };
     } catch (error) {
       return { error: "Error al resolver el acceso a la invitación" };
     }
@@ -116,14 +144,22 @@ export class InvitationService {
     accept: boolean,
   ): Promise<{ sharedUser?: SharedUser; error?: string }> {
     try {
-      const existing = await this.invitationRepository.findSharedUser(invitationId, userId);
+      const existing = await this.invitationRepository.findSharedUser(
+        invitationId,
+        userId,
+      );
       if (!existing) return { error: "No estás invitado a este recurso" };
 
-      const sharedUser = await this.invitationRepository.upsertSharedUser(invitationId, {
-        userId,
-        role: existing.role,
-        status: accept ? InvitationStatus.ACCEPTED : InvitationStatus.REJECTED,
-      });
+      const sharedUser = await this.invitationRepository.upsertSharedUser(
+        invitationId,
+        {
+          userId,
+          role: existing.role,
+          status: accept
+            ? InvitationStatus.ACCEPTED
+            : InvitationStatus.REJECTED,
+        },
+      );
       return { sharedUser };
     } catch {
       return { error: "Error al responder a la invitación" };
@@ -143,14 +179,20 @@ export class InvitationService {
     role: UserRole = UserRole.VIEWER,
   ): Promise<{ sharedUser?: SharedUser; error?: string }> {
     try {
-      const existing = await this.invitationRepository.findSharedUser(invitationId, userId);
+      const existing = await this.invitationRepository.findSharedUser(
+        invitationId,
+        userId,
+      );
       if (existing) return { sharedUser: existing };
 
-      const sharedUser = await this.invitationRepository.upsertSharedUser(invitationId, {
-        userId,
-        role,
-        status: InvitationStatus.PENDING,
-      });
+      const sharedUser = await this.invitationRepository.upsertSharedUser(
+        invitationId,
+        {
+          userId,
+          role,
+          status: InvitationStatus.PENDING,
+        },
+      );
       return { sharedUser };
     } catch {
       return { error: "Error al solicitar acceso privado" };
@@ -162,7 +204,8 @@ export class InvitationService {
     invitationId: string,
   ): Promise<{ sharedUsers?: SharedUser[]; error?: string }> {
     try {
-      const sharedUsers = await this.invitationRepository.listSharedUsers(invitationId);
+      const sharedUsers =
+        await this.invitationRepository.listSharedUsers(invitationId);
       return { sharedUsers };
     } catch {
       return { error: "Error al listar las solicitudes de acceso" };
@@ -179,14 +222,23 @@ export class InvitationService {
     approve: boolean,
   ): Promise<{ sharedUser?: SharedUser; error?: string }> {
     try {
-      const existing = await this.invitationRepository.findSharedUser(invitationId, userId);
-      if (!existing) return { error: "No hay ninguna solicitud de acceso de ese usuario" };
-
-      const sharedUser = await this.invitationRepository.upsertSharedUser(invitationId, {
+      const existing = await this.invitationRepository.findSharedUser(
+        invitationId,
         userId,
-        role: existing.role,
-        status: approve ? InvitationStatus.ACCEPTED : InvitationStatus.REJECTED,
-      });
+      );
+      if (!existing)
+        return { error: "No hay ninguna solicitud de acceso de ese usuario" };
+
+      const sharedUser = await this.invitationRepository.upsertSharedUser(
+        invitationId,
+        {
+          userId,
+          role: existing.role,
+          status: approve
+            ? InvitationStatus.ACCEPTED
+            : InvitationStatus.REJECTED,
+        },
+      );
       return { sharedUser };
     } catch {
       return { error: "Error al responder a la solicitud de acceso" };

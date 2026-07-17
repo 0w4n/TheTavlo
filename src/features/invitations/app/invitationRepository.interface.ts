@@ -1,15 +1,15 @@
 import type {
-  CreateInvitationDTO,
+  CreatedInvitationDTO,
   CreateSharedUserDTO,
   Invitation,
   SharedUser,
-  UpdateInvitationDTO,
+  UpdatedInvitationDTO,
 } from "../domain/invitation.entity";
 
 export interface InvitationRepository {
   findByToken(token: string): Promise<Invitation | undefined>;
-  create(data: CreateInvitationDTO, parentRef: string): Promise<Invitation>;
-  update(id: string, data: UpdateInvitationDTO): Promise<Invitation>;
+  create(data: CreatedInvitationDTO, parentRef: string): Promise<Invitation>;
+  update(id: string, data: UpdatedInvitationDTO): Promise<Invitation>;
   delete(token: string): Promise<void>;
 
   // ─── Sub-colección invitedUsers (invitaciones privadas / solicitudes) ────

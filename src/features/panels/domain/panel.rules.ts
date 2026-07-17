@@ -16,7 +16,12 @@ export default class PanelRules {
 
   static canDelete(panel: Panel): boolean {
     // No se puede eliminar el panel por defecto
-    if(panel.color == -1 && panel.icon == "" && panel.name == "" && panel.sharedWith == undefined) {
+    if (
+      panel.color == -1 &&
+      panel.icon == "" &&
+      panel.name == "" &&
+      panel.sharedWith == undefined
+    ) {
       return false;
     } else {
       return true;
@@ -25,10 +30,11 @@ export default class PanelRules {
 
   static getDefaultPanel(): CreatePanelDTO {
     return {
+      parentId: null,
       name: "",
       color: -1,
       icon: "",
-      sharedWith: undefined,
+      sharedWith: null,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };

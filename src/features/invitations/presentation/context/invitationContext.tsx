@@ -1,6 +1,6 @@
 import type { InvitationService } from "#features/invitations/app/invitation.service";
 import type {
-  CreateInvitationDTO,
+  CreatedInvitationDTO,
   Invitation,
 } from "#features/invitations/domain/invitation.entity";
 import {
@@ -16,7 +16,7 @@ type InvitationContextValue = {
   invitation: Invitation | undefined;
   createInvitation: (
     data: Omit<
-      CreateInvitationDTO,
+      CreatedInvitationDTO,
       "createdAt" | "updatedAt" | "token" | "objRef"
     >,
     parentRef: string,
@@ -46,7 +46,7 @@ export function InvitationProvider({
   const createInvitation = useCallback(
     async (
       data: Omit<
-        CreateInvitationDTO,
+        CreatedInvitationDTO,
         "createdAt" | "updatedAt" | "token" | "objRef"
       >,
       parentRef: string,
@@ -57,7 +57,8 @@ export function InvitationProvider({
             ...data,
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now(),
-            token: Math.random().toString(36).substring(2, 15) +
+            token:
+              Math.random().toString(36).substring(2, 15) +
               Math.random().toString(36).substring(2, 15),
             grantedBy: "hola",
           },

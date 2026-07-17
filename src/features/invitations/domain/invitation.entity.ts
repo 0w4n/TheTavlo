@@ -117,7 +117,7 @@ export type CreatedSharedUserDTO = Omit<
   "createdAt" | "updatedAt" | "statusUpdatedAt"
 >;
 
-// CreateInvitationDTO/UpdateInvitationDTO: alias usados por el repositorio,
+// CreatedInvitationDTO/UpdatedInvitationDTO: alias usados por el repositorio,
 // el servicio y el contexto de invitaciones. Antes se importaban sin existir
 // (rompía la compilación de toda la feature) — los añadimos aquí para que
 // apunten a los DTOs ya modelados arriba en vez de duplicar su forma.

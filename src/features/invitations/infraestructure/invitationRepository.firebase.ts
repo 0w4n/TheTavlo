@@ -13,10 +13,10 @@ import {
 import type { InvitationRepository } from "../app/invitationRepository.interface";
 import type {
   Invitation,
-  CreateInvitationDTO,
+  CreatedInvitationDTO,
   CreateSharedUserDTO,
   SharedUser,
-  UpdateInvitationDTO,
+  UpdatedInvitationDTO,
 } from "../domain/invitation.entity";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 
@@ -55,7 +55,7 @@ export class FirebaseInvitationRepository implements InvitationRepository {
   }
 
   async create(
-    data: CreateInvitationDTO,
+    data: CreatedInvitationDTO,
     parentRef: string,
   ): Promise<Invitation> {
     const collectionPath = this.getCollectionPath();
@@ -102,7 +102,7 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     } as Invitation;
   }
 
-  async update(id: string, data: UpdateInvitationDTO): Promise<Invitation> {
+  async update(id: string, data: UpdatedInvitationDTO): Promise<Invitation> {
     const docRef = doc(this.firestore, this.getCollectionPath(), id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
