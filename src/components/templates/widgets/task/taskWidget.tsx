@@ -11,9 +11,13 @@ export function TaskWidget() {
   const { state: taskState } = useTasks();
   const { state: panelState } = usePanels();
 
+  if (panelState.status !== "panel") {
+    return <LoadingPage/>;
+  }
+
   const currentPanel = panelState.currentPanel;
 
-  if (taskState.loading || panelState.isLoading) {
+  if (taskState.loading) {
     <LoadingPage />;
   } else if (!taskState.tasks || currentPanel === undefined) {
     return <span>No hay nada</span>;
