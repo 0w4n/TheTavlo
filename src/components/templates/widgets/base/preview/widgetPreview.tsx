@@ -23,8 +23,7 @@ export default function WidgetPreview({ onClose, type }: widgetPreviewProps) {
 
   return (
     <>
-      <Modal.Header onClose={onClose}>
-        <p>Preview del widget</p>
+      <Modal.Header onClose={onClose} title="Vista previa del widget">
       </Modal.Header>
 
       <Modal.Body>
