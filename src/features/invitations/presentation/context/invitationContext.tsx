@@ -58,7 +58,7 @@ export function InvitationProvider({
             token:
               Math.random().toString(36).substring(2, 15) +
               Math.random().toString(36).substring(2, 15),
-            newOwnerId: data.newOwnerId ?? null,
+            
           },
           parentRef,
         );

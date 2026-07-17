@@ -121,7 +121,6 @@ function PanelHeader({
 
   return (
     <Header
-      ref={headerRef}
       actions={actions}
       dateTimeItem={<DateTimeBadge onClick={() => {}} />}
     />
