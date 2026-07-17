@@ -6,7 +6,7 @@ export default function MigrationDialog() {
   const { state, completeMigration } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  if (!state.migrationPending || !state.migrationData) {
+  if (state.status !== "migration-pending" || !state.migrationData) {
     return null;
   }
 
