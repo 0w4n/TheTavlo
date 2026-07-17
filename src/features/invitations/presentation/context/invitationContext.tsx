@@ -1,7 +1,9 @@
 import type { InvitationService } from "#features/invitations/app/invitation.service";
-import type {
-  CreatedInvitationDTO,
-  Invitation,
+import {
+  InvitationMode,
+  UserRole,
+  type CreatedAnyInvitationDTO,
+  type Invitation,
 } from "#features/invitations/domain/invitation.entity";
 import {
   createContext,
@@ -10,13 +12,12 @@ import {
   type PropsWithChildren,
 } from "react";
 import { initialInvitationState, invitationReducer } from "./invitationReducer";
-import { Timestamp } from "firebase/firestore";
 
 type InvitationContextValue = {
   invitation: Invitation | undefined;
   createInvitation: (
     data: Omit<
-      CreatedInvitationDTO,
+      CreatedAnyInvitationDTO,
       "createdAt" | "updatedAt" | "token" | "objRef"
     >,
     parentRef: string,
@@ -46,20 +47,23 @@ export function InvitationProvider({
   const createInvitation = useCallback(
     async (
       data: Omit<
-        CreatedInvitationDTO,
+        CreatedAnyInvitationDTO,
         "createdAt" | "updatedAt" | "token" | "objRef"
       >,
       parentRef: string,
     ) => {
       try {
+        const payload: CreatedAnyInvitationDTO = {
+          ...data,
+          lastUpdatedBy: "current-user",
+          mode: InvitationMode.USERS,
+          role: UserRole.EDITOR,
+          token: "generated",
+          newOwnerId: "current-user",
+        } as CreatedAnyInvitationDTO;
+
         const newInvitation = await invitationService.createInvitation(
-          {
-            ...data,
-            token:
-              Math.random().toString(36).substring(2, 15) +
-              Math.random().toString(36).substring(2, 15),
-            
-          },
+          payload,
           parentRef,
         );
 
@@ -132,6 +136,7 @@ export function InvitationProvider({
     rejectInvitation,
     clearError,
   };
+
   return (
     <InvitationContext.Provider value={value}>
       {children}
