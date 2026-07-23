@@ -2,16 +2,23 @@ import { Header } from "#components/organisms/header";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import { Rise } from "#components/molecules/rise";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import { useDocumentTitle } from "#core/routing/useDocumentTitle";
+import usePanels from "#features/panels/presentation/hooks/usePanels";
 
 export default function HomePage() {
   useDocumentTitle("Inicio");
+  const { fetchHomePanel } = usePanels();
+
+  useEffect(() => {
+    fetchHomePanel();
+  }, [fetchHomePanel]);
+
   const [riseOpen, setRiseOpen] = useState(false);
 
   return (

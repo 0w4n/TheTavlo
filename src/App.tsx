@@ -32,6 +32,7 @@ import { EventsProvider } from "#features/events/presentation/context/eventsCont
 import { FirebaseEventRepository } from "#features/events/infraestructure/eventRepository.firebase";
 import { EventsService } from "#features/events/app/events.service";
 import type { User } from "#core/auth/domain/user.entity";
+import { AnnouncerProvider } from "#core/a11y/AnnouncerProvider";
 // import ComposeProviders from "#core/providers/composeProviders";
 
 export default function App() {
@@ -47,9 +48,11 @@ export default function App() {
 
   return (
     <>
-      <AuthProvider authService={authService}>
-        <RouterProvider router={appRouter} />
-      </AuthProvider>
+      <AnnouncerProvider>
+        <AuthProvider authService={authService}>
+          <RouterProvider router={appRouter} />
+        </AuthProvider>
+      </AnnouncerProvider>
     </>
   );
 }

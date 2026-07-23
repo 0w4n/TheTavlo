@@ -30,6 +30,7 @@ export default function PanelRoute() {
   // cadena — nunca uno intermedio. Esto reemplaza el `selectPanel(panelData)`
   // que antes vivía en PanelsPage.tsx con el mismo comportamiento.
   useEffect(() => {
+    console.log(data.panel, "seleccionando panel en PanelRoute");
     selectPanel(data.panel);
   }, [data.panel.id]);
 

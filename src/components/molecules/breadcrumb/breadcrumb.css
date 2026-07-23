@@ -32,7 +32,7 @@
 }
 
 .breadcrumb__item:not(:last-child)::after {
-  content: "›";
+  content: "/";
   margin-left: var(--spacing-1);
   color: var(--color-textTertiary, var(--color-textSecondary));
 }
