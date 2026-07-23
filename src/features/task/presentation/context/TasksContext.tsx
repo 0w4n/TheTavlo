@@ -18,7 +18,7 @@ import {
   tasksReducer,
   type TasksState,
 } from "./taskReducer";
-import { firebaseErr, isErr, unexpectedErr, type AppErr } from "#core/appCore/domain/AppCore.type";
+import { err, firebaseErr, isErr, unexpectedErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
 
 type TasksContextValue = {
   state: TasksState;
@@ -76,21 +76,21 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const createTask = useCallback(
     async (data: CreateAnyTaskDTO[]) => {
       for (const element of data) {
-        let result: AnyTask | AppErr;
+        let result: ResultApp<AnyTask, AppErr>;
 
         if (isCreateNodeTask(element) || isCreateTask(element)) {
           result = await tasksService.createAnyTask(element);
         } else {
-          result = unexpectedErr("Tipo de tarea desconocido");
+          result = err(unexpectedErr("Tipo de tarea desconocido"));
         }
 
         if (isErr(result)) {
-          dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+          dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
           throw result;
         }
 
         // Optimistic: onSnapshot también lo reflejará
-        dispatch({ type: "CREATE_TASK_SUCCESS", payload: result });
+        dispatch({ type: "CREATE_TASK_SUCCESS", payload: result.value });
       }
     },
     [tasksService],
@@ -99,11 +99,11 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const updateTask = useCallback(
     async (id: string, data: UpdateAnyTaskDTO) => {
       const result = await tasksService.updateAnyTask(id, data);
-      if (result instanceof Error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
         throw result;
       }
-      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
+      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.value });
     },
     [tasksService],
   );
@@ -111,11 +111,11 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const completeTask = useCallback(
     async (id: string) => {
       const result = await tasksService.completeTask(id);
-      if (result instanceof Error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
         throw result;
       }
-      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result });
+      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.value });
     },
     [tasksService],
   );
@@ -123,8 +123,8 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const deleteTask = useCallback(
     async (id: string) => {
       const result = await tasksService.deleteTask(id);
-      if (result instanceof Error) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
         throw result;
       }
       dispatch({ type: "DELETE_TASK_SUCCESS", payload: id });

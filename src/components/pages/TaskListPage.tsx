@@ -18,17 +18,16 @@ export default function TaskListPage({ panel }: { panel: Panel }) {
     <section className="task-list-page">
       <h1>Tareas — {panel.name || "Panel"}</h1>
 
-      {state.loading && <p>Cargando tareas…</p>}
-      {state.error && <p role="alert">{state.error.message}</p>}
+      {state.status === "loading" && <p>Cargando tareas…</p>}
+      {state.status === "error" && <p role="alert">{state.error?.message}</p>}
 
-      {!state.loading && state.tasks.length === 0 && (
+      {state.status === "task" && state.currentTask.length === 0 && (
         <p>No hay tareas todavía en este panel.</p>
       )}
 
       <ul>
-        {state.tasks.map((task) => (
-          <li key={task.id}>{task.title}</li>
-        ))}
+        {state.status === "task" &&
+          state.currentTask.map((task) => <li key={task.id}>{task.title}</li>)}
       </ul>
     </section>
   );
