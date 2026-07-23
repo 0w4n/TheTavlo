@@ -33,6 +33,8 @@ import { FirebaseEventRepository } from "#features/events/infraestructure/eventR
 import { EventsService } from "#features/events/app/events.service";
 import type { User } from "#core/auth/domain/user.entity";
 import { AnnouncerProvider } from "#core/a11y/AnnouncerProvider";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 // import ComposeProviders from "#core/providers/composeProviders";
 
 export default function App() {
@@ -53,6 +55,8 @@ export default function App() {
           <RouterProvider router={appRouter} />
         </AuthProvider>
       </AnnouncerProvider>
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }
