@@ -20,6 +20,7 @@ import type {
 } from "../domain/task.entity";
 import type { TaskRepository } from "../app/taskRepository.interface";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import { firebaseErr, type AppErr } from "#core/appCore/domain/AppCore.type";
 
 export class FirebaseTaskRepository implements TaskRepository {
   constructor(
@@ -77,7 +78,7 @@ export class FirebaseTaskRepository implements TaskRepository {
    */
   subscribe(
     onData: (tasks: AnyTask[]) => void,
-    onError: (err: Error) => void,
+    onError: (err: AppErr) => void,
   ): Unsubscribe {
     const collectionName = this.getCollectionPath();
     const q = query(collection(this.firestore, collectionName));
@@ -90,7 +91,7 @@ export class FirebaseTaskRepository implements TaskRepository {
         );
         onData(tasks);
       },
-      (error) => onError(new Error(error.message)),
+      (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
   }
 

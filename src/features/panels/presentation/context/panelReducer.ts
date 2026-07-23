@@ -39,9 +39,7 @@ export const initialPanelsState: PanelsState = {
 export function panelsReducer(
   state: PanelsState,
   action: PanelsAction,
-): PanelsState {    
-  console.log("Reducer:", action);
-
+): PanelsState {
   switch (action.type) {
     case "FETCH_PANELS_START":
       return {
@@ -53,7 +51,7 @@ export function panelsReducer(
 
       console.log("FETCH_PANELS_SUCCESS@incoming: ", incoming);
 
-      const currentPanel = incoming[0]
+      const currentPanel = incoming[0];
 
       console.log("FETCH_PANELS_SUCCESS@currentPanel: ", currentPanel);
 

@@ -1,16 +1,127 @@
 .breadcrumb {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.breadcrumb__list {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 2px;
+  flex-wrap: nowrap;
+  gap: var(--spacing-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  /* Red de seguridad: si el colapso por JS no alcanza (paneles con nombres
+     muy largos, fuente grande del usuario, etc.) esto evita que el
+     breadcrumb rompa el layout en cualquier ancho — scrollea con el dedo
+     en touch y con rueda/trackpad en desktop, sin necesitar breakpoints. */
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.breadcrumb__segment {
+.breadcrumb__list::-webkit-scrollbar {
+  display: none;
+}
+
+.breadcrumb__item {
   display: flex;
-  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-1);
 }
 
-.breadcrumb__segment:hover {
-  background-color: var(--color-surface);
-  border-radius: 4px;
+.breadcrumb__item:not(:last-child)::after {
+  content: "›";
+  margin-left: var(--spacing-1);
+  color: var(--color-textTertiary, var(--color-textSecondary));
+}
+
+.breadcrumb__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+
+  color: var(--color-textSecondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+
+  transition: background-color var(--duration-fast) var(--easing-out),
+    color var(--duration-fast) var(--easing-out);
+}
+
+.breadcrumb__link:hover {
+  background-color: var(--color-surfaceHover, var(--color-surface));
+  color: var(--color-textPrimary);
+}
+
+.breadcrumb__link:focus-visible {
+  outline: 2px solid var(--color-focus, var(--color-accent-500, #6b7df6));
+  outline-offset: 2px;
+}
+
+.breadcrumb__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12rem;
+}
+
+.breadcrumb__item--current .breadcrumb__label {
+  color: var(--color-textPrimary);
+  font-weight: var(--font-weight-medium);
+}
+
+.breadcrumb__item--current {
+  padding: var(--spacing-1) var(--spacing-2);
+}
+
+.breadcrumb__ellipsis-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumb__ellipsis-wrap::before {
+  content: "›";
+  margin-right: var(--spacing-1);
+  color: var(--color-textTertiary, var(--color-textSecondary));
+}
+
+.breadcrumb__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-textSecondary);
+  cursor: pointer;
+
+  transition: background-color var(--duration-fast) var(--easing-out);
+}
+
+.breadcrumb__ellipsis:hover {
+  background-color: var(--color-surfaceHover, var(--color-surface));
+  color: var(--color-textPrimary);
+}
+
+.breadcrumb__ellipsis:focus-visible {
+  outline: 2px solid var(--color-focus, var(--color-accent-500, #6b7df6));
+  outline-offset: 2px;
+}
+
+/* En pantallas angostas priorizamos legibilidad sobre densidad: menos
+   ancho por label antes de truncar. Es un ajuste, no una estrategia —
+   el colapso por cantidad de niveles (JS) es lo que realmente decide qué
+   se ve, esto solo afinar el detalle tipográfico. */
+@media (max-width: 480px) {
+  .breadcrumb__label {
+    max-width: 6.5rem;
+  }
 }

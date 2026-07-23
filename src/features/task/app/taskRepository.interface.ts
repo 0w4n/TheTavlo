@@ -4,11 +4,12 @@ import type {
   AnyTask,
   UpdateAnyTaskDTO,
 } from "../domain/task.entity";
+import type { AppErr } from "#core/appCore/domain/AppCore.type";
 
 export interface TaskRepository {
   subscribe(
     onData: (tasks: AnyTask[]) => void,
-    onError: (err: Error) => void,
+    onError: (err: AppErr) => void,
   ): Unsubscribe;
   findAll(): Promise<AnyTask[]>;
   findById(id: string): Promise<AnyTask | null>;

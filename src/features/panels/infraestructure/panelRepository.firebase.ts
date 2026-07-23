@@ -144,14 +144,6 @@ export class FirebasePanelsRepository implements PanelRepository {
           // Panel encontrado — entregarlo y resetear bandera
           creating = false;
 
-          console.log(
-            "panelToDoc: ",
-            this.mapDocumentToPanel(snap.docs[0].id, snap.docs[0].data(), {
-              ownerId: id,
-              ownerAccountType: accountType,
-            }),
-          );
-
           onData(
             this.mapDocumentToPanel(snap.docs[0].id, snap.docs[0].data(), {
               ownerId: id,

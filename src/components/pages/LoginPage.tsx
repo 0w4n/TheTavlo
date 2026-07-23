@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 import "./LoginPage.css";
 import { Button } from "#components/atoms/button";
+import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 
 export default function LoginPage() {
+  useDocumentTitle("Iniciar sesión");
   const { signInAsGuest, signInWithGoogle, state } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();

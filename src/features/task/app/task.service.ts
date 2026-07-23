@@ -10,6 +10,7 @@ import {
 } from "../domain/task.entity";
 import { TaskRules } from "../domain/task.rule";
 import type { TaskRepository } from "./taskRepository.interface";
+import { firebaseErr, unexpectedErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
 
 export class TasksService {
   constructor(private repository: TaskRepository) {}
@@ -23,7 +24,7 @@ export class TasksService {
    */
   subscribe(
     onData: (tasks: AnyTask[]) => void,
-    onError: (err: Error) => void,
+    onError: (err: AppErr) => void,
   ): Unsubscribe {
     return this.repository.subscribe(onData, onError);
   }
@@ -40,15 +41,14 @@ export class TasksService {
 
   // ─── Mutaciones ──────────────────────────────────────────────────────────
 
-  async createAnyTask(data: CreateAnyTaskDTO): Promise<AnyTask | Error> {
+  async createAnyTask(data: CreateAnyTaskDTO): Promise<ResultApp<AnyTask, AppErr>> {
     const titleError = TaskRules.validateTitle(data.title);
-    console.log(titleError);
-    if (titleError) return Error(titleError);
+    if (titleError) return unexpectedErr(titleError);
 
     try {
       return await this.repository.create(data);
     } catch {
-      return Error("Error al crear la tarea");
+      return firebaseErr("Error al crear la tarea");
     }
   }
 

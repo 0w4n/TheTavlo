@@ -8,8 +8,10 @@ import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import { Rise } from "#components/molecules/rise";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
+import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 
 export default function HomePage() {
+  useDocumentTitle("Inicio");
   const [riseOpen, setRiseOpen] = useState(false);
 
   return (

@@ -9,6 +9,7 @@ import useTasks from "#features/task/presentation/hooks/useTask";
 import { useEvents } from "#features/events/presentation/hooks/useEvents";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
 import { Header } from "#components/organisms/header";
+import PanelLocationBar from "#components/organisms/panelLocationBar/panelLocationBar";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
@@ -33,29 +34,29 @@ export default function PanelRoute() {
 
   switch (data.kind) {
     case "dashboard":
-      return <PanelDashboard panel={data.panel} />;
+      return <PanelDashboard panel={data.panel} panels={data.panels} />;
     case "task-list":
       return (
-        <PanelChrome panel={data.panel}>
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Tareas" viewIcon="IconChecklist">
           <TaskListPage panel={data.panel} />
         </PanelChrome>
       );
     case "task-detail":
       return (
-        <PanelChrome panel={data.panel}>
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Tareas" viewIcon="IconChecklist">
           <TaskListPage panel={data.panel} />
           <TaskDetailModal taskId={data.taskId} />
         </PanelChrome>
       );
     case "calendar":
       return (
-        <PanelChrome panel={data.panel}>
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Calendario" viewIcon="IconCalendarEvent">
           <CalendarPage panel={data.panel} />
         </PanelChrome>
       );
     case "event-detail":
       return (
-        <PanelChrome panel={data.panel}>
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Calendario" viewIcon="IconCalendarEvent">
           <CalendarPage panel={data.panel} />
           <EventDetailModal eventId={data.eventId} />
         </PanelChrome>
@@ -64,7 +65,7 @@ export default function PanelRoute() {
 }
 
 /** Dashboard de widgets — el mismo componente que usaba HomePage/PanelsPage. */
-function PanelDashboard({ panel }: { panel: Panel }) {
+function PanelDashboard({ panel, panels }: { panel: Panel; panels: Panel[] }) {
   const { signOut } = useAuth();
   const { state: widgetsState, toggleEditMode } = useWidgets();
 
@@ -75,17 +76,31 @@ function PanelDashboard({ panel }: { panel: Panel }) {
         onSignOut={signOut}
         leftAction={<EditModeButton editMode={widgetsState.editMode} onToggle={toggleEditMode} />}
       />
+      <PanelLocationBar panels={panels} />
       <Dashboard widgetState={widgetsState} />
     </>
   );
 }
 
 /** Header + wrapper común para las vistas de task-list/calendar (y sus detalles). */
-function PanelChrome({ panel, children }: { panel: Panel; children: React.ReactNode }) {
+function PanelChrome({
+  panel,
+  panels,
+  viewLabel,
+  viewIcon,
+  children,
+}: {
+  panel: Panel;
+  panels: Panel[];
+  viewLabel?: string;
+  viewIcon?: string;
+  children: React.ReactNode;
+}) {
   const { signOut } = useAuth();
   return (
     <>
       <PanelHeader panel={panel} onSignOut={signOut} />
+      <PanelLocationBar panels={panels} viewLabel={viewLabel} viewIcon={viewIcon} />
       {children}
     </>
   );

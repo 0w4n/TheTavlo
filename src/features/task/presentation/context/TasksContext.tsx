@@ -18,6 +18,7 @@ import {
   tasksReducer,
   type TasksState,
 } from "./taskReducer";
+import { firebaseErr, isErr, unexpectedErr, type AppErr } from "#core/appCore/domain/AppCore.type";
 
 type TasksContextValue = {
   state: TasksState;
@@ -26,7 +27,7 @@ type TasksContextValue = {
   updateTask: (id: string, data: UpdateAnyTaskDTO) => Promise<void>;
   completeTask: (id: string) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
-  selectTask: (task: AnyTask | undefined) => void;
+  selectTask: (task: AnyTask) => void;
   clearError: () => void;
 };
 
@@ -65,7 +66,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     } catch {
       dispatch({
         type: "FETCH_TASKS_ERROR",
-        payload: Error("Error al cargar tareas"),
+        payload: firebaseErr("Error al cargar tareas"),
       });
     }
   }, [tasksService]);
@@ -75,15 +76,15 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const createTask = useCallback(
     async (data: CreateAnyTaskDTO[]) => {
       for (const element of data) {
-        let result: AnyTask | Error;
+        let result: AnyTask | AppErr;
 
         if (isCreateNodeTask(element) || isCreateTask(element)) {
           result = await tasksService.createAnyTask(element);
         } else {
-          result = Error("Tipo de tarea desconocido");
+          result = unexpectedErr("Tipo de tarea desconocido");
         }
 
-        if (result instanceof Error) {
+        if (isErr(result)) {
           dispatch({ type: "FETCH_TASKS_ERROR", payload: result });
           throw result;
         }
@@ -131,7 +132,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     [tasksService],
   );
 
-  const selectTask = useCallback((task: AnyTask | undefined) => {
+  const selectTask = useCallback((task: AnyTask) => {
     dispatch({ type: "SELECT_TASK", payload: task });
   }, []);
 

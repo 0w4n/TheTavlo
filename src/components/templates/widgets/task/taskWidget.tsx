@@ -11,6 +11,8 @@ export function TaskWidget() {
   const { state: taskState } = useTasks();
   const { state: panelState } = usePanels();
 
+  console.log("status Task: ", taskState);
+
   if (panelState.status !== "panel") {
     return <LoadingPage/>;
   }
@@ -30,6 +32,7 @@ export function TaskWidget() {
 
 function taskItem(item: AnyTask) {
   if(isTask(item)) {
+    console.log("Task: ", item)
     return (
       <>
         <div className="task__item">
@@ -46,6 +49,8 @@ function taskItem(item: AnyTask) {
       </>
     );
   } else if (isNodeTask(item)) {
+    console.log("Node task: ", item);
+    
     return (
       <>
         <div className="task__item">
@@ -67,6 +72,5 @@ function taskItem(item: AnyTask) {
         </div>
       </>
     );
-
   }
 }

@@ -8,7 +8,6 @@ import Icon from "#shared/ui/atoms/icons";
 import WidgetContent from "../content/WidgetContent";
 import { GetDialogWdigetType, getIconWidgetType } from "./utils";
 import { Dropdown } from "#components/molecules/dropdown";
-import BreadCrumb from "#components/molecules/breadcrumb/breadcrumb";
 import AddShared from "#components/templates/dialog/modShared/addShared";
 
 import "./widgetContainer.css";
@@ -113,7 +112,6 @@ export default function WidgetContainer({
           <Icon name={getIconWidgetType(widget.type)} />
         </div>
         <div>
-          <BreadCrumb />
           {editMode && !widget.locked && (
             <Button
               variant="danger"
