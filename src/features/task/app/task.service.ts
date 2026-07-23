@@ -10,7 +10,7 @@ import {
 } from "../domain/task.entity";
 import { TaskRules } from "../domain/task.rule";
 import type { TaskRepository } from "./taskRepository.interface";
-import { firebaseErr, unexpectedErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
+import { err, firebaseErr, isErr, ok, unexpectedErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
 
 export class TasksService {
   constructor(private repository: TaskRepository) {}
@@ -43,64 +43,65 @@ export class TasksService {
 
   async createAnyTask(data: CreateAnyTaskDTO): Promise<ResultApp<AnyTask, AppErr>> {
     const titleError = TaskRules.validateTitle(data.title);
-    if (titleError) return unexpectedErr(titleError);
+    if (isErr(titleError)) return titleError;
 
     try {
-      return await this.repository.create(data);
+      return ok(await this.repository.create(data));
     } catch {
-      return firebaseErr("Error al crear la tarea");
+      return err(firebaseErr("Error al crear la tarea"));
     }
   }
 
   async updateAnyTask(
     id: string,
     data: UpdateAnyTaskDTO,
-  ): Promise<AnyTask | Error> {
+  ): Promise<ResultApp<AnyTask, AppErr>> {
     if (data.title) {
       const titleError = TaskRules.validateTitle(data.title);
-      if (titleError) return Error(titleError);
+      if (isErr(titleError)) return titleError;
     }
     if (data.endAt) {
       const dateError = TaskRules.validateDueDate(data.endAt.toDate());
-      if (dateError) return Error(dateError);
+      if (isErr(dateError)) return dateError;
     }
 
     try {
-      return await this.repository.update(id, data);
+      return ok(await this.repository.update(id, data));
     } catch {
-      return Error("Error al actualizar la tarea");
+      return err(firebaseErr("Error al actualizar la tarea"));
     }
   }
 
-  async completeTask(id: string): Promise<AnyTask | Error> {
+  async completeTask(id: string): Promise<ResultApp<AnyTask, AppErr>> {
     const existingTask = await this.repository.findById(id);
-    if (!existingTask) return Error("Tarea no encontrada");
+    if (!existingTask) return err(firebaseErr("Tarea no encontrada"));
     if (!isNodeTask(existingTask) || !isTask(existingTask))
-      return Error("No se trata de una tarea");
+      return err(firebaseErr("No se trata de una tarea"));
     if (!TaskRules.canComplete(existingTask))
-      return Error("La tarea ya está completada");
+      return err(firebaseErr("La tarea ya está completada"));
 
     if (isTask(existingTask)) {
       const res = await this.updateAnyTask(id, {
         progress: TaskProgress.SUBMITTED,
         updatedAt: Timestamp.now(),
       });
-      if (res instanceof Error) return Error("Algo");
-      if (isTask(res)) return res;
-      return Error(
+
+      if (isErr(res)) return res;
+
+      return err(unexpectedErr(
         "Error inesperado: el resultado de la actualización no es válido",
-      );
+      ));
     }
 
-    return Error(`El id ${id} de la tarea devuelve una interfaz no válida`);
+    return err(unexpectedErr(`El id ${id} de la tarea devuelve una interfaz no válida`));
   }
 
-  async deleteTask(id: string): Promise<boolean | Error> {
+  async deleteTask(id: string): Promise<ResultApp<boolean, AppErr>> {
     try {
       await this.repository.delete(id);
-      return true;
+      return ok(true);
     } catch {
-      return Error(`Error al eliminar la tarea con id: ${id}`);
+      return err(firebaseErr(`Error al eliminar la tarea con id: ${id}`));
     }
   }
 

@@ -15,6 +15,7 @@ import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import TaskListPage from "./TaskListPage";
 import CalendarPage from "./CalendarPage";
+import LoadingPage from "./LoadingPage";
 
 /**
  * Único componente para toda la cadena `home/:pid[/:pid...]`. Antes había
@@ -153,7 +154,12 @@ function TaskDetailModal({ taskId }: { taskId: string }) {
   const close = () => navigate(-1);
 
   const { state } = useTasks();
-  const task = state.tasks.find((t) => t.id === taskId);
+
+  if (state.status !== "task") {
+    return <LoadingPage />;
+  }
+
+  const task = state.currentTask.find((t) => t.id === taskId);
 
   return (
     <Modal onClose={close}>

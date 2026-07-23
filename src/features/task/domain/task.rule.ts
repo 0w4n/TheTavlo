@@ -1,3 +1,4 @@
+import { err, ok, validationErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
 import { TaskProgress, type Task } from "./task.entity";
 
 export class TaskRules {
@@ -9,20 +10,20 @@ export class TaskRules {
     return task.endAt.toDate() < new Date();
   }
 
-  static validateTitle(title: string): string | null {
+  static validateTitle(title: string): ResultApp<string, AppErr> {
     if (!title || title.trim().length === 0) {
-      return "El título es requerido";
+      return err(validationErr("El título es requerido"));
     }
     if (title.length > 100) {
-      return "El título no puede exceder 100 caracteres";
+      return err(validationErr("El título no puede exceder 100 caracteres"));
     }
-    return null;
+    return ok(title);
   }
 
-  static validateDueDate(date: Date): string | null {
+  static validateDueDate(date: Date): ResultApp<Date, AppErr> {
     if (date < new Date()) {
-      return "La fecha de vencimiento no puede ser en el pasado";
+      return err(validationErr("La fecha de vencimiento no puede ser en el pasado"));
     }
-    return null;
+    return ok(date);
   }
 }

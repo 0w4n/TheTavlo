@@ -16,16 +16,19 @@ export function TaskWidget() {
   if (panelState.status !== "panel") {
     return <LoadingPage/>;
   }
+  
+  if (taskState.status !== "task") {
+    return <LoadingPage />;
+  }
 
   const currentPanel = panelState.currentPanel;
+  const currentTasks = taskState.currentTask;
 
-  if (taskState.loading) {
-    <LoadingPage />;
-  } else if (!taskState.tasks || currentPanel === undefined) {
+  if (!taskState.status || currentPanel === undefined) {
     return <span>No hay nada</span>;
   } else {
     return (
-      <>{taskState.tasks.map((item) => taskItem(item))}</>
+      <>{currentTasks.map((item) => taskItem(item))}</>
     );
   }
 }
