@@ -12,11 +12,12 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
   const { state, fetchSubPanels } = usePanels();
   const [subPanels, setSubPanels] = useState<Panel[]>([]);
 
+  console.log("Panel state:", state);
+
   useEffect(() => {
-    if (state.status === "loading") {
-      console.warn("No hay panel seleccionado");
-      return;
-    }
+    if (widget.type !== "panels-list") return;
+
+    if (state.status === "loading") return;
 
     if (state.status === "error") {
       console.error(state.error)
@@ -24,9 +25,6 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     }
 
     const panel = state.currentPanel;
-
-    console.log("Cargando contenido del widget:", widget);
-    console.log("Panel actual:", panel);
 
     const loadSubPanels = async () => {
       console.log(panel.id);
@@ -36,7 +34,7 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     };
 
     loadSubPanels();
-  }, [state, fetchSubPanels]);
+  }, [state, fetchSubPanels, widget.type]);
 
   switch (widget.type) {
     case "task-list":

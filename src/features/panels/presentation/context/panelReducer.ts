@@ -29,6 +29,7 @@ type PanelsAction =
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
   | { type: "DELETE_PANEL_CASCADE_SUCCESS"; payload: { deletedIds: string[] } }
+  | { type: "REFRESH_PANEL" }
   | { type: "SELECT_PANEL"; payload: Panel }
   | { type: "CLEAR_ERROR" };
 
@@ -104,6 +105,10 @@ export function panelsReducer(
       return {
         status: "loading",
       };
+
+    case "REFRESH_PANEL":
+      if (state.status !== "panel") return state;
+      return {...state};
 
     case "SELECT_PANEL":
       return {

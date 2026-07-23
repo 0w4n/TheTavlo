@@ -24,11 +24,7 @@ export interface CreatePanelOpt {
   addToParent: boolean;
 }
 
-export type CreatePanelResult =
-  | ResultApp<void, AppErr>
-  | ResultApp<Panel, AppErr>
-  | ResultApp<DocumentReference, AppErr>;
-
+export type CreatePanelResult = ResultApp<void | Panel | DocumentReference, AppErr>;
 
 // ─── Valor del contexto ───────────────────────────────────────────────────────
 
@@ -58,12 +54,6 @@ export type PanelsContextValue = {
     data: CreatePanelDTO,
     opt?: CreatePanelOpt,
   ) => Promise<CreatePanelResult>;
-
-  /** @deprecated Usar parentId en createPanel() en su lugar. */
-  addSubPanel: (
-    parentRef: DocumentReference,
-    childRef: DocumentReference,
-  ) => Promise<void>;
 
   /** Actualiza campos de un panel por id. */
   updatePanel: (id: string, data: UpdatePanelDTO) => Promise<void>;

@@ -185,21 +185,6 @@ export function PanelsProvider({
     [panelsService, state.status],
   );
 
-  // ─── addSubPanel ──────────────────────────────────────────────────────────
-
-  const addSubPanel = useCallback(
-    async (
-      parentRef: DocumentReference,
-      childRef: DocumentReference,
-    ): Promise<void> => {
-      const result = await panelsService.addSubPanel(parentRef, childRef);
-      if (isErr(result)) {
-        dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
-      }
-    },
-    [panelsService],
-  );
-
   // ─── fetchSubPanels ───────────────────────────────────────────────────────
 
   const fetchSubPanels = useCallback(
@@ -210,6 +195,7 @@ export function PanelsProvider({
           dispatch({ type: "FETCH_PANELS_ERROR", payload: parentRef.err });
           return [];
         }
+
         const result = await panelsService.getSubPanels(parentRef.value);
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
@@ -222,6 +208,7 @@ export function PanelsProvider({
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
           return [];
         }
+        dispatch({type: "REFRESH_PANEL"})
         return result.value;
       }
     },
@@ -300,7 +287,6 @@ export function PanelsProvider({
     fetchPanels,
     fetchHomePanel,
     createPanel,
-    addSubPanel,
     fetchSubPanels,
     updatePanel,
     deletePanel,
