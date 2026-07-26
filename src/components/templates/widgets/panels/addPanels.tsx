@@ -104,8 +104,6 @@ export function AddPanels({ onClose }: AddPanelsForm) {
             <div
               style={{
                 backgroundColor: `hsl(${panel?.color}, 100%, 80%)`,
-                width: "20px",
-                height: "20px",
               }}
             >
               <span style={{ color: `hsl(${panel?.color}, 100%, 25%)` }}>AbC</span>

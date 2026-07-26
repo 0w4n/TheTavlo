@@ -6,7 +6,7 @@ import type {
 } from "#features/widgets/domain/widget.entity";
 import Icon from "#shared/ui/atoms/icons";
 import WidgetContent from "../content/WidgetContent";
-import { GetDialogWdigetType, getIconWidgetType } from "./utils";
+import { GetDialogWdigetType } from "./utils";
 import { Dropdown } from "#components/molecules/dropdown";
 import AddShared from "#components/templates/dialog/modShared/addShared";
 
@@ -25,7 +25,7 @@ export default function WidgetContainer({
   editMode: boolean;
   onResize?: (layout: Widget["layout"]) => void;
 }) {
-  const [search, setSearch] = useState("");
+  const [_search, setSearch] = useState("");
   const actionTrigers = {
     iconTrigger: "IconDotsVertical",
     options: [
