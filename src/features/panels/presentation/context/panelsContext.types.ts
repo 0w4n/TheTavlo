@@ -69,7 +69,7 @@ export type PanelsContextValue = {
   deletePanelCascade: (id: string) => Promise<string[]>;
 
   /** Devuelve los paneles hijos del panel con el id dado. */
-  fetchSubPanels: (parentId: DocumentReference | string) => Promise<Panel[]>;
+  fetchSubPanels: (parentId: DocumentReference | string) => Promise<void>;
 
   /** Establece el panel seleccionado (para edición/detalle). */
   selectPanel: (panel: Panel) => void;

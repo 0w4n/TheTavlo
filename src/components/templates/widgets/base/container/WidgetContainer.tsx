@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "#components/atoms/button";
 import type {
   Widget,
@@ -25,6 +25,7 @@ export default function WidgetContainer({
   editMode: boolean;
   onResize?: (layout: Widget["layout"]) => void;
 }) {
+  const [search, setSearch] = useState("");
   const actionTrigers = {
     iconTrigger: "IconDotsVertical",
     options: [
@@ -99,8 +100,6 @@ export default function WidgetContainer({
 
   const { removeWidget } = useWidgets();
 
-  console.log("Por aquí paso");
-
   const handleRemoving = async () => {
     removeWidget(widget.id);
   };
@@ -108,9 +107,14 @@ export default function WidgetContainer({
   return (
     <div className="widget" style={{ cursor: editMode ? "grab" : "default" }}>
       <div className="widget__header">
-        <div>
+        {/* <div>
           <Icon name={getIconWidgetType(widget.type)} />
+        </div> */}
+        <div className="widget__header-searchBar">
+          <Icon name={"IconSearch"} />
+          <input type="text" placeholder="Búscame" onChange={(e) => setSearch(e.target.value)} className="widget__header-searchBar-input"/>
         </div>
+        <Button variant="primary" icon="IconFilter2" iconSize={16}/>
         <div>
           {editMode && !widget.locked && (
             <Button

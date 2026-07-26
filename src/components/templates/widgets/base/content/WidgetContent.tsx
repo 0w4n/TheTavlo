@@ -9,32 +9,8 @@ import type { Panel } from "#features/panels/domain/panel.entity";
 import { TaskWidget } from "../../task/taskWidget";
 
 export default function WidgetContent({ widget }: { widget: Widget }) {
-  const { state, fetchSubPanels } = usePanels();
-  const [subPanels, setSubPanels] = useState<Panel[]>([]);
-
-  console.log("Panel state:", state);
-
-  useEffect(() => {
-    if (widget.type !== "panels-list") return;
-
-    if (state.status === "loading") return;
-
-    if (state.status === "error") {
-      console.error(state.error)
-      return;
-    }
-
-    const panel = state.currentPanel;
-
-    const loadSubPanels = async () => {
-      console.log(panel.id);
-      const children = await fetchSubPanels(panel.id);
-      console.log("Sub-panels fetched:", children);
-      setSubPanels(children);
-    };
-
-    loadSubPanels();
-  }, [state, fetchSubPanels, widget.type]);
+  const { state } = usePanels();
+  const subPanels = state.status === "panel" ? state.subPanels : [];
 
   switch (widget.type) {
     case "task-list":
@@ -46,7 +22,7 @@ export default function WidgetContent({ widget }: { widget: Widget }) {
     case "panels-list":
       return (
         <PanelsWidget
-          items={subPanels.filter((panel) => panel !== undefined)}
+          items={subPanels}
         />
       );
 

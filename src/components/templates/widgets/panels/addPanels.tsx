@@ -72,7 +72,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
               onChange={(e) => {
                 setPanel((p) => ({ ...p, name: e.target.value }));
 
-                setErrors((er) => ({ ...er, title: undefined }));
+                setErrors((err) => ({ ...err, title: undefined }));
               }}
             />
           </Field>
@@ -84,7 +84,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
               onChange={(e) => {
                 setPanel((p) => ({ ...p, icon: e.target.value }));
 
-                setErrors((er) => ({ ...er, icon: undefined }));
+                setErrors((err) => ({ ...err, icon: undefined }));
               }}
             />
           </Field>
@@ -98,7 +98,7 @@ export function AddPanels({ onClose }: AddPanelsForm) {
               step={2}
               onChange={(e) => {
                 setPanel((p) => ({ ...p, color: e.target.valueAsNumber }));
-                setErrors((er) => ({ ...er, color: undefined }));
+                setErrors((err) => ({ ...err, color: undefined }));
               }}
             />
             <div
@@ -107,7 +107,9 @@ export function AddPanels({ onClose }: AddPanelsForm) {
                 width: "20px",
                 height: "20px",
               }}
-            ></div>
+            >
+              <span style={{ color: `hsl(${panel?.color}, 100%, 25%)` }}>AbC</span>
+            </div>
           </Field>
         </form>
       </Modal.Body>

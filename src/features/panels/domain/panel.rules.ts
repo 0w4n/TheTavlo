@@ -7,7 +7,7 @@ export default class PanelRules {
       return "El nombre del panel es requerido";
     }
 
-    if (name.length > 15) {
+    if (name.length > 50) {
       return "El nombre no puede exceder 50 caracteres";
     }
 

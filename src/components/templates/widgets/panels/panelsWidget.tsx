@@ -3,8 +3,12 @@ import type { Panel } from "#features/panels/domain/panel.entity";
 import { Link } from "react-router-dom";
 import "./panelsWidget.css";
 
-export default function PanelsWidget({ items }: { items: Panel[] }) {
-  return <>{items.map((item) => panelsItem(item))}</>;
+export default function PanelsWidget({ items }: { items: Panel[] | undefined }) {
+  if (!items || items.length === 0) {
+    return <span>No hay paneles</span>;
+  } else {
+    return <>{items.map((item) => panelsItem(item))}</>;
+  }
 }
 
 function panelsItem(panel: Panel) {

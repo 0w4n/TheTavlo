@@ -33,16 +33,9 @@ export function PanelsProvider({
   const [state, dispatch] = useReducer(panelsReducer, initialPanelsState);
   const { state: authState } = useAuth();
 
-  useEffect(() => {
-    console.log("state cambió a:", state);
-  }, [state]);
-
   // ─── Suscripción en tiempo real al panel home ─────────────────────────────
   // Se activa cuando hay usuario autenticado y se cancela al desmontar
   // o cuando el usuario cambia.
-
-  console.log("1. useEffect");
-  console.log("authState: ", authState);
 
   useEffect(() => {
     if (authState.status === "error") return;
@@ -57,12 +50,75 @@ export function PanelsProvider({
         console.log("Panel recibido: ", panel);
         dispatch({ type: "FETCH_PANELS_SUCCESS", payload: [panel] });
       },
-      (err) => {console.log("Panel err: ", err); dispatch({ type: "FETCH_PANELS_ERROR", payload: err });},
+      (err) => {
+        console.log("Panel err: ", err);
+        dispatch({ type: "FETCH_PANELS_ERROR", payload: err });
+      },
     );
 
     // Limpieza: cancela la suscripción de Firestore
     return unsubscribe;
   }, [panelsService, authState.status]);
+
+  // currentPanel.id derivado del estado — única fuente de verdad para saber
+  // "en qué panel estoy", usada tanto por el efecto de sincronización de
+  // subPanels como por createPanel (evita closures obsoletas: sin esto,
+  // useCallback solo se re-crea cuando cambia state.status, no cuando
+  // cambia el currentPanel dentro de ese mismo status).
+  const currentPanelId =
+    state.status === "panel" ? state.currentPanel.id : undefined;
+
+  // ─── loadSubPanels (interno) ───────────────────────────────────────────────
+  // Único lugar que efectivamente pide los hijos de un panel a Firestore.
+  // Lo usan: el efecto de sincronización automática (con cancelToken) y
+  // fetchSubPanels/la vía legacy de addSubPanel (sin cancelToken — el
+  // chequeo `currentPanel.id === parentId` en el reducer ya actúa como red
+  // de seguridad barata contra condiciones de carrera).
+  const loadSubPanels = useCallback(
+    async (
+      parentId: string,
+      cancelToken?: { cancelled: boolean },
+    ): Promise<void> => {
+      const refResult = await panelsService.getDocRef(parentId);
+      if (cancelToken?.cancelled) return;
+
+      if (isErr(refResult)) {
+        dispatch({ type: "FETCH_SUBPANELS_ERROR", payload: refResult.err });
+        return;
+      }
+
+      const result = await panelsService.getSubPanels(refResult.value);
+      if (cancelToken?.cancelled) return;
+
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_SUBPANELS_ERROR", payload: result.err });
+        return;
+      }
+
+      dispatch({
+        type: "FETCH_SUBPANELS_SUCCESS",
+        payload: { parentId, panels: result.value },
+      });
+    },
+    [panelsService],
+  );
+
+  // ─── Sincronización de subPanels con el currentPanel ──────────────────────
+  // Único punto de sincronización con Firestore para subPanels (no vive en
+  // los widgets). Se dispara con la carga inicial, con la navegación entre
+  // paneles y con selectPanel — siempre que cambie currentPanel.id. Usa
+  // cancelToken para no aplicar un resultado que quedó "en vuelo" si el
+  // usuario navega antes de que resuelva.
+  useEffect(() => {
+    if (currentPanelId === undefined) return;
+
+    const cancelToken = { cancelled: false };
+    loadSubPanels(currentPanelId, cancelToken);
+
+    return () => {
+      cancelToken.cancelled = true;
+    };
+  }, [currentPanelId, loadSubPanels]);
 
   // ─── findByRef ────────────────────────────────────────────────────────────
 
@@ -137,41 +193,55 @@ export function PanelsProvider({
     ): Promise<CreatePanelResult> => {
       if (!opt) {
         const result = await panelsService.createPanel(data);
+
         if (isErr(result)) {
           dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
         } else {
           dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
         }
+
         return result.success ? { success: true, value: undefined } : result;
       }
 
-      if (opt.addToParent && state.status === "panel" && state.currentPanel) {
-        const currentRef = await panelsService.getDocRef(state.currentPanel.id);
+      if (opt.addToParent && currentPanelId !== undefined) {
+        const currentRef = await panelsService.getDocRef(currentPanelId);
         const result = await panelsService.createPanel(
           data,
           currentRef.success ? currentRef.value : undefined,
         );
 
+        console.log("createPanel result: ", result);
+
         if (isErr(result)) {
-          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
+          dispatch({ type: "FETCH_SUBPANELS_ERROR", payload: result.err });
           return result;
         }
 
+        // El panel creado ya viene completo (con parentId incluido): el
+        // reducer lo agrega a subPanels en memoria si corresponde al
+        // currentPanel — cero lecturas extra a Firestore, y ya no depende
+        // de que el widget se re-monte o de recargar la página.
+        dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
+
         switch (opt.return) {
           case ReturnType.PANEL:
-            dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
             return result;
+
           case ReturnType.DOCREF: {
             const refResult = await panelsService.getDocRef(result.value.id);
             if (isErr(refResult)) {
-              dispatch({ type: "FETCH_PANELS_ERROR", payload: refResult.err });
+              dispatch({
+                type: "FETCH_SUBPANELS_ERROR",
+                payload: refResult.err,
+              });
               return refResult;
             }
+
             return refResult;
           }
+
           case ReturnType.DEFAULT:
           default:
-            dispatch({ type: "CREATE_PANEL_SUCCESS", payload: result.value });
             return { success: true, value: undefined };
         }
       }
@@ -182,37 +252,36 @@ export function PanelsProvider({
         ),
       );
     },
-    [panelsService, state.status],
+    [panelsService, currentPanelId],
   );
 
   // ─── fetchSubPanels ───────────────────────────────────────────────────────
 
   const fetchSubPanels = useCallback(
-    async (parentId: DocumentReference | string): Promise<Panel[]> => {
+    async (parentId: DocumentReference | string): Promise<void> => {
       if (typeof parentId === "string") {
-        const parentRef = await panelsService.getDocRef(parentId);
-        if (isErr(parentRef)) {
-          dispatch({ type: "FETCH_PANELS_ERROR", payload: parentRef.err });
-          return [];
-        }
-
-        const result = await panelsService.getSubPanels(parentRef.value);
-        if (isErr(result)) {
-          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
-          return [];
-        }
-        return result.value;
-      } else {
-        const result = await panelsService.getSubPanels(parentId);
-        if (isErr(result)) {
-          dispatch({ type: "FETCH_PANELS_ERROR", payload: result.err });
-          return [];
-        }
-        dispatch({type: "REFRESH_PANEL"})
-        return result.value;
+        // Sin cancelToken a propósito: es la misma vía legacy documentada
+        // arriba (addSubPanel solo recibe DocumentReferences, no el Panel
+        // completo) — el chequeo currentPanel.id === parentId dentro del
+        // reducer ya descarta el resultado si el usuario navegó mientras
+        // tanto, sin necesidad de una señal de cancelación explícita.
+        await loadSubPanels(parentId);
+        return;
       }
+
+      const result = await panelsService.getSubPanels(parentId);
+
+      if (isErr(result)) {
+        dispatch({ type: "FETCH_SUBPANELS_ERROR", payload: result.err });
+        return;
+      }
+
+      dispatch({
+        type: "FETCH_SUBPANELS_SUCCESS",
+        payload: { parentId: parentId.id, panels: result.value },
+      });
     },
-    [panelsService],
+    [panelsService, loadSubPanels],
   );
 
   // ─── updatePanel ──────────────────────────────────────────────────────────
