@@ -15,11 +15,11 @@ const APP_NAME = "TheTavlo";
  */
 export function useDocumentTitle(title: string) {
   useEffect(() => {
-    const previous = document.title;
-    document.title = title ? `${title} · ${APP_NAME}` : APP_NAME;
+    const previous = document.head.outerHTML;
+    document.head.outerHTML = title ? `<meta property="og:site_name" content="${APP_NAME} - ${title}"> <meta property="og:title" content="${APP_NAME} - ${title}">` : `<meta property="og:site_name" content="${APP_NAME}"> <meta property="og:title" content="${APP_NAME}">`;
 
     return () => {
-      document.title = previous;
+      document.head.outerHTML = previous;
     };
   }, [title]);
 }
