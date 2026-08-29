@@ -1,0 +1,71 @@
+.panels__widget--item {
+  background-color: hsl(var(--panels__widget--color), 100%, 20%);
+  text-decoration: none;
+  padding: var(--spacing-2);
+  border-radius: var(--radius-base);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-1);
+  color: var(--color-textPrimary);
+  scroll-snap-align: start;
+}
+
+.widgetContent__view--list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.widgetContent__view--card {
+  display: grid;
+}
+
+.panels__widget--item__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.panels__widget--item__icon {
+  background-color: hsl(var(--panels__widget--color), 100%, 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: var(--spacing-1);
+  anchor-name: --icon-emoji;
+}
+
+.panels__widget--item__icon > span {
+  font-size: 32px;
+}
+
+.emoji-picker {
+  position: absolute !important;
+  position-anchor: --icon-emoji;
+  inset-block-start: anchor(bottom);
+  inset-inline-start: anchor(left);
+}
+
+
+.panels__widget--item__name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  gap: var(--spacing-2);
+}
+
+.panels__widget--item:hover {
+  background-color: hsl(var(--panels__widget--color), 100%, 30%);
+  > .panels__widget--item__icon {
+    background-color: hsl(var(--panels__widget--color), 100%, 80%);
+    > svg {
+      color: hsl(var(--panels__widget--color), 100%, 30%);
+    }
+  }
+  > .panels__widget--item__name > svg {
+    color: hsl(var(--panels__widget--color), 100%, 80%);
+  }
+}

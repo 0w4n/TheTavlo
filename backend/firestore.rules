@@ -1,0 +1,87 @@
+rules_version = '2';
+
+// Borrador — verifícalo contra tu esquema real antes de desplegarlo.
+// Objetivo (Q3 de la conversación de invitaciones): la validación de rol
+// vive TANTO acá (última barrera, evita que un cliente modificado se salte
+// las reglas) COMO en el backend (invitations.router.ts, que además oculta
+// acciones como "invitar"/"link público" a quien no es dueño/editor). El
+// cliente (React) además debe ocultar "Eliminar" y demás acciones de
+// escritura para VIEWER — eso es solo UX, esta es la barrera real.
+//
+// Supuestos sobre el esquema (confirmar contra panel.entity.ts /
+// invitation.entity.ts):
+//   {accountType}/{ownerId}/panels/{panelId}                  -> Panel
+//   {accountType}/{ownerId}/panels/{panelId}/tasks/{taskId}    -> AnyTask
+//   {accountType}/{ownerId}/panels/{panelId}/event/{eventId}   -> AnyEvent
+//   {accountType}/{ownerId}/panels/{panelId}/notes/{noteId}    -> Note
+//   {accountType}/{ownerId}/panels/{panelId}/widgets/{widgetId}-> Widget
+//   shared/{invitationId}                                      -> Invitation
+//   shared/{invitationId}/invitedUsers/{userId}                -> SharedUser
+//   sharedPanelIndex/{userId}/panels/{panelId}                 -> índice de "compartido conmigo"
+//     (solo lo escribe el backend con firebase-admin — nunca el cliente)
+
+function isSignedIn() {
+  return request.auth != null;
+}
+
+function isOwner(ownerId) {
+  return isSignedIn() && request.auth.uid == ownerId;
+}
+
+// Lee el rol del usuario actual sobre panelId desde su propio índice
+// (sharedPanelIndex/{uid}/panels/{panelId}), escrito únicamente por el
+// backend al aceptar una invitación. Si no existe, no tiene acceso.
+function sharedRole(panelId) {
+  let idx = /databases/$(database)/documents/sharedPanelIndex/$(request.auth.uid)/panels/$(panelId);
+  return exists(idx)
+    ? get(idx).data.role
+    : null;
+}
+
+function canRead(ownerId, panelId) {
+  return isOwner(ownerId) || sharedRole(panelId) in ["editor", "viewer"];
+}
+
+function canWrite(ownerId, panelId) {
+  return isOwner(ownerId) || sharedRole(panelId) == "editor";
+}
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /{accountType}/{ownerId}/panels/{panelId} {
+      allow read: if canRead(ownerId, panelId);
+      // Eliminar/transferir el panel: SOLO el dueño (ni siquiera un editor).
+      allow update: if canWrite(ownerId, panelId);
+      allow delete: if isOwner(ownerId);
+      allow create: if isOwner(ownerId);
+
+      match /{subcollection}/{docId} {
+        allow read: if canRead(ownerId, panelId);
+        allow write: if canWrite(ownerId, panelId);
+      }
+    }
+
+    // Invitaciones: solo dueño/editor pueden crear (igual que valida el
+    // backend); cualquiera con el doc puede leerlo para resolveAccess
+    // (el token ya actúa como secreto — no se puede listar la colección
+    // sin conocer el id, y no exponemos `list` acá).
+    match /shared/{invitationId} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if false; // todas las escrituras pasan por el backend (admin SDK)
+
+      match /invitedUsers/{userId} {
+        allow read: if isSignedIn() && request.auth.uid == userId;
+        allow write: if false; // idem: solo el backend
+      }
+    }
+
+    // Índice de "compartido conmigo": cada usuario solo puede leer el suyo;
+    // solo el backend (admin SDK, que ignora estas reglas) puede escribirlo.
+    match /sharedPanelIndex/{userId}/panels/{panelId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+  }
+}

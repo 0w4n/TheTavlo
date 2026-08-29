@@ -1,0 +1,8 @@
+@host = "http://localhost:3000"
+@version = "v1"
+
+get http://localhost:3000/api/v1/user/ifda
+
+###
+
+get http://localhost:3000/api/v1/ping

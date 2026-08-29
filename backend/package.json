@@ -1,0 +1,30 @@
+{
+  "name": "backend-thetavlo",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Jorge Levia Galán",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@google/genai": "^2.17.0",
+    "@trpc/server": "^11.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.0.2",
+    "helmet": "^8.0.0",
+    "resend": "^4.0.1"
+  }
+}
