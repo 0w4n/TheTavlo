@@ -105,15 +105,9 @@ vi.mock("./TaskListPage", () => ({
   ),
 }));
 
-<<<<<<< HEAD:client/src/components/pages/PanelRoute.test.tsx
 vi.mock("./CalendarListPage", () => ({
   default: ({ panel }: { panel: Panel }) => (
     <div data-testid="calendar-page">CalendarListPage:{panel.id}</div>
-=======
-vi.mock("./CalendarPage", () => ({
-  default: ({ panel }: { panel: Panel }) => (
-    <div data-testid="calendar-page">CalendarPage:{panel.id}</div>
->>>>>>> main/HEAD:src/components/pages/PanelRoute.test.tsx
   ),
 }));
 
@@ -149,11 +143,7 @@ describe("PanelRoute — monta la vista correcta según data.kind", () => {
     );
   });
 
-<<<<<<< HEAD:client/src/components/pages/PanelRoute.test.tsx
   it("kind: 'calendar' → renderiza CalendarListPage con el último panel de la cadena", async () => {
-=======
-  it("kind: 'calendar' → renderiza CalendarPage con el último panel de la cadena", async () => {
->>>>>>> main/HEAD:src/components/pages/PanelRoute.test.tsx
     const panel = makePanel("panel-c");
     renderWithLoaderData({ kind: "calendar", panels: [panel], panel });
 
