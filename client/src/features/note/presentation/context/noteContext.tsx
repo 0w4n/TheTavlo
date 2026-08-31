@@ -1,4 +1,6 @@
 import { createContext, useMemo, useReducer } from "react";
+import { Timestamp } from "firebase/firestore";
+import type { CreateNoteDTO } from "#features/note/domain/note.entity";
 import type { NotesContextValue, NotesProviderProps } from "./noteContext.type";
 import { initialNotesState, notesReducer } from "./noteReducer";
 import { unexpectedErr } from "#core/appCore/domain/AppCore.type";
@@ -26,7 +28,13 @@ export function NotesProvider({ children, notesService }: NotesProviderProps) {
 
   const createNote = async (noteData: { title: string; body: string }) => {
     try {
-      const note = await notesService.createNote(noteData);
+      const now = Timestamp.now();
+      const createPayload: CreateNoteDTO = {
+        ...noteData,
+        createdAt: now,
+        updatedAt: now,
+      };
+      const note = await notesService.createNote(createPayload);
       dispatch({ type: "CREATE_NOTE_SUCCESS", payload: note });
       await fetchNotes();
     } catch (error) {
