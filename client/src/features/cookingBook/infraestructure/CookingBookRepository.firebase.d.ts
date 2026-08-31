@@ -1,0 +1,30 @@
+import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { Firestore, Unsubscribe } from "firebase/firestore";
+import type { CookingBookRepository } from "../app/CookingBook.interface";
+import type { CookingBook, CreateCookingBookDTO, UpdateCookingBookDTO } from "../domain/CookingBook.entity";
+import type { CookingRecipe, CreateCookingRecipeDTO, UpdateCookingRecipeDTO } from "../domain/CookingRecipe.entity";
+import { type AppErr } from "#core/appCore/domain/AppCore.type";
+export declare class FirebaseCookingBookRepository implements CookingBookRepository {
+    private firestore;
+    private getCurrentContext;
+    constructor(firestore: Firestore, getCurrentContext: () => GlobalContextValue);
+    private getCollectionPath;
+    private getRecipeCollectionPath;
+    private getContext;
+    private booksCollectionRef;
+    private bookDocRef;
+    private recipesCollectionRef;
+    private recipeDocRef;
+    subscribeToCookingBooks(onData: (books: CookingBook[]) => void, onError: (err: AppErr) => void): Unsubscribe;
+    getAllCookingBooks(): Promise<CookingBook[]>;
+    getCookingBook(id: string): Promise<CookingBook | null>;
+    createCookingBook(data: CreateCookingBookDTO): Promise<CookingBook>;
+    updateCookingBook(id: string, data: UpdateCookingBookDTO): Promise<CookingBook>;
+    deleteCookingBook(id: string): Promise<void>;
+    subscribeToCookingRecipes(cookingBookId: string, onData: (recipes: CookingRecipe[]) => void, onError: (err: AppErr) => void): Unsubscribe;
+    getAllCookingRecipes(cookingBookId: string): Promise<CookingRecipe[]>;
+    getCookingRecipe(cookingBookId: string, recipeId: string): Promise<CookingRecipe | null>;
+    createCookingRecipe(cookingBookId: string, data: CreateCookingRecipeDTO): Promise<CookingRecipe>;
+    updateCookingRecipe(cookingBookId: string, recipeId: string, data: UpdateCookingRecipeDTO): Promise<CookingRecipe>;
+    deleteCookingRecipe(cookingBookId: string, recipeId: string): Promise<void>;
+}

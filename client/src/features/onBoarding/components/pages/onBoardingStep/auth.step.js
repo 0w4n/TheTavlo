@@ -1,0 +1,10 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Button } from "#components/atoms/button";
+import Icon from "#shared/ui/atoms/icons";
+// ─── Paso 5: entrar ─────────────────────────────────────────────────────────
+export default function StepAuth({ onGoogle, onGuest, isLoading, errorMessage, success, }) {
+    if (success) {
+        return (_jsxs("section", { "aria-labelledby": "onboarding-heading", className: "onboarding__success", children: [_jsx("span", { className: "onboarding__success-icon", "aria-hidden": "true", children: _jsx(Icon, { name: "IconCheck", size: 32 }) }), _jsx("h1", { id: "onboarding-heading", className: "onboarding__title", children: "Tu espacio est\u00E1 listo" }), _jsx("p", { className: "onboarding__subtitle", children: "Te llevamos ah\u00ED en un segundo\u2026" })] }));
+    }
+    return (_jsxs("section", { "aria-labelledby": "onboarding-heading", children: [_jsx("p", { className: "onboarding__eyebrow", children: "\u00DAltimo paso" }), _jsx("h1", { id: "onboarding-heading", className: "onboarding__title", children: "Guardemos tu espacio" }), _jsx("p", { className: "onboarding__subtitle", children: "Entr\u00E1 como invitado y prob\u00E1 todo sin compromiso, o con Google si prefer\u00EDs tener tu cuenta desde ya." }), errorMessage && (_jsx("p", { role: "alert", className: "onboarding__error", children: errorMessage })), _jsxs("div", { className: "onboarding__auth-actions", children: [_jsx(Button, { variant: "secondary", size: "lg", icon: "IconBrandGoogleFilled", label: "Continuar con Google", onClick: onGoogle, disabled: isLoading, className: "button__full-width" }), _jsx(Button, { variant: "secondary", size: "lg", icon: "IconSpy", label: "Entrar como invitado", onClick: onGuest, disabled: isLoading, className: "button__full-width" })] }), _jsx("p", { className: "onboarding__reassurance", children: "Sin tarjeta, sin compromiso. Si entr\u00E1s como invitado, pod\u00E9s pasar tu cuenta a Google despu\u00E9s sin perder nada." })] }));
+}

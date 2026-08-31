@@ -1,0 +1,1 @@
+import{j as e}from"./grid-layout-uVRQLkEY.js";import{L as i}from"./vendor-react-PoAuO92A.js";function t(){return e.jsxs("div",{style:{textAlign:"center",padding:"4rem 1rem"},children:[e.jsx("h1",{children:"404"}),e.jsx("p",{children:"La página que buscás no existe."}),e.jsx(i,{to:"/home",children:"Volver al inicio"})]})}export{t as default};
