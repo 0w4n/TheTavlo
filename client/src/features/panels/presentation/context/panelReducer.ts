@@ -41,12 +41,12 @@ type PanelsAction =
   | { type: "CREATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "ARCHIVED"; payload: Panel }
   | { type: "ARCHIVED_ERROR"; payload: AppErr }
-  | { type: "UNARCHIVED"; payload: void }
+  | { type: "UNARCHIVED"; payload: Panel }
   | { type: "UNARCHIVED_ERROR"; payload: AppErr }
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
   | { type: "DELETE_PANEL_CASCADE_SUCCESS"; payload: { deletedIds: string[] } }
-  | { type: "DELETE_ARCHIVED_SUCCESS"; payload: string }
+  | { type: "DELETE_ARCHIVED_SUCCESS"; payload: Panel[] }
   | { type: "DELETE_ARCHIVED_ERROR"; payload: AppErr }
   | { type: "SELECT_PANEL"; payload: Panel }
   | { type: "CLEAR_ERROR" };
@@ -271,14 +271,15 @@ export function panelsReducer(
     case "DELETE_ARCHIVED_SUCCESS": {
       if (state.status !== "panel") return state;
 
-      const deletedId = action.payload;
+      const deletedPanels = action.payload;
+      const deletedIds = new Set(deletedPanels.map((p) => p.id));
 
       // El panel borrado es el que estás viendo (o el seleccionado): no hay
       // forma segura de seguir mostrando este estado, hay que volver a
       // "loading" y dejar que la suscripción al panel home la repueble.
       if (
-        state.currentPanel.id === deletedId ||
-        state.selectedPanel?.id === deletedId
+        deletedIds.has(state.currentPanel.id) ||
+        (state.selectedPanel && deletedIds.has(state.selectedPanel.id))
       ) {
         return { status: "loading" };
       }
@@ -287,7 +288,7 @@ export function panelsReducer(
       // memoria, sin recargar nada — cero lecturas extra a Firestore.
       return {
         ...state,
-        subPanels: state.subPanels.filter((p) => p.id !== deletedId),
+        subPanels: state.subPanels.filter((p) => !deletedIds.has(p.id)),
       };
     }
 

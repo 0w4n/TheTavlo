@@ -16,7 +16,6 @@ import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import TaskListPage from "./TaskListPage";
 import CalendarListPage from "#features/events/components/pages/CalendarListPage";
 import LoadingPage from "./LoadingPage";
-import CalendarPage from "#features/events/components/pages/CalendarPage";
 import AddShared from "#components/templates/dialog/modShared/addShared";
 import { usePanelRole } from "#features/invitations/presentation/hooks/usePanelRole";
 
@@ -64,7 +63,16 @@ export default function PanelRoute() {
         </PanelChrome>
       );
     case "calendar":
-      return <CalendarPage events={[]} />;
+      return (
+        <PanelChrome
+          panel={data.panel}
+          panels={data.panels}
+          viewLabel="Calendario"
+          viewIcon="IconCalendarEvent"
+        >
+          <CalendarListPage panel={data.panel} />
+        </PanelChrome>
+      );
     case "event-detail":
       return (
         <PanelChrome

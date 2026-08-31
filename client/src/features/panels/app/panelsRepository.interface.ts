@@ -35,7 +35,7 @@ export interface PanelRepository {
   /**
    * Devuelve todos los paneles archivados.
    */
-  findArchived(parentRef: DocumentReference | null): Promise<ResultApp<Panel[] | undefined, AppErr>>;
+  findArchived(parentRef: DocumentReference): Promise<ResultApp<Panel[] | undefined, AppErr>>;
 
   create(
     data: CreatePanelDTO,
@@ -56,7 +56,7 @@ export interface PanelRepository {
   /**
    * Desarchiva un panel.
    */
-  unarchive(id: string): Promise<ResultApp<void, AppErr>>;
+  unarchive(id: string): Promise<ResultApp<Panel, AppErr>>;
 
   update(id: string, data: UpdatePanelDTO): Promise<ResultApp<Panel, AppErr>>;
 
@@ -69,5 +69,5 @@ export interface PanelRepository {
   /**
    * Elimina definitivamente un panel archivado.
    */
-  deleteArchived(ref: string): Promise<ResultApp<string, AppErr>>;
+  deleteArchived(ref: DocumentReference): Promise<ResultApp<Panel[], AppErr>>;
 }

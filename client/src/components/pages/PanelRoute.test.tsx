@@ -47,13 +47,23 @@ vi.mock("#features/widgets/presentation/hooks/useWidgets", () => ({
 
 vi.mock("#features/task/presentation/hooks/useTask", () => ({
   default: () => ({
-    state: { tasks: [{ id: "task-1", title: "Comprar café" }] },
+    state: {
+      status: "task",
+      currentTask: [{ id: "task-1", title: "Comprar café" }],
+    },
   }),
+}));
+
+vi.mock("#features/invitations/presentation/hooks/usePanelRole", () => ({
+  usePanelRole: () => "owner",
 }));
 
 vi.mock("#features/events/presentation/hooks/useEvents", () => ({
   useEvents: () => ({
-    state: { event: [{ id: "evt-1", name: "Reunión de equipo" }] },
+    state: {
+      status: "events",
+      event: [{ id: "evt-1", name: "Reunión de equipo" }],
+    },
   }),
 }));
 
@@ -68,6 +78,10 @@ vi.mock("#components/organisms/header", () => ({
   Header: forwardRef<HTMLElement>((_props, ref) => (
     <header data-testid="header" ref={ref as React.Ref<HTMLElement>} />
   )),
+}));
+
+vi.mock("#components/organisms/panelLocationBar/panelLocationBar", () => ({
+  default: () => <div data-testid="panel-location-bar" />,
 }));
 
 vi.mock("#components/molecules/toolbar/toolBar", () => ({
@@ -105,10 +119,22 @@ vi.mock("./TaskListPage", () => ({
   ),
 }));
 
-vi.mock("./CalendarListPage", () => ({
+vi.mock("#features/events/components/pages/CalendarListPage", () => ({
   default: ({ panel }: { panel: Panel }) => (
     <div data-testid="calendar-page">CalendarListPage:{panel.id}</div>
   ),
+}));
+
+vi.mock("./LoadingPage", () => ({
+  default: () => <div data-testid="loading-page">Loading...</div>,
+}));
+
+vi.mock("#features/events/components/pages/CalendarPage", () => ({
+  default: () => <div data-testid="calendar-view">Calendar View</div>,
+}));
+
+vi.mock("#components/templates/dialog/modShared/addShared", () => ({
+  default: () => <div data-testid="add-shared">Add Shared</div>,
 }));
 
 // Importado DESPUÉS de los vi.mock — así usa las versiones mockeadas.

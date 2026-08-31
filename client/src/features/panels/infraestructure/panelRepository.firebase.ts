@@ -241,7 +241,7 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   async findArchived(
-    parentId: DocumentReference | null,
+    parentId: DocumentReference,
   ): Promise<ResultApp<Panel[] | undefined, AppErr>> {
     const q = query(
       this.collectionRef(),
@@ -287,38 +287,65 @@ export class FirebasePanelsRepository implements PanelRepository {
     }
   }
 
-  async archive(id: string): Promise<ResultApp<string, AppErr>> {
-    const updateData = { isArchived: true, updatedAt: Timestamp.now() };
-    return updateDoc(this.docRef(id), updateData)
-      .then(() => ok(id))
-      .catch((error) =>
-        err(
-          firebaseErr(
-            error instanceof Error
-              ? error.message
-              : "Error al archivar el panel",
-            undefined,
-            error instanceof Error ? error.stack : undefined,
-          ),
+  async archive(id: string): Promise<ResultApp<Panel, AppErr>> {
+    try {
+      const docRef = this.docRef(id);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        return err(firebaseErr(`Panel con id "${id}" no encontrado`));
+      }
+
+      const currentPanel = docSnap.data();
+      const updatedPanel: Panel = {
+        ...currentPanel,
+        isArchived: true,
+        updatedAt: Timestamp.now(),
+      };
+
+      await updateDoc(docRef, { isArchived: true, updatedAt: updatedPanel.updatedAt });
+
+      return ok(updatedPanel);
+    } catch (error) {
+      return err(
+        firebaseErr(
+          error instanceof Error ? error.message : "Error al archivar el panel",
+          undefined,
+          error instanceof Error ? error.stack : undefined,
         ),
       );
+    }
   }
 
-  async unarchive(id: string): Promise<ResultApp<void, AppErr>> {
-    const updateData = { isArchived: deleteField(), updatedAt: Timestamp.now() };
-    return updateDoc(this.docRef(id), updateData)
-      .then(() => ok(undefined))
-      .catch((error) =>
-        err(
-          firebaseErr(
-            error instanceof Error
-              ? error.message
-              : "Error al desarchivar el panel",
-            undefined,
-            error instanceof Error ? error.stack : undefined,
-          ),
+  async unarchive(id: string): Promise<ResultApp<Panel, AppErr>> {
+    try {
+      const docRef = this.docRef(id);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        return err(firebaseErr(`Panel con id "${id}" no encontrado`));
+      }
+
+      const currentPanel = docSnap.data();
+      const updatedPanel: Panel = {
+        ...currentPanel,
+        isArchived: false,
+        updatedAt: Timestamp.now(),
+      };
+
+      await updateDoc(docRef, {
+        isArchived: deleteField(),
+        updatedAt: updatedPanel.updatedAt,
+      });
+
+      return ok(updatedPanel);
+    } catch (error) {
+      return err(
+        firebaseErr(
+          error instanceof Error ? error.message : "Error al desarchivar el panel",
+          undefined,
+          error instanceof Error ? error.stack : undefined,
         ),
       );
+    }
   }
 
   async update(
@@ -407,10 +434,24 @@ export class FirebasePanelsRepository implements PanelRepository {
 
   async deleteArchived(
     ref: DocumentReference,
-  ): Promise<ResultApp<void, AppErr>> {
+  ): Promise<ResultApp<Panel[], AppErr>> {
     try {
-      await deleteDoc(ref);
-      return ok(undefined);
+      const q = query(
+        collection(this.firestore, ref.path),
+        where(documentId(), "==", ref.id)
+      );
+      const snapshot = await getDocs(q);
+      const panels: Panel[] = [];
+      
+      const batch = writeBatch(this.firestore);
+      snapshot.docs.forEach((docSnap) => {
+        const panel = docSnap.data() as Panel;
+        panels.push(panel);
+        batch.delete(docSnap.ref);
+      });
+      
+      await batch.commit();
+      return ok(panels);
     } catch (error) {
       return err(
         firebaseErr(

@@ -20,6 +20,8 @@ import {
   unexpectedErr,
   err,
   notFoundErr,
+  type ResultApp,
+  type AppErr,
 } from "#core/appCore/domain/AppCore.type";
 
 export const PanelsContext = createContext<PanelsContextValue | undefined>(
@@ -186,7 +188,7 @@ export function PanelsProvider({
 
   const findArchived = useCallback(
     async (
-      parentRef: DocumentReference | null,
+      parentRef: DocumentReference,
     ): Promise<Panel[] | undefined> => {
       const result = await panelsService.getArchivedPanels(parentRef);
       if (isErr(result)) {
@@ -369,13 +371,14 @@ export function PanelsProvider({
   );
 
   const deletePanelArchive = useCallback(
-    async (id: string): Promise<void> => {
+    async (id: DocumentReference): Promise<ResultApp<Panel[], AppErr>> => {
       const result = await panelsService.deletePanelArchive(id);
       if (isErr(result)) {
         dispatch({ type: "DELETE_ARCHIVED_ERROR", payload: result.err });
-        return;
+        return result;
       }
       dispatch({ type: "DELETE_ARCHIVED_SUCCESS", payload: result.value });
+      return result;
     },
     [panelsService],
   );
