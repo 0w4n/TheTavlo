@@ -19,7 +19,6 @@ import {
   type TasksState,
 } from "./taskReducer";
 import { err, firebaseErr, isErr, unexpectedErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
-import { err, firebaseErr, isErr, unexpectedErr, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
 
 type TasksContextValue = {
   state: TasksState;
@@ -29,7 +28,6 @@ type TasksContextValue = {
   completeTask: (id: string) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   selectTask: (task: AnyTask) => void;
-  selectTask: (task: AnyTask) => void;
   clearError: () => void;
 };
 
@@ -37,7 +35,6 @@ export const TasksContext = createContext<TasksContextValue | undefined>(
   undefined,
 );
 
-type TasksProviderProps = PropsWithChildren<{ tasksService: TasksService }>;
 type TasksProviderProps = PropsWithChildren<{ tasksService: TasksService }>;
 
 export function TasksProvider({ children, tasksService }: TasksProviderProps) {
@@ -88,12 +85,9 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
       dispatch({
         type: "FETCH_TASKS_ERROR",
         payload: firebaseErr("Error al cargar tareas"),
-        payload: firebaseErr("Error al cargar tareas"),
       });
     }
   }, [tasksService]);
-
-  // ─── Mutaciones ──────────────────────────────────────────────────────────
 
   // ─── Mutaciones ──────────────────────────────────────────────────────────
 
@@ -101,10 +95,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     async (data: CreateAnyTaskDTO[]) => {
       for (const element of data) {
         let result: ResultApp<AnyTask, AppErr>;
-      for (const element of data) {
-        let result: ResultApp<AnyTask, AppErr>;
 
-        if (isCreateNodeTask(element) || isCreateTask(element)) {
         if (isCreateNodeTask(element) || isCreateTask(element)) {
           result = await tasksService.createAnyTask(element);
         } else {
@@ -115,13 +106,8 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
         if (isErr(result)) {
           dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
           throw result;
-        if (isErr(result)) {
-          dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
-          throw result;
         }
 
-        // Optimistic: onSnapshot también lo reflejará
-        dispatch({ type: "CREATE_TASK_SUCCESS", payload: result.value });
         // Optimistic: onSnapshot también lo reflejará
         dispatch({ type: "CREATE_TASK_SUCCESS", payload: result.value });
       }
@@ -132,14 +118,11 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const updateTask = useCallback(
     async (id: string, data: UpdateAnyTaskDTO) => {
       const result = await tasksService.updateAnyTask(id, data);
-      if (isErr(result)) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
-        throw result;
+      
       if (isErr(result)) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
         throw result;
       }
-      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.value });
       dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.value });
     },
     [tasksService],
@@ -148,14 +131,11 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const completeTask = useCallback(
     async (id: string) => {
       const result = await tasksService.completeTask(id);
-      if (isErr(result)) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
-        throw result;
+      
       if (isErr(result)) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
         throw result;
       }
-      dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.value });
       dispatch({ type: "UPDATE_TASK_SUCCESS", payload: result.value });
     },
     [tasksService],
@@ -164,9 +144,7 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
   const deleteTask = useCallback(
     async (id: string) => {
       const result = await tasksService.deleteTask(id);
-      if (isErr(result)) {
-        dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
-        throw result;
+      
       if (isErr(result)) {
         dispatch({ type: "FETCH_TASKS_ERROR", payload: result.err });
         throw result;
@@ -176,7 +154,6 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
     [tasksService],
   );
 
-  const selectTask = useCallback((task: AnyTask) => {
   const selectTask = useCallback((task: AnyTask) => {
     dispatch({ type: "SELECT_TASK", payload: task });
   }, []);

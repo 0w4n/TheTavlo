@@ -59,7 +59,6 @@ export default function LoginPage() {
       </div>
 
       {state.status === "error" && (
-      {state.status === "error" && (
         <div className="loginPage__card-error">{state.error}</div>
       )}
 
@@ -71,16 +70,13 @@ export default function LoginPage() {
           icon="IconBrandGoogleFilled"
           label="Entrar con Google"
           disabled={isLoading || state.status === "initializing"}
-          disabled={isLoading || state.status === "initializing"}
         />
         <Button
           className="loginPage__card-content-item"
           variant="secondary"
           onClick={handleGuestSignIn}
           icon="IconSpy"
-          icon="IconSpy"
           label="Entrar como Invitado"
-          disabled={isLoading || state.status === "initializing"}
           disabled={isLoading || state.status === "initializing"}
         />
       </div>
