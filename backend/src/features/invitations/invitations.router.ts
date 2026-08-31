@@ -94,6 +94,17 @@ function pendingByEmailId(email: string): string {
 }
 
 /**
+ * thetavlo.com es ahora la landing pública; toda la app (incluida esta
+ * pantalla) vive bajo /app/* en el mismo dominio (ver appRouter.tsx del
+ * cliente: basename "/app"). Antes esto apuntaba a un subdominio separado
+ * (app.thetavlo.app) — con el dominio único, el fallback también cambia.
+ */
+function invitationUrl(invitationId: string, token: string): string {
+  const base = process.env.APP_BASE_URL ?? "https://thetavlo.com";
+  return `${base}/app/invitation/${invitationId}?token=${token}`;
+}
+
+/**
  * `DocumentReference`/`Timestamp` de firebase-admin NO son JSON-safe tal
  * cual (el primero arrastra una referencia circular al cliente de
  * Firestore; `JSON.stringify` puede tirar "Converting circular structure
@@ -214,7 +225,7 @@ export const invitationsRouter = router({
         });
       }
 
-      const acceptUrl = `${process.env.APP_BASE_URL ?? "https://app.thetavlo.app"}/invitation/${invitationRef.id}?token=${token}`;
+      const acceptUrl = invitationUrl(invitationRef.id, token);
       await sendInvitationEmail({
         to: input.email,
         panelName: input.panelName,
@@ -251,7 +262,7 @@ export const invitationsRouter = router({
         const data = doc.data();
         return {
           invitationId: doc.id,
-          url: `${process.env.APP_BASE_URL ?? "https://app.thetavlo.app"}/invitation/${doc.id}?token=${data.token}`,
+          url: invitationUrl(doc.id, data.token as string),
         };
       }
 
@@ -274,7 +285,7 @@ export const invitationsRouter = router({
 
       return {
         invitationId: ref.id,
-        url: `${process.env.APP_BASE_URL ?? "https://app.thetavlo.app"}/invitation/${ref.id}?token=${token}`,
+        url: invitationUrl(ref.id, token),
       };
     }),
 

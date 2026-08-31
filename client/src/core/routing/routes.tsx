@@ -1,9 +1,9 @@
 import { ProtectedLayout } from "../../App";
 import panelLoader from "./loaders/panel.loader";
+import sharedPanelLoader from "./loaders/sharedPanel.loader";
 import { Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import LoadingPage from "#components/pages/LoadingPage";
-// import invitationsLoader from "./loaders/invitation.loader";
 
 const HomePage = lazy(() => import("#components/pages/HomePage"));
 const LoginPage = lazy(() => import("#components/pages/LoginPage"));
@@ -11,6 +11,9 @@ const PanelRoute = lazy(() => import("#components/pages/PanelRoute"));
 const ErrorPage = lazy(() => import("#components/pages/error"));
 const CommingPage = lazy(() => import("#components/pages/Comming"));
 const NotFoundPage = lazy(() => import("#components/pages/NotFoundPage"));
+const InvitationGate = lazy(
+  () => import("#features/invitations/presentation/pages/InvitationGate"),
+);
 
 export const routes = [
   {
@@ -79,18 +82,45 @@ export const routes = [
           },
         ],
       },
+      {
+        // Panel compartido (invitación aceptada o enlace público) — vive en
+        // el árbol de OTRO dueño, así que NO cuelga de "/home" (que solo
+        // resuelve la cadena del homePanel del usuario actual vía
+        // panelLoader). Va como hermano de "/home", no como hijo: sigue
+        // protegido por ProtectedLayout, pero es su propia raíz de URL.
+        // Reutiliza el mismo <PanelRoute/> porque ambos loaders devuelven
+        // el mismo PanelLoaderData.
+        path: "/shared/:ownerAccountType/:ownerId/:panelId",
+        id: "shared-panel",
+        loader: sharedPanelLoader,
+        element: (
+          <Suspense fallback={<LoadingPage />}>
+            <PanelRoute />
+          </Suspense>
+        ),
+        errorElement: (
+          <Suspense fallback={<LoadingPage />}>
+            <ErrorPage />
+          </Suspense>
+        ),
+      },
     ],
   },
   {
     path: "/",
     element: <Navigate to="/home" replace />,
   },
-  // {
-  //   path: "/invitation/:invitacionId",
-  //   loader: invitationsLoader,
-  //   element: ,
-  //   errorElement: <ErrorPage />,
-  // },
+  {
+    // Única pantalla pública además de /login — ver InvitationGate.tsx:
+    // debe poder resolverse SIN sesión (un link privado igual dice "inicia
+    // sesión para continuar" en vez de redirigir a ciegas).
+    path: "/invitation/:invitationId",
+    element: (
+      <Suspense fallback={<LoadingPage />}>
+        <InvitationGate />
+      </Suspense>
+    ),
+  },
   {
     // 404 real — antes esta ruta devolvía <CommingPage/> ("En construcción"),
     // que ahora es solo para "/home/calendar" (feature futura, no URL rota).

@@ -24,7 +24,7 @@ import type {
 
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
-import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import type { ResponsiveLayouts } from "react-grid-layout";
 import { widgetConverter } from "./widget.converter";
 

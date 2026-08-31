@@ -3,6 +3,7 @@ import useAuth from "../../core/auth/presentation/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "#components/atoms/button";
 import { useDocumentTitle } from "#core/routing/useDocumentTitle";
+import { safeReturnTo, withReturnTo } from "#core/routing/returnTo";
 import OnboardingPage from "#features/onBoarding/components/pages/OnboardingPage";
 
 import "./LoginPage.css";
@@ -14,11 +15,12 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const returnTo = safeReturnTo(searchParams.get("returnTo"));
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      navigate("/login?onBoarding", { replace: true });
+      navigate(withReturnTo("/login?onBoarding", returnTo), { replace: true });
     } catch (error) {
       console.error("Error al iniciar sesión con Google:", error);
     } finally {
@@ -29,7 +31,7 @@ export default function LoginPage() {
   const handleGuestSignIn = async () => {
     setIsLoading(true);
     try {
-      navigate("/login?onBoarding", { replace: true });
+      navigate(withReturnTo("/login?onBoarding", returnTo), { replace: true });
     } catch (error) {
       throw new Error(error as string);
     } finally {
@@ -39,7 +41,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (state.status === "authenticated") {
-      navigate("/home", { replace: true });
+      navigate(returnTo ?? "/home", { replace: true });
     }
   });
 

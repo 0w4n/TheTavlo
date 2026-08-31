@@ -12,25 +12,25 @@ function buildApp(): App {
   const existing = getApps();
   if (existing.length > 0) return existing[0]!;
 
-  const projectId = process.env.EXPRESS_FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.EXPRESS_FIREBASE_CLIENT_EMAIL;
-  // Algunos hosts (Render, Vercel, etc.) no permiten saltos de línea reales
-  // en variables de entorno — llegan como "\n" literal y hay que revertirlo.
-  const privateKey = process.env.EXPRESS_FIREBASE_PRIVATE_KEY?.replace(
-    /\\n/g,
-    "\n",
-  );
+  const credentials = process.env.FIREBASE_CRED;
+  const databaseURL = process.env.FIREBASE_DATABASE_URL;
 
-  if (!projectId || !clientEmail || !privateKey) {
+  if (!credentials) {
     throw new Error(
-      "Faltan variables de entorno de Firebase Admin: EXPRESS_FIREBASE_PROJECT_ID, " +
-        "EXPRESS_FIREBASE_CLIENT_EMAIL, EXPRESS_FIREBASE_PRIVATE_KEY. Revisa example.env.",
+      "Faltan variables de entorno de Firebase Admin: FIREBASE_CRED. Revisa example.env.",
+    );
+  }
+  if (!databaseURL) {
+    throw new Error(
+      "Faltan variables de entorno de Firebase Admin: DATABASE_URL. Revisa example.env.",
     );
   }
 
-  return initializeApp({
-    credential: cert({ projectId, clientEmail, privateKey }),
-  });
+  const serviceAccount = JSON.parse(
+    Buffer.from(credentials, 'base64').toString('utf-8')
+  );
+
+  return initializeApp({ credential: cert(serviceAccount), databaseURL });
 }
 
 export const firebaseApp = buildApp();

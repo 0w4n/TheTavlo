@@ -20,6 +20,7 @@ import { PanelsService } from "#features/panels/app/panels.service";
 import { WidgetService } from "#features/widgets/app/widget.service";
 import { RouterProvider, Navigate, Outlet } from "react-router-dom";
 import { appRouter } from "#core/routing/appRouter";
+import LandingPage from "#components/pages/LandingPage";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import { GlobalContextProvider } from "#core/globalContext/context/globalContext";
 import { InvitationService } from "#features/invitations/app/invitation.service";
@@ -37,7 +38,54 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 // import ComposeProviders from "#core/providers/composeProviders";
 
+// thetavlo.com/ es la landing pública; toda la app vive bajo /app/*
+// (ver appRouter.tsx: basename: "/app"). Estos son los prefijos que la app
+// usaba ANTES de este cambio — alguien con uno de esos links guardado
+// (o un correo de invitación viejo) debe seguir llegando a destino, no a
+// la landing por error.
+const LEGACY_APP_PREFIXES = ["/login", "/home", "/invitation", "/shared"];
+
+function isAppRoute(pathname: string): boolean {
+  return pathname === "/app" || pathname.startsWith("/app/");
+}
+
+function isLegacyAppPath(pathname: string): boolean {
+  return LEGACY_APP_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 export default function App() {
+  const { pathname, search } = window.location;
+  const appRoute = isAppRoute(pathname);
+
+  useEffect(() => {
+    if (!appRoute && isLegacyAppPath(pathname)) {
+      window.location.replace(`/app${pathname}${search}`);
+    }
+    // Se ejecuta una sola vez por carga de página — no hay routing de
+    // cliente antes de este punto, así que pathname/search no cambian
+    // durante la vida de este componente.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!appRoute) {
+    // Mientras se dispara el redirect de arriba, no mostramos la landing
+    // ni por un instante (evita el parpadeo landing -> app).
+    if (isLegacyAppPath(pathname)) return <LoadingPage />;
+    return <LandingPage />;
+  }
+
+  return (
+    <>
+      <AuthenticatedApp />
+      <SpeedInsights />
+      <Analytics />
+    </>
+  );
+}
+
+function AuthenticatedApp() {
   const authRepository = useMemo(() => {
     return new FirebaseAuthRepository(firebaseService.auth);
   }, [firebaseService.auth]);
@@ -49,15 +97,11 @@ export default function App() {
   }, [authRepository, migrationRepository]);
 
   return (
-    <>
-      <AnnouncerProvider>
-        <AuthProvider authService={authService}>
-          <RouterProvider router={appRouter} />
-        </AuthProvider>
-      </AnnouncerProvider>
-      <SpeedInsights />
-      <Analytics />
-    </>
+    <AnnouncerProvider>
+      <AuthProvider authService={authService}>
+        <RouterProvider router={appRouter} />
+      </AuthProvider>
+    </AnnouncerProvider>
   );
 }
 

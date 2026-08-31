@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import type { NoteRepository } from "../app/noteRepository.interface";
 import type { Note, CreateNoteDTO, UpdateNoteDTO } from "../domain/note.entity";
-import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import { noteConverter } from "./note.converter";
 
 export class FirebaseNoteRepository implements NoteRepository {

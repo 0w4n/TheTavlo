@@ -13,7 +13,7 @@ import "./panelsWidget.css";
 
 export default function PanelsWidget({
   items,
-  config = {typeView: "list"},
+  config = { typeView: "list"},
 }: {
   items: Panel[] | undefined;
   config: PanelConfig;

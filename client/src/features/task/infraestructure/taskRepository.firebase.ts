@@ -21,7 +21,7 @@ import type { TaskRepository } from "../app/taskRepository.interface";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import { firebaseErr, type AppErr } from "#core/appCore/domain/AppCore.type";
-import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import { taskConverter } from "./task.converter";
 
 export class FirebaseTaskRepository implements TaskRepository {

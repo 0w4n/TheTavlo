@@ -14,7 +14,7 @@ import {
 import type { EventRepository } from "../app/eventRepository.interface";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
-import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import type {
   CreateAnyEventDTO,
   AnyEvent,

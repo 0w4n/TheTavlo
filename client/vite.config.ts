@@ -54,6 +54,8 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: "dist",
+    emptyOutDir: true,
     target: "es2020",
     minify: true,
     sourcemap: false,
@@ -63,7 +65,7 @@ export default defineConfig({
           "vendor-react": ["react", "react-dom", "react-router-dom"],
           firebase: ["firebase/app", "firebase/firestore", "firebase/auth"],
           d3: ["d3-scale", "d3-axis", "d3-shape", "d3-selection", "d3-array"],
-          gsap: ["gsap", "@gspa/react"],
+          gsap: ["gsap", "@gsap/react"],
           "grid-layout": [
             "react-grid-layout",
             "react-resizable",

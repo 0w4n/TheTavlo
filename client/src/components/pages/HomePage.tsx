@@ -163,7 +163,7 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
                 icon: "IconSettings",
                 label: "Ajustes",
                 onClick: () => {
-                  window.location.href = "/settings";
+                  window.location.href = "/app/settings";
                 },
               },
               {

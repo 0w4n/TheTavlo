@@ -17,6 +17,8 @@ import TaskListPage from "./TaskListPage";
 import CalendarListPage from "#features/events/components/pages/CalendarListPage";
 import LoadingPage from "./LoadingPage";
 import CalendarPage from "#features/events/components/pages/CalendarPage";
+import AddShared from "#components/templates/dialog/modShared/addShared";
+import { usePanelRole } from "#features/invitations/presentation/hooks/usePanelRole";
 
 /**
  * Único componente para toda la cadena `home/:pid[/:pid...]`. Antes había
@@ -140,6 +142,10 @@ function PanelHeader({
   leftAction?: React.ReactNode;
 }) {
   const headerRef = useRef<HTMLElement>(null);
+  // Solo dueño/editor pueden compartir (Q3 + assertCanManageSharing en el
+  // backend) — un VIEWER ni siquiera debería ver la opción.
+  const panelRole = usePanelRole();
+  const canShare = panelRole === "owner" || panelRole === "editor";
 
   useEffect(() => {
     headerRef.current?.style.setProperty(
@@ -152,6 +158,32 @@ function PanelHeader({
     ...(leftAction
       ? [{ type: "children" as const, children: leftAction }]
       : []),
+    ...(canShare
+      ? [
+          {
+            type: "dropdown" as const,
+            iconTrigger: "IconUserPlus",
+            options: [
+              {
+                icon: "IconMail",
+                label: "Invitar por correo",
+                portalModal: true as const,
+                render: (onClose: () => void) => (
+                  <AddShared type="private" onClose={onClose} />
+                ),
+              },
+              {
+                icon: "IconLink",
+                label: "Copiar enlace público",
+                portalModal: true as const,
+                render: (onClose: () => void) => (
+                  <AddShared type="public" onClose={onClose} />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       type: "dropdown" as const,
       iconTrigger: "IconUser",
@@ -160,7 +192,7 @@ function PanelHeader({
           icon: "IconSettings",
           label: "Ajustes",
           onClick: () => {
-            window.location.href = "/settings";
+            window.location.href = "/app/settings";
           },
         },
         {

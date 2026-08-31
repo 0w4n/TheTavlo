@@ -1,0 +1,8 @@
+{
+  "name": "thetavlo-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter client --filter backend dev",
+    "build": "pnpm --filter client build"
+  }
+}

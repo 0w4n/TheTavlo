@@ -24,7 +24,7 @@ import type {
   UpdateCookingRecipeDTO,
 } from "../domain/CookingRecipe.entity";
 import { firebaseErr, type AppErr } from "#core/appCore/domain/AppCore.type";
-import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import { cookingBookConverter, cookingRecipeConverter } from "./cookingBook.converter";
 
 export class FirebaseCookingBookRepository implements CookingBookRepository {

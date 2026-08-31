@@ -1,0 +1,14 @@
+{
+  "buildCommand": "pnpm --filter client build",
+  "outputDirectory": "client/dist",
+  "rewrites": [
+    {
+      "source": "/backend/(.*)",
+      "destination": "/backend/api/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/client/$1"
+    }
+  ]
+}
