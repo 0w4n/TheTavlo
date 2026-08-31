@@ -7,8 +7,12 @@
       "destination": "/backend/api/index.ts"
     },
     {
+      "source": "/app/(.*)",
+      "destination": "/client/index.html"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/client/$1"
+      "destination": "/client/index.html"
     }
   ]
 }
