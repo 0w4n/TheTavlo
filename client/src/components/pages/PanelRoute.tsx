@@ -14,11 +14,16 @@ import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import TaskListPage from "./TaskListPage";
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
 import CalendarListPage from "#features/events/components/pages/CalendarListPage";
 import LoadingPage from "./LoadingPage";
 import CalendarPage from "#features/events/components/pages/CalendarPage";
 import AddShared from "#components/templates/dialog/modShared/addShared";
 import { usePanelRole } from "#features/invitations/presentation/hooks/usePanelRole";
+=======
+import CalendarPage from "./CalendarPage";
+import LoadingPage from "./LoadingPage";
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
 
 /**
  * Único componente para toda la cadena `home/:pid[/:pid...]`. Antes había
@@ -42,28 +47,37 @@ export default function PanelRoute() {
       return <PanelDashboard panel={data.panel} panels={data.panels} />;
     case "task-list":
       return (
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
         <PanelChrome
           panel={data.panel}
           panels={data.panels}
           viewLabel="Tareas"
           viewIcon="IconChecklist"
         >
+=======
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Tareas" viewIcon="IconChecklist">
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
           <TaskListPage panel={data.panel} />
         </PanelChrome>
       );
     case "task-detail":
       return (
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
         <PanelChrome
           panel={data.panel}
           panels={data.panels}
           viewLabel="Tareas"
           viewIcon="IconChecklist"
         >
+=======
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Tareas" viewIcon="IconChecklist">
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
           <TaskListPage panel={data.panel} />
           <TaskDetailModal taskId={data.taskId} />
         </PanelChrome>
       );
     case "calendar":
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
       return <CalendarPage events={[]} />;
     case "event-detail":
       return (
@@ -74,6 +88,17 @@ export default function PanelRoute() {
           viewIcon="IconCalendarEvent"
         >
           <CalendarListPage panel={data.panel} />
+=======
+      return (
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Calendario" viewIcon="IconCalendarEvent">
+          <CalendarPage panel={data.panel} />
+        </PanelChrome>
+      );
+    case "event-detail":
+      return (
+        <PanelChrome panel={data.panel} panels={data.panels} viewLabel="Calendario" viewIcon="IconCalendarEvent">
+          <CalendarPage panel={data.panel} />
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
           <EventDetailModal eventId={data.eventId} />
         </PanelChrome>
       );
@@ -90,12 +115,16 @@ function PanelDashboard({ panel, panels }: { panel: Panel; panels: Panel[] }) {
       <PanelHeader
         panel={panel}
         onSignOut={signOut}
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
         leftAction={
           <EditModeButton
             editMode={widgetsState.editMode}
             onToggle={toggleEditMode}
           />
         }
+=======
+        leftAction={<EditModeButton editMode={widgetsState.editMode} onToggle={toggleEditMode} />}
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
       />
       <PanelLocationBar panels={panels} />
       <Dashboard widgetState={widgetsState} />
@@ -121,11 +150,15 @@ function PanelChrome({
   return (
     <>
       <PanelHeader panel={panel} onSignOut={signOut} />
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
       <PanelLocationBar
         panels={panels}
         viewLabel={viewLabel}
         viewIcon={viewIcon}
       />
+=======
+      <PanelLocationBar panels={panels} viewLabel={viewLabel} viewIcon={viewIcon} />
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
       {children}
     </>
   );
@@ -142,6 +175,7 @@ function PanelHeader({
   leftAction?: React.ReactNode;
 }) {
   const headerRef = useRef<HTMLElement>(null);
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
   // Solo dueño/editor pueden compartir (Q3 + assertCanManageSharing en el
   // backend) — un VIEWER ni siquiera debería ver la opción.
   const panelRole = usePanelRole();
@@ -184,10 +218,20 @@ function PanelHeader({
           },
         ]
       : []),
+=======
+
+  useEffect(() => {
+    headerRef.current?.style.setProperty("background-color", `hsl(${panel.color}, 100%, 20%)`);
+  }, [panel.color]);
+
+  const actions = [
+    ...(leftAction ? [{ type: "children" as const, children: leftAction }] : []),
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
     {
       type: "dropdown" as const,
       iconTrigger: "IconUser",
       options: [
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
         {
           icon: "IconSettings",
           label: "Ajustes",
@@ -201,6 +245,10 @@ function PanelHeader({
           danger: true,
           onClick: onSignOut,
         },
+=======
+        { icon: "IconSettings", label: "Ajustes", onClick: () => { window.location.href = "/settings"; } },
+        { icon: "IconLogout", label: "Cerrar Sesión", danger: true, onClick: onSignOut },
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
       ],
     },
   ];
@@ -249,9 +297,12 @@ function EventDetailModal({ eventId }: { eventId: string }) {
   const close = () => navigate(-1);
 
   const { state } = useEvents();
+<<<<<<< HEAD:client/src/components/pages/PanelRoute.tsx
   if (state.status !== "events") {
     return <LoadingPage />;
   }
+=======
+>>>>>>> main/HEAD:src/components/pages/PanelRoute.tsx
   const event = state.event.find((e) => e.id === eventId);
 
   return (

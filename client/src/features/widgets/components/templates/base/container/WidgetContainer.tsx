@@ -8,6 +8,10 @@ import Icon from "#shared/ui/atoms/icons";
 import WidgetContent from "../content/WidgetContent";
 import { GetDialogWdigetType } from "./utils";
 import { Dropdown } from "#components/molecules/dropdown";
+<<<<<<< HEAD:client/src/features/widgets/components/templates/base/container/WidgetContainer.tsx
+=======
+import AddShared from "#components/templates/dialog/modShared/addShared";
+>>>>>>> main/HEAD:src/components/templates/widgets/base/container/WidgetContainer.tsx
 
 import "./widgetContainer.css";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
@@ -25,6 +29,7 @@ export default function WidgetContainer({
   editMode: boolean;
   onResize?: (layout: Widget["layout"]) => void;
 }) {
+<<<<<<< HEAD:client/src/features/widgets/components/templates/base/container/WidgetContainer.tsx
   const [search, setSearch] = useState("");
   const [enable, setEnable] = useState(false);
   const [multipleSelecction, setMultipleSelecction] = useState([]);
@@ -35,6 +40,9 @@ export default function WidgetContainer({
   const panelRole = usePanelRole();
   const canManage = panelRole === "owner" || panelRole === "editor";
 
+=======
+  const [_search, setSearch] = useState("");
+>>>>>>> main/HEAD:src/components/templates/widgets/base/container/WidgetContainer.tsx
   const actionTrigers = {
     iconTrigger: "IconDotsVertical",
     options: [
@@ -131,6 +139,7 @@ export default function WidgetContainer({
         </div> */}
         <div className="widget__header-searchBar">
           <Icon name={"IconSearch"} />
+<<<<<<< HEAD:client/src/features/widgets/components/templates/base/container/WidgetContainer.tsx
           <input
             type="text"
             placeholder="Búscame"
@@ -139,6 +148,11 @@ export default function WidgetContainer({
           />
         </div>
         <Button variant="primary" icon="IconFilter2" iconSize={16} />
+=======
+          <input type="text" placeholder="Búscame" onChange={(e) => setSearch(e.target.value)} className="widget__header-searchBar-input"/>
+        </div>
+        <Button variant="primary" icon="IconFilter2" iconSize={16}/>
+>>>>>>> main/HEAD:src/components/templates/widgets/base/container/WidgetContainer.tsx
         <div>
           {editMode && !widget.locked && (
             <Button

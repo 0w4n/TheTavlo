@@ -24,6 +24,7 @@
 
 .widget__header > div:last-child {
   background-color: var(--color-backgroundSecondary);
+  background-color: var(--color-backgroundSecondary);
   flex: 1;
 }
 
@@ -37,6 +38,41 @@
   > button {
     padding: var(--spacing-1);
   }
+}
+
+.widget__header-searchBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background-color: transparent;
+  border-radius: 10px;
+  border: solid 2px var(--color-border);
+  box-sizing: border-box;
+  padding: var(--spacing-1) var(--spacing-2);
+}
+
+.widget__header-searchBar-input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-textPrimary);
+  font-size: var(--font-size-sm);
+  flex: 1;
+}
+
+.widget__header-searchBar-input:hover {
+  outline: none;
+  border: none;
+}
+
+.widget__header-searchBar-input:focus {
+  outline: none;
+  border: none;
+}
+
+.widget__header-searchBar-input::placeholder {
+  color: var(--color-textSecondary);
+  font-size: var(--font-size-sm);
 }
 
 .widget__header-searchBar {

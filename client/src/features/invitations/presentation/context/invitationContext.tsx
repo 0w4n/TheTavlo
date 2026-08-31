@@ -4,6 +4,11 @@ import {
   UserRole,
   type CreatedAnyInvitationDTO,
   type Invitation,
+import {
+  InvitationMode,
+  UserRole,
+  type CreatedAnyInvitationDTO,
+  type Invitation,
 } from "#features/invitations/domain/invitation.entity";
 import {
   createContext,
@@ -17,6 +22,7 @@ type InvitationContextValue = {
   invitation: Invitation | undefined;
   createInvitation: (
     data: Omit<
+      CreatedAnyInvitationDTO,
       CreatedAnyInvitationDTO,
       "createdAt" | "updatedAt" | "token" | "objRef"
     >,
@@ -48,6 +54,7 @@ export function InvitationProvider({
     async (
       data: Omit<
         CreatedAnyInvitationDTO,
+        CreatedAnyInvitationDTO,
         "createdAt" | "updatedAt" | "token" | "objRef"
       >,
       parentRef: string,
@@ -62,7 +69,17 @@ export function InvitationProvider({
           newOwnerId: "current-user",
         } as CreatedAnyInvitationDTO;
 
+        const payload: CreatedAnyInvitationDTO = {
+          ...data,
+          lastUpdatedBy: "current-user",
+          mode: InvitationMode.USERS,
+          role: UserRole.EDITOR,
+          token: "generated",
+          newOwnerId: "current-user",
+        } as CreatedAnyInvitationDTO;
+
         const newInvitation = await invitationService.createInvitation(
+          payload,
           payload,
           parentRef,
         );
@@ -102,6 +119,8 @@ export function InvitationProvider({
   const acceptInvitation = async (token: string) => {
     const invitationResult =
       await invitationService.getInvitationByToken(token);
+    const invitationResult =
+      await invitationService.getInvitationByToken(token);
 
     if (invitationResult.error) {
       dispatch({
@@ -113,6 +132,8 @@ export function InvitationProvider({
   };
 
   const rejectInvitation = async (token: string) => {
+    const invitationResult =
+      await invitationService.getInvitationByToken(token);
     const invitationResult =
       await invitationService.getInvitationByToken(token);
 
@@ -136,6 +157,7 @@ export function InvitationProvider({
     rejectInvitation,
     clearError,
   };
+
 
   return (
     <InvitationContext.Provider value={value}>
