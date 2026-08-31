@@ -140,11 +140,12 @@ function AuthenticatedLayout({ user }: { user: User }) {
       firebaseService.firestore,
       () => user,
     );
+    // TODO [Resolver conflicto en el PanelService]
     // Caché progresiva en memoria: navegar por paneles ya visitados en esta
     // sesión no vuelve a leer Firestore. Ver panelsCache.ts.
-    const cachedRepository = new CachedPanelsRepository(repository, cacheKey);
+    // const cachedRepository = new CachedPanelsRepository(repository, cacheKey);
 
-    return new PanelsService(cachedRepository);
+    return new PanelsService(repository);
   }, [user, cacheKey]);
 
   // Al cerrar sesión (o cambiar de usuario) este layout se desmonta —
