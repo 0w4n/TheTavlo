@@ -91,10 +91,12 @@ export function createPanelLoader(deps: PanelLoaderDeps = defaultDeps()) {
       throw redirect("/home?invalidPanel=1");
     }
 
-    let panelsIdParsed: string[] = [];
-
-    panelsIdParsed.push(homePanel.value.id);
-    panelsIdParsed.push(...parsed.path.panelIds);
+    // La cadena de panelIds del parser ya incluye la ruta completa (home/child/grandchild).
+    // Si el primer panelId es el homePanel, usamos la cadena tal cual.
+    // Si no, preprendemos el homePanel (caso donde la URL es simplemente "task" o similar).
+    const panelsIdParsed = parsed.path.panelIds[0] === homePanel.value.id 
+      ? parsed.path.panelIds 
+      : [homePanel.value.id, ...parsed.path.panelIds];
 
     const chainResult = await panelsService.resolveChain(panelsIdParsed);
 

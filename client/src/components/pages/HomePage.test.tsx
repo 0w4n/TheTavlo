@@ -57,6 +57,24 @@ vi.mock("#components/molecules/modal", () => ({
   ),
 }));
 
+vi.mock("#features/panels/presentation/hooks/usePanels", () => ({
+  default: () => ({
+    fetchHomePanel: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+
+vi.mock("#features/invitations/presentation/hooks/usePanelRole", () => ({
+  usePanelRole: () => "owner",
+}));
+
+vi.mock("#features/onBoarding/presentation/hooks/useOnBoardingBootstrap", () => ({
+  useOnBoardingBootstrap: () => {},
+}));
+
+vi.mock("#core/routing/useDocumentTitle", () => ({
+  useDocumentTitle: vi.fn(),
+}));
+
 const { default: HomePage } = await import("./HomePage");
 
 function renderHomePage(initialEntry: string): RenderResult {

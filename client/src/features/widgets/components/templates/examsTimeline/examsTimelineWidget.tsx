@@ -12,22 +12,30 @@ export default function ExamsTimelineWidget() {
 
   if (state.status === "loading") {
     return <LoadingPage />;
-  } else if ( state.status === "events") {
-    if ( state.event.length === 0) {
+  } else if (state.status === "events") {
+    if (state.event.length === 0) {
       return <span>No hay nada</span>;
+    } else {
+      const items = state.event as unknown as ExamEvent[];
+
+      return (
+        <>
+          {items.map((item) =>
+            examTimelineItem({
+              examDate: item.makeAt,
+              id: item.id,
+              examAssignatureName: item.name,
+            }),
+          )}
+        </>
+      );
     }
   } else {
-    const items = state.event as unknown as ExamEvent[];
-
     return (
       <>
-        {items.map((item) =>
-          examTimelineItem({
-            examDate: item.makeAt,
-            id: item.id,
-            examAssignatureName: item.name
-          }),
-        )}
+      <p>{state.error?.code}</p>
+      <p>{state.error?.kind}</p>
+      <p>{state.error?.message}</p>
       </>
     );
   }
@@ -84,9 +92,12 @@ function TimestampToString(timestamp: Timestamp) {
 
     let innerText = "";
 
-    if (days < 7) innerText = `${days} D`; // 1–6 días
-    else if (days < 30) innerText = `${Math.floor(days / 7)} S`; // semanas
-    else if (days < 365) innerText = `${Math.floor(days / 30)} M`; // meses
+    if (days < 7)
+      innerText = `${days} D`; // 1–6 días
+    else if (days < 30)
+      innerText = `${Math.floor(days / 7)} S`; // semanas
+    else if (days < 365)
+      innerText = `${Math.floor(days / 30)} M`; // meses
     else innerText = `${Math.floor(days / 365)} A`; // años
 
     return (

@@ -208,4 +208,46 @@ export class CachedPanelsRepository implements PanelRepository {
 
     return result;
   }
+
+  async findArchived(
+    parentRef: DocumentReference,
+  ): Promise<ResultApp<Panel[] | undefined, AppErr>> {
+    return this.inner.findArchived(parentRef);
+  }
+
+  async archive(id: string): Promise<ResultApp<Panel, AppErr>> {
+    const cached = getCachedPanel(this.cacheKey, id);
+    const result = await this.inner.archive(id);
+
+    if (isOk(result)) {
+      setCachedPanel(this.cacheKey, result.value);
+      invalidateChildren(this.cacheKey, cached?.parentId?.id ?? null);
+    }
+
+    return result;
+  }
+
+  async unarchive(id: string): Promise<ResultApp<Panel, AppErr>> {
+    const cached = getCachedPanel(this.cacheKey, id);
+    const result = await this.inner.unarchive(id);
+
+    if (isOk(result)) {
+      setCachedPanel(this.cacheKey, result.value);
+      invalidateChildren(this.cacheKey, cached?.parentId?.id ?? null);
+    }
+
+    return result;
+  }
+
+  async deleteArchived(
+    parentRef: DocumentReference,
+  ): Promise<ResultApp<Panel[], AppErr>> {
+    const result = await this.inner.deleteArchived(parentRef);
+
+    if (isOk(result)) {
+      invalidateChildren(this.cacheKey, parentRef?.id ?? null);
+    }
+
+    return result;
+  }
 }

@@ -42,6 +42,10 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
     update: 0,
     delete: 0,
     deleteCascade: 0,
+    findArchived: 0,
+    archive: 0,
+    unarchive: 0,
+    deleteArchived: 0,
   };
 
   const repository: PanelRepository = {
@@ -170,23 +174,54 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
 
       return ok({ deletedIds });
     },
+    
+async findArchived(
+      parentRef?: DocumentReference
+    ): Promise<ResultApp<Panel[] | undefined, AppErr>> {
+      calls.findArchived += 1;
+      const archived = Array.from(panels.values()).filter(
+        (p) => (p as { isArchived?: boolean }).isArchived && (!parentRef || p.parentId?.id === parentRef.id)
+      );
+      return ok(archived);
+    },
 
-    findArchived: function (parentRef: DocumentReference | null): Promise<ResultApp<Panel[] | undefined, AppErr>> {
-      throw new Error("Function not implemented.");
+    async archive(id: string): Promise<ResultApp<Panel, AppErr>> {
+      calls.archive += 1;
+      const existing = panels.get(id);
+      if (!existing) return err(notFoundErr(`Panel "${id}" no encontrado`));
+      
+      const updated = { ...existing, isArchived: true };
+      panels.set(id, updated);
+      return ok(updated);
     },
-    
-    archive: function (id: string): Promise<ResultApp<Panel, AppErr>> {
-      throw new Error("Function not implemented.");
+
+    async unarchive(id: string): Promise<ResultApp<Panel, AppErr>> {
+      calls.unarchive += 1;
+      const existing = panels.get(id);
+      if (!existing) return err(notFoundErr(`Panel "${id}" no encontrado`));
+
+      const updated = { ...existing, isArchived: false };
+      panels.set(id, updated);
+      return ok(updated);
     },
-    
-    unarchive: function (id: string): Promise<ResultApp<void, AppErr>> {
-      throw new Error("Function not implemented.");
-    },
-    
-    deleteArchived: function (ref: string): Promise<ResultApp<string, AppErr>> {
-      throw new Error("Function not implemented.");
-    }
-  };
+
+    async deleteArchived(
+      parentRef?: DocumentReference
+    ): Promise<ResultApp<Panel[], AppErr>> {
+      calls.deleteArchived += 1;
+      const deleted: Panel[] = [];
+      for (const [id, panel] of panels.entries()) {
+        const isArchived = (panel as { isArchived?: boolean }).isArchived;
+        const matchesParent = !parentRef || panel.parentId?.id === parentRef.id;
+        
+        if (isArchived && matchesParent) {
+          deleted.push(panel);
+          panels.delete(id);
+        }
+      }
+      return ok(deleted);
+    },  
+};
 
   return {
     repository,

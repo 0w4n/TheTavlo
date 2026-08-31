@@ -83,7 +83,7 @@ export class PanelsService {
   }
 
   async getArchivedPanels(
-    parentRef: DocumentReference | null,
+    parentRef: DocumentReference,
   ): Promise<ResultApp<Panel[] | undefined, AppErr>> {
     return this.repository.findArchived(parentRef);
   }
@@ -153,7 +153,7 @@ export class PanelsService {
     return this.repository.archive(id);
   }
 
-  async unarchivePanel(id: string): Promise<ResultApp<void, AppErr>> {
+  async unarchivePanel(id: string): Promise<ResultApp<Panel, AppErr>> {
     return this.repository.unarchive(id);
   }
 
@@ -210,8 +210,8 @@ export class PanelsService {
   }
 
   async deletePanelArchive(
-    id: string,
-  ): Promise<ResultApp<string, AppErr>> {
+    id: DocumentReference,
+  ): Promise<ResultApp<Panel[], AppErr>> {
     return this.repository.deleteArchived(id);
   }
 }

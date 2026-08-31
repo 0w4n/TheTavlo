@@ -10,7 +10,6 @@ import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig
 import { PanelsProvider } from "#features/panels/presentation/context/panelsContext";
 import { WidgetsProvider } from "#features/widgets/presentation/context/widgetsContext";
 import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
-import { CachedPanelsRepository } from "#features/panels/infraestructure/panelRepository.cached";
 import {
   clearPanelsCache,
   getPanelsCacheKey,

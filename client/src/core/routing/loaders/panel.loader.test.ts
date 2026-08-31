@@ -168,7 +168,7 @@ describe("panelLoader", () => {
     const cacheKey = getPanelsCacheKey(fakeUser);
     const loader = createPanelLoader({
       getCurrentUser: async () => fakeUser,
-      createPanelsService: () =>
+      createPanelsService: (_user: User) =>
         new PanelsService(new CachedPanelsRepository(fixture.repository, cacheKey)),
     });
 

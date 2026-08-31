@@ -43,7 +43,7 @@ export type PanelsContextValue = {
   /** Busca un panel a partir de su referencia de panel compartido. */
   findBySharedId: (sharedId: DocumentReference) => Promise<Panel | undefined>;
 
-  findArchived: (parentRef: DocumentReference | null) => Promise<Panel[] | undefined>;
+  findArchived: (parentRef: DocumentReference ) => Promise<Panel[] | undefined>;
 
   /**
    * Crea un panel.
@@ -74,7 +74,7 @@ export type PanelsContextValue = {
    */
   deletePanelCascade: (id: string) => Promise<string[]>;
 
-  deletePanelArchive: (id: string) => Promise<void>;
+  deletePanelArchive: (id: DocumentReference) => Promise<ResultApp<Panel[], AppErr>>;
 
   /** Devuelve los paneles hijos del panel con el id dado. */
   fetchSubPanels: (parentId: DocumentReference | string) => Promise<void>;
