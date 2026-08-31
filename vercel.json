@@ -8,11 +8,11 @@
     },
     {
       "source": "/app/(.*)",
-      "destination": "/client/index.html"
+      "destination": "/index.html"
     },
     {
       "source": "/(.*)",
-      "destination": "/client/index.html"
+      "destination": "/index.html"
     }
   ]
 }
