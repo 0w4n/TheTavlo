@@ -1,4 +1,5 @@
 import type { NotesService } from "#features/note/app/notes.service";
+import type { Note } from "#features/note/domain/note.entity";
 import type { NoteState } from "#features/note/presentation/context/noteReducer";
 import type { PropsWithChildren } from "react";
 
@@ -11,7 +12,7 @@ export type NotesContextValue = {
     noteData: { title?: string; body?: string },
   ) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
-  selectNote: (note: { id: string; title: string; body: string }) => void;
+  selectNote: (note: Note) => void;
   clearError: () => void;
 };
 
