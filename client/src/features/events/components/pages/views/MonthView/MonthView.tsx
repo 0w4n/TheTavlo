@@ -38,15 +38,15 @@ export default function MonthView(currentDate: Date, events: AnyEvent[]) {
       {days.map((d) => (
         <DayCard key={d.toDateString()} day={d}>
           {events
-            .filter((ev) => ev.start.toDate().getDate() === d.getDate())
+            .filter((ev) => {
+              const startAt = \"startAt\" in ev ? ev.startAt.toDate() : null;
+              return startAt?.getDate() === d.getDate();
+            })
             .map((ev) => (
               <EventCard
                 key={ev.id}
                 type="month"
-                title={ev.title}
-                description={ev.description}
-                icon={ev.icon}
-                color={ev.color}
+                event={ev}
                 size="small"
               />
             ))}

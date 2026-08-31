@@ -1,6 +1,5 @@
 import type { AnyEvent } from "../../domain/events.entity";
 import { useState } from "react";
-import DayCard from "../templates/DayCard/DayCard";
 import EventCard from "../templates/EventCard/EventCard";
 import MonthView from "./views/MonthView/MonthView";
 import { Button } from "#components/atoms/button";
@@ -46,16 +45,24 @@ export default function CalendarPage({
 
   const renderEventsForDay = (date: Date) => {
     const dayEvents = events.filter(
-      (ev) =>
-        ev.start.toDate().toDateString() === date.toDateString() ||
-        (ev.start.toDate() <= date && ev.end.toDate() >= date),
+      (ev) => {
+        const startAt = "startAt" in ev ? ev.startAt.toDate() : null;
+        const endAt = "endAt" in ev ? ev.endAt.toDate() : null;
+        return (
+          startAt?.toDateString() === date.toDateString() ||
+          (startAt && endAt && startAt <= date && endAt >= date)
+        );
+      },
     );
 
     return (
       <div className="day-view">
         {hours.map((hour) => {
           const hourEvents = dayEvents.filter(
-            (ev) => ev.start.toDate().getHours() === hour,
+            (ev) => {
+              const startAt = "startAt" in ev ? ev.startAt.toDate() : null;
+              return startAt?.getHours() === hour;
+            },
           );
           const isCurrentHour =
             date.toDateString() === now.toDateString() && hour === currentHour;
@@ -75,10 +82,7 @@ export default function CalendarPage({
                     <EventCard
                       key={ev.id}
                       type="day"
-                      title={ev.title}
-                      description={ev.description}
-                      icon={ev.icon}
-                      color={ev.color}
+                      event={ev}
                       size="large"
                       className={isCurrentHour ? "current-event" : ""}
                     />
@@ -135,10 +139,16 @@ export default function CalendarPage({
               <div className="hour-label">{hour}:00</div>
               {days.map((d) => {
                 const dayEvents = events.filter(
-                  (ev) => ev.start.toDate().getDate() === d.getDate(),
+                  (ev) => {
+                    const startAt = "startAt" in ev ? ev.startAt.toDate() : null;
+                    return startAt?.getDate() === d.getDate();
+                  },
                 );
                 const hourEvents = dayEvents.filter(
-                  (ev) => ev.start.toDate().getHours() === hour,
+                  (ev) => {
+                    const startAt = "startAt" in ev ? ev.startAt.toDate() : null;
+                    return startAt?.getHours() === hour;
+                  },
                 );
                 return (
                   <div key={d.toDateString()} className="week-hour-slot">
@@ -157,36 +167,6 @@ export default function CalendarPage({
             </div>
           );
         })}
-      </div>
-    );
-  };
-
-  const renderMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const startDate = new Date(year, month, 0);
-    const days = Array.from({ length: 42 }, (_, i) => {
-      const day = new Date(startDate);
-      day.setDate(startDate.getDate() + i);
-      return day;
-    });
-
-    return (
-      <div className="month-view">
-        {days.map((d) => (
-          <DayCard key={d.toDateString()} day={d}>
-            {events
-              .filter((ev) => ev.start.toDate().getDate() === d.getDate())
-              .map((ev) => (
-                <EventCard
-                  key={ev.id}
-                  type="month"
-                  size="small"
-                  event={ev}
-                />
-              ))}
-          </DayCard>
-        ))}
       </div>
     );
   };
