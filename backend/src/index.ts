@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import serverless from 'serverless-http';
 import cors from "cors";
 import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -36,6 +37,4 @@ app.get("/", (req, res) => {
   res.send("Hello world!");
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor listo en http://localhost:${PORT}`);
-});
+export default serverless(app);
