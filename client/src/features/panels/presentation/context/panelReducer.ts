@@ -41,7 +41,7 @@ type PanelsAction =
   | { type: "CREATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "ARCHIVED"; payload: Panel }
   | { type: "ARCHIVED_ERROR"; payload: AppErr }
-  | { type: "UNARCHIVED"; payload: Panel }
+  | { type: "UNARCHIVED"; payload: void }
   | { type: "UNARCHIVED_ERROR"; payload: AppErr }
   | { type: "UPDATE_PANEL_SUCCESS"; payload: Panel }
   | { type: "DELETE_PANEL_SUCCESS"; payload: string }
@@ -190,16 +190,7 @@ export function panelsReducer(
       };
 
     case "UNARCHIVED": {
-      if (state.status !== "panel") return state;
-
-      return {
-        ...state,
-        subPanels: reconcileSubPanels(
-          state.subPanels,
-          action.payload,
-          state.currentPanel.id,
-        ),
-      };
+      return state;
     }
 
     case "UNARCHIVED_ERROR":

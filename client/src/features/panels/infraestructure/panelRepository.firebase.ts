@@ -287,10 +287,10 @@ export class FirebasePanelsRepository implements PanelRepository {
     }
   }
 
-  async archive(id: string): Promise<ResultApp<void, AppErr>> {
+  async archive(id: string): Promise<ResultApp<string, AppErr>> {
     const updateData = { isArchived: true, updatedAt: Timestamp.now() };
     return updateDoc(this.docRef(id), updateData)
-      .then(() => ok(undefined))
+      .then(() => ok(id))
       .catch((error) =>
         err(
           firebaseErr(

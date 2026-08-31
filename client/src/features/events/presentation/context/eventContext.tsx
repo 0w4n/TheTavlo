@@ -6,6 +6,7 @@ import {
   type EventsContextValue,
   type EventsProviderProp,
 } from "./eventContext.type";
+import type { AnyEvent } from "#features/events/domain/events.entity";
 
 export function EventsProvider({
   children,
@@ -26,8 +27,8 @@ export function EventsProvider({
   }, [eventsService]);
 
   const createEvent = useCallback(
-    async (eventData: { name: string; type: string; makeAt: Date }) => {
-      dispatch({ type: "CREATE_EVENT_START", payload: eventData });
+    async (eventData: AnyEvent) => {
+      dispatch({ type: "CREATE_EVENTS_SUCCESS", payload: eventData });
     },
     [eventsService]
   );

@@ -51,7 +51,7 @@ export interface PanelRepository {
   /**
    * Archiva un panel.
    */
-  archive(id: string): Promise<ResultApp<void, AppErr>>;
+  archive(id: string): Promise<ResultApp<Panel, AppErr>>;
 
   /**
    * Desarchiva un panel.
@@ -69,5 +69,5 @@ export interface PanelRepository {
   /**
    * Elimina definitivamente un panel archivado.
    */
-  deleteArchived(ref: DocumentReference): Promise<ResultApp<void, AppErr>>;
+  deleteArchived(ref: string): Promise<ResultApp<string, AppErr>>;
 }

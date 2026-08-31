@@ -17,7 +17,7 @@ export type CookingBookState =
 
 type CookingBookAction = { type: "FETCH_COOKINGNOOK_START" };
 
-export const initialCookingBookState: CookingBookState = { state: "loading" };
+export const initialCookingBookState: CookingBookState = { status: "loading" };
 
 export function cookingRecipeReducer (
     state: CookingBookState,

@@ -1,4 +1,4 @@
-import Tag from "#components/atoms/tags/tag";
+import Tag from "#components/atoms/tags/Tag";
 
 export default function SelectionTagForm() {
   return (
