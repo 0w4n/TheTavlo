@@ -19,6 +19,7 @@ import type {
   UpdatedInvitationDTO,
 } from "../domain/invitation.entity";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import { invitationConverter, sharedUserConverter } from "./invitation.converter";
 
 export class FirebaseInvitationRepository implements InvitationRepository {
   constructor(
@@ -38,17 +39,23 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     return ctx;
   }
 
-  async findByToken(token: string): Promise<Invitation | undefined> {
-    const q = query(
-      collection(this.firestore, this.getCollectionPath()),
-      where("token", "==", token),
+  private collectionRef() {
+    return collection(this.firestore, this.getCollectionPath()).withConverter(
+      invitationConverter,
     );
+  }
+
+  private docRef(id: string) {
+    return doc(this.firestore, this.getCollectionPath(), id).withConverter(
+      invitationConverter,
+    );
+  }
+
+  async findByToken(token: string): Promise<Invitation | undefined> {
+    const q = query(this.collectionRef(), where("token", "==", token));
 
     return getDocs(q)
-      .then((snapshot) => {
-        const doc = snapshot.docs[0];
-        return doc ? ({ id: doc.id, ...doc.data() } as Invitation) : undefined;
-      })
+      .then((snapshot) => snapshot.docs[0]?.data())
       .catch((e) => {
         throw new Error(`Error fetching invitation by token: ${e.message}`);
       });
@@ -58,7 +65,6 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     data: CreatedInvitationDTO,
     parentRef: string,
   ): Promise<Invitation> {
-    const collectionPath = this.getCollectionPath();
     // OJO: "users" (plural) — antes decía "user" y la búsqueda del panel
     // padre fallaba siempre. Además usamos el accountType real del
     // propietario (puede ser un "guest" compartiendo su propio panel),
@@ -74,15 +80,17 @@ export class FirebaseInvitationRepository implements InvitationRepository {
       throw new Error(`Panel padre con id "${parentRef}" no encontrado`);
     }
 
-    const newDocRef = doc(collection(this.firestore, collectionPath)); // ← ref nueva
-    const batch = writeBatch(this.firestore);
-    batch.set(newDocRef, {
+    const newDocRef = doc(this.collectionRef()); // ← ref nueva, ya tipada
+    const payload = {
       ...data,
       // targetRef se fija aquí, en servidor/cliente de confianza, en vez de
       // confiar en lo que mande el llamador — siempre debe apuntar al panel
       // que se acaba de validar arriba.
       targetRef: parentDocRef,
-    });
+    } as unknown as Invitation;
+
+    const batch = writeBatch(this.firestore);
+    batch.set(newDocRef, payload);
     await batch.commit();
 
     // También dejamos constancia en el propio panel para que
@@ -91,44 +99,26 @@ export class FirebaseInvitationRepository implements InvitationRepository {
       .update(parentDocRef, { sharedWith: newDocRef.id })
       .commit();
 
-    const createdSnap = await getDoc(newDocRef); // ← leer el doc recién creado
-    if (!createdSnap.exists()) {
-      throw new Error("No se pudo recuperar la invitación recién creada");
-    }
-
-    return {
-      id: createdSnap.id,
-      ...createdSnap.data(),
-    } as Invitation;
+    return { ...payload, id: newDocRef.id };
   }
 
   async update(id: string, data: UpdatedInvitationDTO): Promise<Invitation> {
-    const docRef = doc(this.firestore, this.getCollectionPath(), id);
+    const docRef = this.docRef(id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
       throw new Error(`Invitación con id "${id}" no encontrada`);
     }
 
+    const updateData = { ...data, updatedAt: Timestamp.now() };
     const batch = writeBatch(this.firestore);
-    batch.update(docRef, { ...data, updatedAt: Timestamp.now() });
+    batch.update(docRef, updateData);
     await batch.commit();
 
-    const updatedSnap = await getDoc(docRef);
-    if (!updatedSnap.exists()) {
-      throw new Error("No se pudo recuperar la invitación actualizada");
-    }
-
-    return {
-      id: updatedSnap.id,
-      ...updatedSnap.data(),
-    } as Invitation;
+    return { ...docSnap.data(), ...updateData, id };
   }
 
   async delete(token: string): Promise<void> {
-    const q = query(
-      collection(this.firestore, this.getCollectionPath()),
-      where("token", "==", token),
-    );
+    const q = query(this.collectionRef(), where("token", "==", token));
 
     const snapshot = await getDocs(q);
     if (snapshot.empty) {
@@ -150,44 +140,45 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     return `${this.getCollectionPath()}/${invitationId}/invitedUsers`;
   }
 
+  private invitedUsersCollectionRef(invitationId: string) {
+    return collection(
+      this.firestore,
+      this.invitedUsersCollectionPath(invitationId),
+    ).withConverter(sharedUserConverter);
+  }
+
+  private invitedUserDocRef(invitationId: string, userId: string) {
+    return doc(
+      this.firestore,
+      this.invitedUsersCollectionPath(invitationId),
+      userId,
+    ).withConverter(sharedUserConverter);
+  }
+
   async findSharedUser(
     invitationId: string,
     userId: string,
   ): Promise<SharedUser | undefined> {
-    const docRef = doc(
-      this.firestore,
-      this.invitedUsersCollectionPath(invitationId),
-      userId,
-    );
-    const snap = await getDoc(docRef);
-    if (!snap.exists()) return undefined;
-    return snap.data() as SharedUser;
+    const snap = await getDoc(this.invitedUserDocRef(invitationId, userId));
+    return snap.exists() ? snap.data() : undefined;
   }
 
   async listSharedUsers(invitationId: string): Promise<SharedUser[]> {
-    const snap = await getDocs(
-      collection(this.firestore, this.invitedUsersCollectionPath(invitationId)),
-    );
-    return snap.docs.map((d) => d.data() as SharedUser);
+    const snap = await getDocs(this.invitedUsersCollectionRef(invitationId));
+    return snap.docs.map((d) => d.data());
   }
 
   async upsertSharedUser(
     invitationId: string,
     data: CreatedSharedUserDTO,
   ): Promise<SharedUser> {
-    const docRef = doc(
-      this.firestore,
-      this.invitedUsersCollectionPath(invitationId),
-      data.userId,
-    );
+    const docRef = this.invitedUserDocRef(invitationId, data.userId);
     const existing = await getDoc(docRef);
     const now = Timestamp.now();
 
     const payload: SharedUser = {
       ...data,
-      createdAt: existing.exists()
-        ? (existing.data() as SharedUser).createdAt
-        : now,
+      createdAt: existing.exists() ? existing.data().createdAt : now,
       updatedAt: now,
       statusUpdatedAt: now,
     };

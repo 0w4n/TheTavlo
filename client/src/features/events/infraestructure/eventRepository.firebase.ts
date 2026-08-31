@@ -4,9 +4,7 @@ import {
   query,
   Timestamp,
   where,
-  type DocumentData,
   type Firestore,
-  // --- NUEVAS IMPORTACIONES PARA LA IMPLEMENTACIÓN ---
   addDoc,
   doc,
   getDoc,
@@ -16,11 +14,13 @@ import {
 import type { EventRepository } from "../app/eventRepository.interface";
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
+import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
 import type {
   CreateAnyEventDTO,
   AnyEvent,
   UpdateAnyEventDTO,
 } from "../domain/events.entity";
+import { eventConverter } from "./event.converter";
 
 export class FirebaseEventRepository implements EventRepository {
   constructor(
@@ -43,125 +43,54 @@ export class FirebaseEventRepository implements EventRepository {
     return ctx;
   }
 
-  private mapDocumentToAnyEvent(id: string, data: DocumentData): AnyEvent {
-    const event: any = { ...data };
-
-    const eventBase = {
-      id: id,
-      name: event.name,
-      createdAt: event.createdAt,
-      updatedAt: event.updatedAt,
-    };
-
-    switch (event.type) {
-      case "exam":
-        return {
-          ...eventBase,
-          type: "exam",
-          makeAt: event.makeAt,
-        };
-
-      case "multiDay":
-        return {
-          ...eventBase,
-          type: "multiDay",
-          category: event.category,
-          startAt: event.startAt,
-          endAt: event.endAt,
-          location: event.location,
-        };
-
-      case "reminder":
-        return {
-          ...eventBase,
-          type: "reminder",
-          isRecurring: event.isRecurring,
-          recurrenceRule: event.recurrenceRule,
-        };
-
-      default:
-        return {
-          ...eventBase,
-          type: "generic",
-          startAt: event.startAt,
-          endAt: event.endAt,
-          location: event.location,
-        };
-    }
+  private collectionRef() {
+    return collection(this.firestore, this.getCollectionPath()).withConverter(
+      eventConverter,
+    );
   }
 
-  // --- MÉTODOS IMPLEMENTADOS ---
+  private docRef(id: string) {
+    return doc(this.firestore, this.getCollectionPath(), id).withConverter(
+      eventConverter,
+    );
+  }
 
   async create(data: CreateAnyEventDTO): Promise<AnyEvent> {
-    const collectionPath = this.getCollectionPath();
-    const collectionRef = collection(this.firestore, collectionPath);
+    const now = Timestamp.now();
+    const payload = { ...data, createdAt: now, updatedAt: now } as AnyEvent;
 
-    // Añadimos marcas de tiempo automáticas para la creación
-    const payload = {
-      ...data,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    };
-
-    const docRef = await addDoc(collectionRef, payload);
-    
-    return this.mapDocumentToAnyEvent(docRef.id, payload);
+    const docRef = await addDoc(this.collectionRef(), payload);
+    return { ...payload, id: docRef.id };
   }
 
+  // ⚠️ Sin cambios de comportamiento: sigue devolviendo solo exámenes
+  // futuros, no "todos los eventos" (bug preexistente ya reportado en la
+  // auditoría — no se toca en este cambio, que es solo mappers -> withConverter).
   async findAll(): Promise<AnyEvent[]> {
-    const collectionName = this.getCollectionPath();
-
     const q = query(
-      collection(this.firestore, collectionName),
-      where("type",  "==", "exam"),
+      this.collectionRef(),
+      where("type", "==", "exam"),
       where("makeAt", ">", Timestamp.now()),
     );
 
     const querySnapshot = await getDocs(q);
-
-    return querySnapshot.docs.map((doc) =>
-      this.mapDocumentToAnyEvent(doc.id, { ...doc.data() }),
-    );
+    return querySnapshot.docs.map((doc) => doc.data());
   }
 
   async findById(id: string): Promise<AnyEvent | undefined> {
-    const collectionPath = this.getCollectionPath();
-    const docRef = doc(this.firestore, collectionPath, id);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      return undefined;
-    }
-
-    return this.mapDocumentToAnyEvent(docSnap.id, docSnap.data());
+    const docSnap = await getDoc(this.docRef(id));
+    return docSnap.exists() ? docSnap.data() : undefined;
   }
 
   async update(id: string, data: UpdateAnyEventDTO): Promise<AnyEvent> {
-    const collectionPath = this.getCollectionPath();
-    const docRef = doc(this.firestore, collectionPath, id);
+    const now = Timestamp.now();
+    const payload = withoutId({ ...data, updatedAt: now });
 
-    // Actualizamos los datos junto con la fecha de modificación
-    const payload = {
-      ...data,
-      updatedAt: Timestamp.now(),
-    };
-
-    // Usamos updateDoc para hacer una actualización parcial (solo los campos enviados)
-    await updateDoc(docRef, payload);
-
-    // Recuperamos el documento completo para devolver la entidad actualizada
-    const updatedSnap = await getDoc(docRef);
-    if (!updatedSnap.exists()) {
-      throw new Error(`No se pudo encontrar el evento con ID ${id} tras la actualización.`);
-    }
-
-    return this.mapDocumentToAnyEvent(updatedSnap.id, updatedSnap.data());
+    await updateDoc(this.docRef(id), payload);
+    return { id, ...payload } as AnyEvent;
   }
 
   async delete(id: string): Promise<void> {
-    const collectionPath = this.getCollectionPath();
-    const docRef = doc(this.firestore, collectionPath, id);
-    
-    await deleteDoc(docRef);
+    await deleteDoc(this.docRef(id));
   }
 }

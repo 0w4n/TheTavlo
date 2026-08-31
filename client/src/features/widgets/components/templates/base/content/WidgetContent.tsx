@@ -4,7 +4,7 @@ import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
 import ExamsTimelineWidget from "../../examsTimeline/examsTimelineWidget";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import { TaskWidget } from "../../task/taskWidget";
-import CookingBookWidget from "#features/cookingBook/components/template/widget/cookingBook";
+import CookingBookWidget from "#features/cookingBook/components/template/widget/CookingBook";
 import NoteWidget from "#features/note/components/templates/widget/Note.widget";
 
 export default function WidgetContent({

@@ -7,7 +7,6 @@ import {
   deleteDoc,
   query,
   Timestamp,
-  type DocumentData,
   DocumentReference,
   Firestore,
   writeBatch,
@@ -33,6 +32,8 @@ import {
   type AppErr,
   firebaseErr,
 } from "#core/appCore/domain/AppCore.type";
+import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { panelConverter } from "./panel.converter";
 
 export class FirebasePanelsRepository implements PanelRepository {
   constructor(
@@ -53,6 +54,18 @@ export class FirebasePanelsRepository implements PanelRepository {
     return ctx;
   }
 
+  private collectionRef() {
+    return collection(this.firestore, this.getCollectionPath()).withConverter(
+      panelConverter,
+    );
+  }
+
+  private docRef(id: string) {
+    return doc(this.firestore, this.getCollectionPath(), id).withConverter(
+      panelConverter,
+    );
+  }
+
   private setPanelDefault(): CreatePanelDTO {
     const now = Timestamp.now();
     return {
@@ -66,54 +79,6 @@ export class FirebasePanelsRepository implements PanelRepository {
     };
   }
 
-  private mapDocumentToPanel(
-    id: string,
-    data: DocumentData,
-    owner?: { ownerId: string; ownerAccountType: User["accountType"] },
-  ): Panel {
-    return {
-      id,
-      parentId: data.parentId ?? null,
-      name: data.name,
-      icon: data.icon,
-      color: data.color,
-      sharedWith: data.sharedWith ?? null,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      ownerId: owner?.ownerId,
-      ownerAccountType: owner?.ownerAccountType,
-    };
-  }
-
-  /**
-   * Deriva el propietario real de un panel a partir de la ruta completa de
-   * su documento, ej. "users/abc123/panels/xyz" -> { ownerAccountType: "users", ownerId: "abc123" }.
-   * Funciona tanto para paneles propios como para paneles de otra persona
-   * encontrados vía findBySharedId/findByRef (collectionGroup).
-   */
-  private ownerFromPath(path: string): {
-    ownerId: string;
-    ownerAccountType: User["accountType"];
-  } {
-    const [ownerAccountType, ownerId] = path.split("/");
-    return {
-      ownerId,
-      ownerAccountType: ownerAccountType as User["accountType"],
-    };
-  }
-
-  private mapPanelToDocument(
-    panel: Partial<Panel> | Partial<CreatePanelDTO>,
-  ): DocumentData {
-    const data: any = { ...panel };
-    if (data.createdAt instanceof Date)
-      data.createdAt = Timestamp.fromDate(data.createdAt);
-    if (data.updatedAt instanceof Date)
-      data.updatedAt = Timestamp.fromDate(data.updatedAt);
-    delete data.id;
-    return data as DocumentData;
-  }
-
   // ─── Suscripciones en tiempo real ────────────────────────────────────────
 
   /**
@@ -125,11 +90,8 @@ export class FirebasePanelsRepository implements PanelRepository {
     onData: (panel: Panel) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const { accountType, id } = this.getUser();
-    if (accountType === null || id === null)
-      console.log("Hola, aquí está el error");
     const q = query(
-      collection(this.firestore, accountType, id, "panels"),
+      this.collectionRef(),
       where("color", "==", -1),
       where("parentId", "==", null),
     );
@@ -137,22 +99,12 @@ export class FirebasePanelsRepository implements PanelRepository {
     // Bandera para evitar creaciones paralelas si el listener dispara varias veces
     let creating = false;
 
-    const onHomePanel = onSnapshot(
+    return onSnapshot(
       q,
       (snap) => {
-        console.log("Snap: ", snap);
-
-        if (snap.empty === false) {
-          // Panel encontrado — entregarlo y resetear bandera
+        if (!snap.empty) {
           creating = false;
-
-          onData(
-            this.mapDocumentToPanel(snap.docs[0].id, snap.docs[0].data(), {
-              ownerId: id,
-              ownerAccountType: accountType,
-            }),
-          );
-
+          onData(snap.docs[0].data());
           return;
         }
 
@@ -170,8 +122,6 @@ export class FirebasePanelsRepository implements PanelRepository {
       },
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
-
-    return onHomePanel;
   }
 
   /**
@@ -181,20 +131,9 @@ export class FirebasePanelsRepository implements PanelRepository {
     onData: (panels: Panel[]) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const { accountType, id } = this.getUser();
-    const q = query(collection(this.firestore, this.getCollectionPath()));
-
     return onSnapshot(
-      q,
-      (snap) => {
-        const panels = snap.docs.map((d) =>
-          this.mapDocumentToPanel(d.id, d.data(), {
-            ownerId: id,
-            ownerAccountType: accountType,
-          }),
-        );
-        onData(panels);
-      },
+      query(this.collectionRef()),
+      (snap) => onData(snap.docs.map((d) => d.data())),
       (error) => onError(firebaseErr(error.message)),
     );
   }
@@ -202,9 +141,8 @@ export class FirebasePanelsRepository implements PanelRepository {
   // ─── Queries puntuales ────────────────────────────────────────────────────
 
   async findHomePanel(): Promise<ResultApp<Panel, AppErr>> {
-    const { accountType, id } = this.getUser();
     const q = query(
-      collection(this.firestore, accountType, id, "panels"),
+      this.collectionRef(),
       where("color", "==", -1),
       where("icon", "==", ""),
       where("name", "==", ""),
@@ -212,64 +150,28 @@ export class FirebasePanelsRepository implements PanelRepository {
     );
 
     const querySnapshot = await getDocs(q);
-
     if (querySnapshot.empty) {
       return this.create(this.setPanelDefault());
     }
-
-    return ok(
-      this.mapDocumentToPanel(
-        querySnapshot.docs[0].id,
-        querySnapshot.docs[0].data(),
-        { ownerId: id, ownerAccountType: accountType },
-      ),
-    );
+    return ok(querySnapshot.docs[0].data());
   }
 
   async findAll(): Promise<ResultApp<Panel[], AppErr>> {
-    const { accountType, id } = this.getUser();
-    const q = query(collection(this.firestore, this.getCollectionPath()));
-    const querySnapshot = await getDocs(q);
-    return ok(
-      querySnapshot.docs.map((d) =>
-        this.mapDocumentToPanel(d.id, d.data(), {
-          ownerId: id,
-          ownerAccountType: accountType,
-        }),
-      ),
-    );
+    const querySnapshot = await getDocs(query(this.collectionRef()));
+    return ok(querySnapshot.docs.map((d) => d.data()));
   }
 
   async findByParentId(
     parentId: DocumentReference,
   ): Promise<ResultApp<Panel[], AppErr>> {
-    const { accountType, id } = this.getUser();
-    const q = query(
-      collection(this.firestore, this.getCollectionPath()),
-      where("parentId", "==", parentId),
-    );
+    const q = query(this.collectionRef(), where("parentId", "==", parentId));
     const querySnapshot = await getDocs(q);
-    return ok(
-      querySnapshot.docs.map((d) =>
-        this.mapDocumentToPanel(d.id, d.data(), {
-          ownerId: id,
-          ownerAccountType: accountType,
-        }),
-      ),
-    );
+    return ok(querySnapshot.docs.map((d) => d.data()));
   }
 
   async findById(id: string): Promise<ResultApp<Panel | undefined, AppErr>> {
-    const { accountType, id: ownerId } = this.getUser();
-    const docRef = doc(this.firestore, this.getCollectionPath(), id);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return ok(undefined);
-    return ok(
-      this.mapDocumentToPanel(docSnap.id, docSnap.data(), {
-        ownerId,
-        ownerAccountType: accountType,
-      }),
-    );
+    const docSnap = await getDoc(this.docRef(id));
+    return ok(docSnap.exists() ? docSnap.data() : undefined);
   }
 
   /**
@@ -282,10 +184,7 @@ export class FirebasePanelsRepository implements PanelRepository {
     const uniqueIds = Array.from(new Set(ids));
     if (uniqueIds.length === 0) return ok([]);
 
-    const { accountType, id: ownerId } = this.getUser();
-    const collectionPath = this.getCollectionPath();
     const FIRESTORE_IN_LIMIT = 10;
-
     const chunks: string[][] = [];
     for (let i = 0; i < uniqueIds.length; i += FIRESTORE_IN_LIMIT) {
       chunks.push(uniqueIds.slice(i, i + FIRESTORE_IN_LIMIT));
@@ -294,24 +193,11 @@ export class FirebasePanelsRepository implements PanelRepository {
     try {
       const snapshots = await Promise.all(
         chunks.map((chunk) =>
-          getDocs(
-            query(
-              collection(this.firestore, collectionPath),
-              where(documentId(), "in", chunk),
-            ),
-          ),
+          getDocs(query(this.collectionRef(), where(documentId(), "in", chunk))),
         ),
       );
 
-      const panels = snapshots.flatMap((snap) =>
-        snap.docs.map((d) =>
-          this.mapDocumentToPanel(d.id, d.data(), {
-            ownerId,
-            ownerAccountType: accountType,
-          }),
-        ),
-      );
-
+      const panels = snapshots.flatMap((snap) => snap.docs.map((d) => d.data()));
       return ok(panels);
     } catch (error) {
       return err(
@@ -329,15 +215,8 @@ export class FirebasePanelsRepository implements PanelRepository {
   async findByRef(
     ref: DocumentReference,
   ): Promise<ResultApp<Panel | undefined, AppErr>> {
-    const docSnap = await getDoc(ref);
-    if (docSnap.exists())
-      return ok(
-        this.mapDocumentToPanel(
-          docSnap.id,
-          docSnap.data(),
-          this.ownerFromPath(docSnap.ref.path),
-        ),
-      );
+    const docSnap = await getDoc(ref.withConverter(panelConverter));
+    if (docSnap.exists()) return ok(docSnap.data());
     return err(firebaseErr("Panel no encontrado"));
   }
 
@@ -353,40 +232,25 @@ export class FirebasePanelsRepository implements PanelRepository {
     sharedId: DocumentReference,
   ): Promise<ResultApp<Panel | undefined, AppErr>> {
     const q = query(
-      collectionGroup(this.firestore, "panels"),
+      collectionGroup(this.firestore, "panels").withConverter(panelConverter),
       where("sharedWith", "==", sharedId.id),
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return ok(undefined);
-    const docSnap = querySnapshot.docs[0];
-    return ok(
-      this.mapDocumentToPanel(
-        docSnap.id,
-        docSnap.data(),
-        this.ownerFromPath(docSnap.ref.path),
-      ),
-    );
+    return ok(querySnapshot.docs[0].data());
   }
 
   async findArchived(
     parentId: DocumentReference | null,
   ): Promise<ResultApp<Panel[] | undefined, AppErr>> {
-    const collPath = this.getCollectionPath();
     const q = query(
-      collection(this.firestore, collPath),
+      this.collectionRef(),
       where("isArchived", "==", true),
       where("parentId", "==", parentId),
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return ok(undefined);
-    const panels = querySnapshot.docs.map((docSnap) =>
-      this.mapDocumentToPanel(
-        docSnap.id,
-        docSnap.data(),
-        this.ownerFromPath(docSnap.ref.path),
-      ),
-    );
-    return ok(panels);
+    return ok(querySnapshot.docs.map((d) => d.data()));
   }
 
   // ─── Mutaciones — sin getDoc extra post-escritura ─────────────────────────
@@ -396,29 +260,19 @@ export class FirebasePanelsRepository implements PanelRepository {
     parentId?: DocumentReference,
   ): Promise<ResultApp<Panel, AppErr>> {
     const { accountType, id: ownerId } = this.getUser();
-    const collectionPath = this.getCollectionPath();
     const now = Timestamp.now();
 
-    const panelData = this.mapPanelToDocument({
+    const panelData = {
       ...data,
       parentId: parentId ?? null,
       createdAt: data.createdAt ?? now,
       updatedAt: data.updatedAt ?? now,
-    });
+    } as Panel;
 
-    const docRef = await addDoc(collection(this.firestore, collectionPath), panelData);
+    const docRef = await addDoc(this.collectionRef(), panelData);
 
-    // Construimos el panel localmente para evitar el getDoc extra
-    return ok(
-      this.mapDocumentToPanel(
-        docRef.id,
-        {
-          ...panelData,
-          parentId: parentId ?? null,
-        },
-        { ownerId, ownerAccountType: accountType },
-      ),
-    );
+    // Construimos el panel localmente para evitar el getDoc extra.
+    return ok({ ...panelData, id: docRef.id, ownerId, ownerAccountType: accountType });
   }
 
   async addSubPanel(
@@ -434,9 +288,8 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   async archive(id: string): Promise<ResultApp<void, AppErr>> {
-    const ref = doc(this.firestore, this.getCollectionPath(), id);
     const updateData = { isArchived: true, updatedAt: Timestamp.now() };
-    return updateDoc(ref, updateData)
+    return updateDoc(this.docRef(id), updateData)
       .then(() => ok(undefined))
       .catch((error) =>
         err(
@@ -452,9 +305,8 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   async unarchive(id: string): Promise<ResultApp<void, AppErr>> {
-    const ref = doc(this.firestore, this.getCollectionPath(), id);
     const updateData = { isArchived: deleteField(), updatedAt: Timestamp.now() };
-    return updateDoc(ref, updateData)
+    return updateDoc(this.docRef(id), updateData)
       .then(() => ok(undefined))
       .catch((error) =>
         err(
@@ -474,29 +326,17 @@ export class FirebasePanelsRepository implements PanelRepository {
     data: UpdatePanelDTO,
   ): Promise<ResultApp<Panel, AppErr>> {
     const { accountType, id: ownerId } = this.getUser();
-    const collectionPath = this.getCollectionPath();
+    const now = Timestamp.now();
+    const updateData = withoutId({ ...data, updatedAt: now });
 
-    const rawUpdate = { ...data, updatedAt: Timestamp.now() };
-    const updateData = this.mapPanelToDocument(rawUpdate);
+    await updateDoc(this.docRef(id), updateData);
 
-    const docRef = doc(this.firestore, collectionPath, id);
-    await updateDoc(docRef, updateData);
-
-    // Leemos solo para devolver el panel actualizado (requerido por el tipo)
-    const updatedSnap = await getDoc(docRef);
-    if (!updatedSnap.exists())
-      return err(firebaseErr("Error al leer el panel actualizado"));
-    return ok(
-      this.mapDocumentToPanel(updatedSnap.id, updatedSnap.data(), {
-        ownerId,
-        ownerAccountType: accountType,
-      }),
-    );
+    // Sin getDoc extra: reconstruimos localmente con lo que acabamos de escribir.
+    return ok({ id, ownerId, ownerAccountType: accountType, ...updateData } as Panel);
   }
 
   async delete(id: string): Promise<ResultApp<void, AppErr>> {
-    const docRef = doc(this.firestore, this.getCollectionPath(), id);
-    await deleteDoc(docRef);
+    await deleteDoc(this.docRef(id));
     return ok(undefined);
   }
 
@@ -507,15 +347,14 @@ export class FirebasePanelsRepository implements PanelRepository {
    * entera del árbol que igual hay que borrar.
    */
   private async collectDescendantIds(rootId: string): Promise<string[]> {
-    const collectionPath = this.getCollectionPath();
     const descendantIds: string[] = [];
     const queue: string[] = [rootId];
 
     while (queue.length > 0) {
       const currentId = queue.shift() as string;
-      const parentRef = doc(this.firestore, collectionPath, currentId);
+      const parentRef = doc(this.firestore, this.getCollectionPath(), currentId);
       const childrenQuery = query(
-        collection(this.firestore, collectionPath),
+        this.collectionRef(),
         where("parentId", "==", parentRef),
       );
       const snap = await getDocs(childrenQuery);
@@ -533,7 +372,6 @@ export class FirebasePanelsRepository implements PanelRepository {
     id: string,
   ): Promise<ResultApp<{ deletedIds: string[] }, AppErr>> {
     const FIRESTORE_BATCH_LIMIT = 500;
-    const collectionPath = this.getCollectionPath();
 
     try {
       const descendantIds = await this.collectDescendantIds(id);
@@ -548,7 +386,7 @@ export class FirebasePanelsRepository implements PanelRepository {
         const chunk = deletedIds.slice(i, i + FIRESTORE_BATCH_LIMIT);
         const batch = writeBatch(this.firestore);
         for (const panelId of chunk) {
-          batch.delete(doc(this.firestore, collectionPath, panelId));
+          batch.delete(doc(this.firestore, this.getCollectionPath(), panelId));
         }
         await batch.commit();
       }

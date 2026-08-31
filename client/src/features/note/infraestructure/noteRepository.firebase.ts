@@ -3,15 +3,19 @@ import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
+  getDoc,
   getDocs,
   query,
   Timestamp,
-  writeBatch,
+  updateDoc,
   type Firestore,
 } from "firebase/firestore";
 import type { NoteRepository } from "../app/noteRepository.interface";
 import type { Note, CreateNoteDTO, UpdateNoteDTO } from "../domain/note.entity";
+import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
+import { noteConverter } from "./note.converter";
 
 export class FirebaseNoteRepository implements NoteRepository {
   constructor(
@@ -36,68 +40,49 @@ export class FirebaseNoteRepository implements NoteRepository {
     return ctx;
   }
 
-  async findAll(): Promise<Note[]> {
-    const collPath = this.getCollectionPath();
-    const q = query(collection(this.firestore, collPath));
+  private collectionRef() {
+    return collection(this.firestore, this.getCollectionPath()).withConverter(
+      noteConverter,
+    );
+  }
 
-    return getDocs(q).then((querySnapshot) => {
-      return querySnapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as Note,
-      );
-    });
+  private docRef(id: string) {
+    return doc(this.firestore, this.getCollectionPath(), id).withConverter(
+      noteConverter,
+    );
+  }
+
+  async findAll(): Promise<Note[]> {
+    const snap = await getDocs(query(this.collectionRef()));
+    return snap.docs.map((d) => d.data());
   }
 
   async findById(id: string): Promise<Note | null> {
-    const collPath = this.getCollectionPath();
-
-    const q = query(collection(this.firestore, collPath, id));
-
-    return getDocs(q).then((querySnapshot) => {
-      if (querySnapshot.empty) {
-        return null;
-      }
-      const doc = querySnapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as Note;
-    });
+    // Antes: `query(collection(firestore, collPath, id))` — un
+    // `collection()` con un número par de segmentos, inválido en
+    // Firestore (tira "must have an odd number of segments" en runtime).
+    // Buscar UN documento por id es `doc()` + `getDoc()`, no una query.
+    const docSnap = await getDoc(this.docRef(id));
+    return docSnap.exists() ? docSnap.data() : null;
   }
 
   async create(data: CreateNoteDTO): Promise<Note> {
-    const collPath = this.getCollectionPath();
-
-    const docRef = await addDoc(collection(this.firestore, collPath), {
-      ...data,
-    });
-
-    return {
-      ...data,
-      id: docRef.id,
-    };
+    const docRef = await addDoc(this.collectionRef(), data as Note);
+    return { ...data, id: docRef.id };
   }
 
   async update(id: string, data: UpdateNoteDTO): Promise<Note> {
-    const collPath = this.getCollectionPath();
+    const now = Timestamp.now();
+    const updateData = withoutId({ ...data, updatedAt: now });
 
-    const docRef = doc(this.firestore, collPath, id);
-    const batch = writeBatch(this.firestore);
-    
-    batch.update(docRef, {
-      ...data,
-      updatedAt: Timestamp.now(),
-    });
-    
-    await batch.commit();
+    // updateDoc no pasa por el converter (ver withoutId.ts), pero igual
+    // acepta una referencia convertida sin problema.
+    await updateDoc(this.docRef(id), updateData);
 
-    return { id, ...data, updatedAt: Timestamp.now() } as Note;
+    return { id, ...updateData } as Note;
   }
 
   async delete(id: string): Promise<void> {
-    const collPath = this.getCollectionPath();
-
-    const batch = writeBatch(this.firestore);
-    const docRef = doc(this.firestore, collPath, id);
-
-    batch.delete(docRef);
-
-    await batch.commit();
+    await deleteDoc(this.docRef(id));
   }
 }

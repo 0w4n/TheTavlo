@@ -13,7 +13,7 @@ import "./panelsWidget.css";
 
 export default function PanelsWidget({
   items,
-  config,
+  config = {typeView: "list"},
 }: {
   items: Panel[] | undefined;
   config: PanelConfig;
@@ -22,8 +22,7 @@ export default function PanelsWidget({
     return <span>No hay paneles</span>;
   } else {
     return (
-      <div className={`widgetContent__view--list`}>
-        {/* ${config.typeView ? "list" : "list"} */}
+      <div className={`widgetContent__view--${config.typeView ? "list" : "list"}`}>
         {items.map((item) => panelsItem(item))}
       </div>
     );

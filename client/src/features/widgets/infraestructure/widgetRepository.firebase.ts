@@ -1,6 +1,5 @@
 import {
   Firestore,
-  type DocumentData,
   Timestamp,
   query,
   collection,
@@ -25,7 +24,9 @@ import type {
 
 import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
+import { withoutId } from "#core/appCore/infraestructure/firebase/withoutId";
 import type { ResponsiveLayouts } from "react-grid-layout";
+import { widgetConverter } from "./widget.converter";
 
 export class FirebaseWidgetRepository implements WidgetRepository {
   constructor(
@@ -39,10 +40,7 @@ export class FirebaseWidgetRepository implements WidgetRepository {
 
   private getCollectionPath(): string {
     // Usamos el propietario REAL del panel (resolvePanelOwner: ownerId +
-    // ownerAccountType del dueño, no del usuario que está mirando). Antes
-    // esta función solo tomaba `ownerId` del dueño pero `accountType` del
-    // visitante — mezcla que rompe en cuanto dueño e invitado tienen un
-    // accountType distinto (ej. "users" comparte con un "guest").
+    // ownerAccountType del dueño, no del usuario que está mirando).
     const ctx = this.getContext();
     const { accountType, ownerId } = resolvePanelOwner(ctx);
     const { panelId } = ctx.state.panel;
@@ -55,28 +53,16 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     return ctx;
   }
 
-  // -------------------------------------------------------
-  // 🔄 MAPPERS
-  // -------------------------------------------------------
-
-  private mapDocumentToWidget(id: string, data: DocumentData): Widget {
-    return {
-      id,
-      type: data.type,
-      config: data.config ?? {},
-      locked: data.locked ?? false,
-      layout: data.layout,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
+  private collectionRef() {
+    return collection(this.firestore, this.getCollectionPath()).withConverter(
+      widgetConverter,
+    );
   }
 
-  private mapWidgetToDocument(
-    widget: Partial<Widget> | Partial<CreateWidgetDTO>,
-  ): DocumentData {
-    const data: Record<string, any> = { ...widget };
-    delete data.id;
-    return data as DocumentData;
+  private docRef(id: string) {
+    return doc(this.firestore, this.getCollectionPath(), id).withConverter(
+      widgetConverter,
+    );
   }
 
   // -------------------------------------------------------
@@ -92,17 +78,9 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     onData: (widgets: Widget[]) => void,
     onError: (err: string) => void,
   ): Unsubscribe {
-    const path = this.getCollectionPath();
-    const q = query(collection(this.firestore, path));
-
     return onSnapshot(
-      q,
-      (snap) => {
-        const widgets = snap.docs.map((d) =>
-          this.mapDocumentToWidget(d.id, d.data()),
-        );
-        onData(widgets);
-      },
+      query(this.collectionRef()),
+      (snap) => onData(snap.docs.map((d) => d.data())),
       (error) => onError(error.message),
     );
   }
@@ -112,24 +90,19 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   // -------------------------------------------------------
 
   async findByPanel(_panelId: string): Promise<Widget[]> {
-    const path = this.getCollectionPath();
-    const q = query(collection(this.firestore, path));
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => this.mapDocumentToWidget(d.id, d.data()));
+    const snap = await getDocs(query(this.collectionRef()));
+    return snap.docs.map((d) => d.data());
   }
 
   async findById(id: string, _panelId?: string): Promise<Widget | null> {
-    const path = this.getCollectionPath();
-    const ref = doc(this.firestore, path, id);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return null;
-    return this.mapDocumentToWidget(snap.id, snap.data());
+    const snap = await getDoc(this.docRef(id));
+    return snap.exists() ? snap.data() : null;
   }
 
   async findByRef(documentRef: DocumentReference): Promise<Widget | null> {
-    const snap = await getDoc(documentRef);
+    const snap = await getDoc(documentRef.withConverter(widgetConverter));
     if (!snap.exists()) throw new Error("Widget no encontrado");
-    return this.mapDocumentToWidget(snap.id, snap.data());
+    return snap.data();
   }
 
   // -------------------------------------------------------
@@ -137,19 +110,11 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   // -------------------------------------------------------
 
   async create(data: CreateWidgetDTO): Promise<Widget> {
-    const path = this.getCollectionPath();
     const now = Timestamp.now();
+    const payload = { ...data, createdAt: now, updatedAt: now } as Widget;
 
-    const payload = {
-      ...data,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const ref = await addDoc(collection(this.firestore, path), payload);
-
-    // Construimos el objeto local para no hacer un getDoc extra
-    return this.mapDocumentToWidget(ref.id, payload);
+    const ref = await addDoc(this.collectionRef(), payload);
+    return { ...payload, id: ref.id };
   }
 
   // -------------------------------------------------------
@@ -157,19 +122,14 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   // -------------------------------------------------------
 
   async update(id: string, data: UpdateWidgetDTO): Promise<Widget> {
-    const path = this.getCollectionPath();
     const now = Timestamp.now();
+    const updateData = withoutId({ ...data, updatedAt: now });
 
-    const rawUpdate = { ...data, updatedAt: now };
-    const updateData = this.mapWidgetToDocument(rawUpdate);
+    await updateDoc(this.docRef(id), updateData);
 
-    const ref = doc(this.firestore, path, id);
-    await updateDoc(ref, updateData);
-
-    // Construimos el objeto local sin round-trip extra
-    const existing = await this.findById(id);
-    if (!existing) throw new Error("Widget no encontrado tras actualizar");
-    return { ...existing, ...data, updatedAt: now };
+    // Sin round-trip extra: el caller ya tiene el widget completo antes
+    // de llamar a update(); acá solo devolvemos lo que cambió + id.
+    return { id, ...updateData } as Widget;
   }
 
   // -------------------------------------------------------
@@ -191,7 +151,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
 
   async updateBulkLayout(layouts: ResponsiveLayouts): Promise<void> {
     const batch = writeBatch(this.firestore);
-    const path = this.getCollectionPath();
     const now = Timestamp.now();
 
     const widgetLayouts = new Map<string, Record<string, LayoutItemDTO>>();
@@ -206,8 +165,7 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     }
 
     for (const [id, layout] of widgetLayouts.entries()) {
-      const ref = doc(this.firestore, path, id);
-      batch.update(ref, { layout, updatedAt: now });
+      batch.update(this.docRef(id), { layout, updatedAt: now });
     }
 
     await batch.commit();
@@ -218,8 +176,6 @@ export class FirebaseWidgetRepository implements WidgetRepository {
   // -------------------------------------------------------
 
   async delete(id: string): Promise<void> {
-    const path = this.getCollectionPath();
-    const ref = doc(this.firestore, path, id);
-    await deleteDoc(ref);
+    await deleteDoc(this.docRef(id));
   }
 }

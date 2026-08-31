@@ -11,7 +11,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node", "express"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

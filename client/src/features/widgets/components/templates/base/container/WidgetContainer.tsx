@@ -8,12 +8,12 @@ import Icon from "#shared/ui/atoms/icons";
 import WidgetContent from "../content/WidgetContent";
 import { GetDialogWdigetType } from "./utils";
 import { Dropdown } from "#components/molecules/dropdown";
-import AddShared from "#components/templates/dialog/modShared/addShared";
 
 import "./widgetContainer.css";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import ModalPortal from "#components/molecules/modal/portal";
 import { DelWidget } from "#components/templates/dialog/modWidget/delWidget";
+import { usePanelRole } from "#features/invitations/presentation/hooks/usePanelRole";
 
 export default function WidgetContainer({
   type,
@@ -29,18 +29,15 @@ export default function WidgetContainer({
   const [enable, setEnable] = useState(false);
   const [multipleSelecction, setMultipleSelecction] = useState([]);
 
+  // Compartir/eliminar son acciones de EDITOR (o dueño) hacia arriba — un
+  // VIEWER no debe verlas (Q3: "ambos" — esto es solo la mitad de UX, la
+  // barrera real está en firestore.rules + invitations.router.ts).
+  const panelRole = usePanelRole();
+  const canManage = panelRole === "owner" || panelRole === "editor";
+
   const actionTrigers = {
     iconTrigger: "IconDotsVertical",
     options: [
-      {
-        label: "Compartir",
-        icon: "IconUserPlus",
-        onClick: () => console.log("Opción 1 seleccionada"),
-        render: (onClose: () => void) => (
-          <AddShared type="widget" onClose={onClose} />
-        ),
-        portalModal: true,
-      },
       {
         label: "Card",
         icon: "IconGrid",
@@ -56,16 +53,20 @@ export default function WidgetContainer({
         icon: "IconPin",
         onClick: () => console.log("Opción 3 seleccionada"),
       },
-      {
-        label: "Eliminar",
-        icon: "IconTrash",
-        danger: true,
-        onClick: () => console.log("Opción 4 seleccionada"),
-        render: (onClose: () => void) => (
-          <DelWidget onDelete={handleRemoving} onClose={onClose} />
-        ),
-        portalModal: true,
-      },
+      ...(canManage
+        ? [
+            {
+              label: "Eliminar",
+              icon: "IconTrash",
+              danger: true,
+              onClick: () => console.log("Opción 4 seleccionada"),
+              render: (onClose: () => void) => (
+                <DelWidget onDelete={handleRemoving} onClose={onClose} />
+              ),
+              portalModal: true as const,
+            },
+          ]
+        : []),
       {
         label: "Ver archivados",
         icon: "IconArchive",

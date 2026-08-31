@@ -10,7 +10,6 @@ import {
   Timestamp,
   onSnapshot,
   runTransaction,
-  type DocumentData,
   type DocumentReference,
   type Firestore,
   type Unsubscribe,
@@ -34,6 +33,13 @@ import {
   type AppErr,
   type ResultApp,
 } from "#core/appCore/domain/AppCore.type";
+import {
+  attendanceRecordConverter,
+  classSlotConverter,
+  occurrenceExceptionConverter,
+  scheduleConverter,
+  subjectConverter,
+} from "./schedule.converters";
 
 /** Firestore rechaza `undefined` en cualquier campo (no está activado `ignoreUndefinedProperties`) — los campos opcionales del dominio (room, professor, notes, reason...) hay que limpiarlos antes de cada escritura. */
 function stripUndefined<T extends Record<string, unknown>>(data: T): T {
@@ -87,89 +93,34 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     return `${this.getScheduleCollectionPath()}/${scheduleId}/attendance`;
   }
 
-  // ─── Mapeo Firestore <-> dominio (explícito, campo a campo — mismo estilo
-  // que `mapDocumentToPanel`, no el `FeatureMapper` genérico que declara
-  // `schedule.mapper.ts` pero que el resto del código tampoco usa en la
-  // práctica) ─────────────────────────────────────────────────────────────
-
-  private mapDocumentToSchedule(id: string, data: DocumentData): Schedule {
-    return {
-      id,
-      homePanelRef: data.homePanelRef,
-      name: data.name,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      weekStartsOn: data.weekStartsOn,
-      holidays: data.holidays ?? [],
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
+  private scheduleCollectionRef() {
+    return collection(this.firestore, this.getScheduleCollectionPath()).withConverter(
+      scheduleConverter,
+    );
   }
 
-  private mapDocumentToSubject(id: string, data: DocumentData): Subject {
-    return {
-      id,
-      scheduleId: data.scheduleId,
-      name: data.name,
-      color: data.color,
-      panelRef: data.panelRef ?? null,
-      exam: data.exam ?? null,
-      isArchived: data.isArchived ?? false,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
+  private subjectsCollectionRef(scheduleId: string) {
+    return collection(this.firestore, this.getSubjectsPath(scheduleId)).withConverter(
+      subjectConverter,
+    );
   }
 
-  private mapDocumentToClassSlot(id: string, data: DocumentData): ClassSlot {
-    return {
-      id,
-      slotGroupId: data.slotGroupId,
-      scheduleId: data.scheduleId,
-      subjectId: data.subjectId,
-      dayOfWeek: data.dayOfWeek,
-      startMinute: data.startMinute,
-      endMinute: data.endMinute,
-      type: data.type,
-      room: data.room,
-      building: data.building,
-      professor: data.professor,
-      notes: data.notes,
-      validFromWeek: data.validFromWeek,
-      validToWeek: data.validToWeek,
-      status: data.status,
-      supersedes: data.supersedes ?? null,
-      createdAt: data.createdAt,
-      editReason: data.editReason,
-    };
+  private slotVersionsCollectionRef(scheduleId: string) {
+    return collection(this.firestore, this.getSlotVersionsPath(scheduleId)).withConverter(
+      classSlotConverter,
+    );
   }
 
-  private mapDocumentToException(id: string, data: DocumentData): OccurrenceException {
-    return {
-      id,
-      slotGroupId: data.slotGroupId,
-      scheduleId: data.scheduleId,
-      date: data.date,
-      kind: data.kind,
-      overrides: data.overrides,
-      status: data.status,
-      supersedes: data.supersedes ?? null,
-      reason: data.reason,
-      createdAt: data.createdAt,
-    };
+  private exceptionsCollectionRef(scheduleId: string) {
+    return collection(this.firestore, this.getExceptionsPath(scheduleId)).withConverter(
+      occurrenceExceptionConverter,
+    );
   }
 
-  private mapDocumentToAttendance(id: string, data: DocumentData): AttendanceRecord {
-    return {
-      id,
-      slotGroupId: data.slotGroupId,
-      scheduleId: data.scheduleId,
-      subjectId: data.subjectId,
-      date: data.date,
-      status: data.status,
-      reason: data.reason,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
+  private attendanceCollectionRef(scheduleId: string) {
+    return collection(this.firestore, this.getAttendancePath(scheduleId)).withConverter(
+      attendanceRecordConverter,
+    );
   }
 
   // ─── Suscripciones ────────────────────────────────────────────────────────
@@ -178,14 +129,9 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     onData: (schedule: Schedule | null) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const q = query(collection(this.firestore, this.getScheduleCollectionPath()));
     return onSnapshot(
-      q,
-      (snap) => {
-        if (snap.empty) return onData(null);
-        const first = snap.docs[0];
-        onData(this.mapDocumentToSchedule(first.id, first.data()));
-      },
+      query(this.scheduleCollectionRef()),
+      (snap) => onData(snap.empty ? null : snap.docs[0].data()),
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
   }
@@ -195,10 +141,9 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     onData: (subjects: Subject[]) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const q = query(collection(this.firestore, this.getSubjectsPath(scheduleId)));
     return onSnapshot(
-      q,
-      (snap) => onData(snap.docs.map((d) => this.mapDocumentToSubject(d.id, d.data()))),
+      query(this.subjectsCollectionRef(scheduleId)),
+      (snap) => onData(snap.docs.map((d) => d.data())),
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
   }
@@ -210,10 +155,9 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
   ): Unsubscribe {
     // Se traen TODAS las versiones (activas y superseded) a propósito — el
     // historial completo ES la fuente de verdad del resolver, ver diseño §14.
-    const q = query(collection(this.firestore, this.getSlotVersionsPath(scheduleId)));
     return onSnapshot(
-      q,
-      (snap) => onData(snap.docs.map((d) => this.mapDocumentToClassSlot(d.id, d.data()))),
+      query(this.slotVersionsCollectionRef(scheduleId)),
+      (snap) => onData(snap.docs.map((d) => d.data())),
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
   }
@@ -223,10 +167,9 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     onData: (exceptions: OccurrenceException[]) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const q = query(collection(this.firestore, this.getExceptionsPath(scheduleId)));
     return onSnapshot(
-      q,
-      (snap) => onData(snap.docs.map((d) => this.mapDocumentToException(d.id, d.data()))),
+      query(this.exceptionsCollectionRef(scheduleId)),
+      (snap) => onData(snap.docs.map((d) => d.data())),
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
   }
@@ -236,10 +179,9 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     onData: (records: AttendanceRecord[]) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const q = query(collection(this.firestore, this.getAttendancePath(scheduleId)));
     return onSnapshot(
-      q,
-      (snap) => onData(snap.docs.map((d) => this.mapDocumentToAttendance(d.id, d.data()))),
+      query(this.attendanceCollectionRef(scheduleId)),
+      (snap) => onData(snap.docs.map((d) => d.data())),
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
   }
@@ -248,11 +190,8 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
 
   async findSchedule(): Promise<ResultApp<Schedule | undefined, AppErr>> {
     try {
-      const q = query(collection(this.firestore, this.getScheduleCollectionPath()));
-      const snap = await getDocs(q);
-      if (snap.empty) return ok(undefined);
-      const first = snap.docs[0];
-      return ok(this.mapDocumentToSchedule(first.id, first.data()));
+      const snap = await getDocs(query(this.scheduleCollectionRef()));
+      return ok(snap.empty ? undefined : snap.docs[0].data());
     } catch (error) {
       return err(toFirebaseErr(error, "Error al leer el horario del panel"));
     }
@@ -269,7 +208,7 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
   ): Promise<ResultApp<ClassSlot | undefined, AppErr>> {
     try {
       const q = query(
-        collection(this.firestore, this.getSlotVersionsPath(scheduleId)),
+        this.slotVersionsCollectionRef(scheduleId),
         where("slotGroupId", "==", slotGroupId),
         where("validFromWeek", "<=", week),
         where("validToWeek", ">=", week),
@@ -282,7 +221,7 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
       const latest = snap.docs.reduce((best, current) =>
         current.data().createdAt.toMillis() > best.data().createdAt.toMillis() ? current : best,
       );
-      return ok(this.mapDocumentToClassSlot(latest.id, latest.data()));
+      return ok(latest.data());
     } catch (error) {
       return err(toFirebaseErr(error, "Error al buscar la versión activa de la clase"));
     }
@@ -301,16 +240,16 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     }
 
     try {
-      const ref = doc(collection(this.firestore, this.getScheduleCollectionPath()));
+      const ref = doc(this.scheduleCollectionRef());
       const now = Timestamp.now();
       const docData = stripUndefined({
         ...data,
         homePanelRef: this.getPanelRef(),
         createdAt: data.createdAt ?? now,
         updatedAt: data.updatedAt ?? now,
-      });
+      }) as Schedule;
       await setDoc(ref, docData);
-      return ok(this.mapDocumentToSchedule(ref.id, docData));
+      return ok({ ...docData, id: ref.id });
     } catch (error) {
       return err(toFirebaseErr(error, "Error al crear el horario"));
     }
@@ -321,13 +260,15 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     data: UpdateScheduleDTO,
   ): Promise<ResultApp<Schedule, AppErr>> {
     try {
-      const ref = doc(this.firestore, this.getScheduleCollectionPath(), id);
+      const ref = doc(this.firestore, this.getScheduleCollectionPath(), id).withConverter(
+        scheduleConverter,
+      );
       const updateData = stripUndefined({ ...data, updatedAt: Timestamp.now() });
       await updateDoc(ref, updateData);
 
       const snap = await getDoc(ref);
       if (!snap.exists()) return err(firebaseErr("Error al leer el horario actualizado"));
-      return ok(this.mapDocumentToSchedule(snap.id, snap.data()));
+      return ok(snap.data());
     } catch (error) {
       return err(toFirebaseErr(error, "Error al actualizar el horario"));
     }
@@ -340,15 +281,15 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     data: CreateSubjectDTO,
   ): Promise<ResultApp<Subject, AppErr>> {
     try {
-      const ref = doc(collection(this.firestore, this.getSubjectsPath(scheduleId)));
+      const ref = doc(this.subjectsCollectionRef(scheduleId));
       const now = Timestamp.now();
       const docData = stripUndefined({
         ...data,
         createdAt: data.createdAt ?? now,
         updatedAt: data.updatedAt ?? now,
-      });
+      }) as Subject;
       await setDoc(ref, docData);
-      return ok(this.mapDocumentToSubject(ref.id, docData));
+      return ok({ ...docData, id: ref.id });
     } catch (error) {
       return err(toFirebaseErr(error, "Error al crear la asignatura"));
     }
@@ -360,13 +301,15 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     data: UpdateSubjectDTO,
   ): Promise<ResultApp<Subject, AppErr>> {
     try {
-      const ref = doc(this.firestore, this.getSubjectsPath(scheduleId), id);
+      const ref = doc(this.firestore, this.getSubjectsPath(scheduleId), id).withConverter(
+        subjectConverter,
+      );
       const updateData = stripUndefined({ ...data, updatedAt: Timestamp.now() });
       await updateDoc(ref, updateData);
 
       const snap = await getDoc(ref);
       if (!snap.exists()) return err(firebaseErr("Error al leer la asignatura actualizada"));
-      return ok(this.mapDocumentToSubject(snap.id, snap.data()));
+      return ok(snap.data());
     } catch (error) {
       return err(toFirebaseErr(error, "Error al actualizar la asignatura"));
     }
@@ -389,16 +332,16 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     data: CreateClassSlotDTO,
   ): Promise<ResultApp<ClassSlot, AppErr>> {
     try {
-      const ref = doc(collection(this.firestore, this.getSlotVersionsPath(scheduleId)));
+      const ref = doc(this.slotVersionsCollectionRef(scheduleId));
       const docData = stripUndefined({
         ...data,
         status: "active" as const,
         supersedes: null,
         createdAt: Timestamp.now(),
         editReason: data.editReason ?? "initial",
-      });
+      }) as ClassSlot;
       await setDoc(ref, docData);
-      return ok(this.mapDocumentToClassSlot(ref.id, docData));
+      return ok({ ...docData, id: ref.id });
     } catch (error) {
       return err(toFirebaseErr(error, "Error al crear la clase"));
     }
@@ -419,13 +362,13 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
   ): Promise<ResultApp<{ createdVersionIds: string[] }, AppErr>> {
     if (plan.kind === "exception") {
       try {
-        const ref = doc(collection(this.firestore, this.getExceptionsPath(scheduleId)));
+        const ref = doc(this.exceptionsCollectionRef(scheduleId));
         const docData = stripUndefined({
           ...plan.exception,
           status: "active" as const,
           supersedes: null,
           createdAt: Timestamp.now(),
-        });
+        }) as OccurrenceException;
         await setDoc(ref, docData);
         return ok({ createdVersionIds: [ref.id] });
       } catch (error) {
@@ -433,11 +376,13 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
       }
     }
 
-    const slotVersionsPath = this.getSlotVersionsPath(scheduleId);
-
     try {
       const createdIds = await runTransaction(this.firestore, async (tx) => {
-        const prevRef = doc(this.firestore, slotVersionsPath, plan.closePrevious.versionId);
+        const prevRef = doc(
+          this.firestore,
+          this.getSlotVersionsPath(scheduleId),
+          plan.closePrevious.versionId,
+        ).withConverter(classSlotConverter);
         const prevSnap = await tx.get(prevRef);
 
         if (!prevSnap.exists()) {
@@ -455,9 +400,7 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
         });
 
         const now = Timestamp.now();
-        const newRefs = plan.newVersions.map(() =>
-          doc(collection(this.firestore, slotVersionsPath)),
-        );
+        const newRefs = plan.newVersions.map(() => doc(this.slotVersionsCollectionRef(scheduleId)));
 
         plan.newVersions.forEach((versionDto, index) => {
           const docData = stripUndefined({
@@ -465,7 +408,7 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
             status: "active" as const,
             supersedes: plan.supersedes,
             createdAt: now,
-          });
+          }) as ClassSlot;
           tx.set(newRefs[index], docData);
         });
 
@@ -487,7 +430,9 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
     try {
       const localDateKey = timestampToLocalDateKey(data.date);
       const id = buildAttendanceId(data.slotGroupId, localDateKey);
-      const ref = doc(this.firestore, this.getAttendancePath(scheduleId), id);
+      const ref = doc(this.firestore, this.getAttendancePath(scheduleId), id).withConverter(
+        attendanceRecordConverter,
+      );
 
       const existingSnap = await getDoc(ref);
       const now = Timestamp.now();
@@ -495,10 +440,10 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
         ...data,
         createdAt: existingSnap.exists() ? existingSnap.data().createdAt : now,
         updatedAt: now,
-      });
+      }) as AttendanceRecord;
 
       await setDoc(ref, docData);
-      return ok(this.mapDocumentToAttendance(id, docData));
+      return ok({ ...docData, id });
     } catch (error) {
       return err(toFirebaseErr(error, "Error al guardar la asistencia"));
     }

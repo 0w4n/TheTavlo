@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import confetti from "canvas-confetti";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import useAnnounce from "#core/a11y/useAnnounce";
@@ -15,6 +15,7 @@ import {
   type StarterWidget,
 } from "../../domain/onBoarding.entity";
 import { savePendingOnboarding } from "../../infraestructure/onBoardingStorage";
+import { safeReturnTo } from "#core/routing/returnTo";
 
 import StepGoals from "./onBoardingStep/goals.step";
 import StepSpace from "./onBoardingStep/space.step";
@@ -71,6 +72,8 @@ export default function OnboardingPage() {
   const { signInAsGuest, signInWithGoogle, state } = useAuth();
   const announce = useAnnounce();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = safeReturnTo(searchParams.get("returnTo"));
   const stageRef = useRef<HTMLDivElement>(null);
   const justCompletedRef = useRef(false);
 
@@ -100,9 +103,9 @@ export default function OnboardingPage() {
   // el onboarding — lo mandamos directo a su espacio.
   useEffect(() => {
     if (state.status === "authenticated" && !justCompletedRef.current) {
-      navigate("/home", { replace: true });
+      navigate(returnTo ?? "/home", { replace: true });
     }
-  }, [state.status, navigate]);
+  }, [state.status, navigate, returnTo]);
 
   // Foco + anuncio en cada cambio de paso: quien navega con teclado no
   // pierde su lugar, y quien usa lector de pantalla se entera del cambio
@@ -184,7 +187,7 @@ export default function OnboardingPage() {
           origin: { y: 0.7 },
         });
       }
-      window.setTimeout(() => navigate("/home", { replace: true }), 900);
+      window.setTimeout(() => navigate(returnTo ?? "/home", { replace: true }), 900);
     } catch (error) {
       justCompletedRef.current = false;
       console.error("Error al iniciar sesión desde el onboarding:", error);
