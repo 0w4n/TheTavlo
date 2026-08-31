@@ -1,0 +1,1 @@
+const t="tavlo:onboarding:pending";function e(n){try{const a={...n,savedAt:new Date().toISOString()};window.localStorage.setItem(t,JSON.stringify(a))}catch{}}function o(){try{const n=window.localStorage.getItem(t);return n?JSON.parse(n):null}catch{return null}}function r(){try{window.localStorage.removeItem(t)}catch{}}export{r as c,o as r,e as s};

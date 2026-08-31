@@ -1,0 +1,1 @@
+import{r as n}from"./vendor-react-PoAuO92A.js";import{A as u}from"./index-BqKE8A8-.js";const e="TheTavlo";function s(t){n.useEffect(()=>{const o=document.title;return document.title=t?`${t} - ${e}`:e,()=>{document.title=o}},[t])}function m(){return n.useContext(u)}export{s as a,m as u};
