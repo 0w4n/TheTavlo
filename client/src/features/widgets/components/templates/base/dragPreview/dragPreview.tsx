@@ -14,7 +14,7 @@ export default function WidgetDragPreview({ widget }: { widget: Widget }) {
       }}
     >
       <div style={{ padding: "1rem", maxHeight: 180, overflow: "hidden" }}>
-        <WidgetContent widget={widget} />
+        <WidgetContent widget={widget} multiSelection={false} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { createContext, useMemo, useReducer } from "react";
 import type { NotesContextValue, NotesProviderProps } from "./noteContext.type";
 import { initialNotesState, notesReducer } from "./noteReducer";
+import { unexpectedErr } from "#core/appCore/domain/AppCore.type";
 
 export const NotesContext = createContext<NotesContextValue | undefined>(
   undefined,
@@ -15,17 +16,25 @@ export function NotesProvider({ children, notesService }: NotesProviderProps) {
       const notes = await notesService.getAllNotes();
       dispatch({ type: "FETCH_NOTES_SUCCESS", payload: notes });
     } catch (error) {
-      dispatch({ type: "FETCH_NOTES_ERROR", payload: error as Error });
+      const appErr = unexpectedErr(
+        error instanceof Error ? error.message : "Error desconocido",
+        error instanceof Error ? error.stack : undefined,
+      );
+      dispatch({ type: "FETCH_NOTES_ERROR", payload: appErr });
     }
   };
 
   const createNote = async (noteData: { title: string; body: string }) => {
     try {
-      await notesService.createNote(noteData);
-      dispatch({ type: "CREATE_NOTE_SUCCESS" });
+      const note = await notesService.createNote(noteData);
+      dispatch({ type: "CREATE_NOTE_SUCCESS", payload: note });
       await fetchNotes();
     } catch (error) {
-      dispatch({ type: "FETCH_NOTES_ERROR", payload: error as Error });
+      const appErr = unexpectedErr(
+        error instanceof Error ? error.message : "Error al crear nota",
+        error instanceof Error ? error.stack : undefined,
+      );
+      dispatch({ type: "FETCH_NOTES_ERROR", payload: appErr });
     }
   };
 
@@ -34,11 +43,15 @@ export function NotesProvider({ children, notesService }: NotesProviderProps) {
     noteData: { title?: string; body?: string },
   ) => {
     try {
-      await notesService.updateNote(id, noteData);
-      dispatch({ type: "UPDATE_NOTE_SUCCESS" });
+      const note = await notesService.updateNote(id, noteData);
+      dispatch({ type: "UPDATE_NOTE_SUCCESS", payload: note });
       await fetchNotes();
     } catch (error) {
-      dispatch({ type: "FETCH_NOTES_ERROR", payload: error as Error });
+      const appErr = unexpectedErr(
+        error instanceof Error ? error.message : "Error al actualizar nota",
+        error instanceof Error ? error.stack : undefined,
+      );
+      dispatch({ type: "FETCH_NOTES_ERROR", payload: appErr });
     }
   };
 
@@ -47,12 +60,16 @@ export function NotesProvider({ children, notesService }: NotesProviderProps) {
       await notesService.deleteNote(id);
       dispatch({ type: "DELETE_NOTE_SUCCESS", payload: id });
     } catch (error) {
-      dispatch({ type: "FETCH_NOTES_ERROR", payload: error as Error });
+      const appErr = unexpectedErr(
+        error instanceof Error ? error.message : "Error al eliminar nota",
+        error instanceof Error ? error.stack : undefined,
+      );
+      dispatch({ type: "FETCH_NOTES_ERROR", payload: appErr });
     }
   };
 
-  const selectNote = (note: { id: string; title: string; body: string }) => {
-    dispatch({ type: "SELECT_NOTE", payload: note });
+  const selectNote = (note: { id: string; title: string; body: string; createdAt: any; updatedAt: any }) => {
+    dispatch({ type: "SELECT_NOTE", payload: note as any });
   };
 
   const clearError = () => {

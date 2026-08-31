@@ -27,7 +27,7 @@ export default function WidgetPreview({ onClose, type }: widgetPreviewProps) {
       </Modal.Header>
 
       <Modal.Body>
-        <WidgetContent widget={widget} />
+        <WidgetContent widget={widget} multiSelection={false} />
       </Modal.Body>
     </>
   );
