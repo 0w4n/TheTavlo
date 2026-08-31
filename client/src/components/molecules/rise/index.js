@@ -1,1 +1,0 @@
-export { Rise } from "./rise";

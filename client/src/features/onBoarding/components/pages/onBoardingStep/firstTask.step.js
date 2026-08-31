@@ -1,8 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { Input } from "#components/atoms/input";
-import { suggestTaskPlaceholder, FIRST_TASK_TITLE_MAX_LENGTH, FIRST_TASK_DUE_OPTIONS, } from "#features/onBoarding/domain/onBoarding.entity";
-// ─── Paso 4: primera tarea (opcional) ──────────────────────────────────────
-export default function StepFirstTask({ goals, title, onTitleChange, due, onDueChange, }) {
-    return (_jsxs("section", { "aria-labelledby": "onboarding-heading", children: [_jsx("p", { className: "onboarding__eyebrow", children: "Casi listo" }), _jsx("h1", { id: "onboarding-heading", className: "onboarding__title", children: "\u00BFQu\u00E9 es lo primero que ten\u00E9s que hacer?" }), _jsx("p", { className: "onboarding__subtitle", children: "Totalmente opcional \u2014 pero ver algo real ah\u00ED adentro ayuda a arrancar. Pod\u00E9s saltear este paso." }), _jsx("div", { className: "onboarding__field", children: _jsx(Input, { label: "Tu primera tarea (opcional)", placeholder: suggestTaskPlaceholder(goals), value: title, onChange: (event) => onTitleChange(event.target.value), maxLength: FIRST_TASK_TITLE_MAX_LENGTH, autoFocus: true }) }), title.trim().length > 0 && (_jsxs("fieldset", { className: "onboarding__subgroup", children: [_jsx("legend", { className: "onboarding__legend", children: "\u00BFPara cu\u00E1ndo?" }), _jsx("div", { className: "onboarding__chips", children: FIRST_TASK_DUE_OPTIONS.map((option) => (_jsx("button", { type: "button", className: "onboarding__chip" +
-                                (due === option.value ? " onboarding__chip--selected" : ""), "aria-pressed": due === option.value, onClick: () => onDueChange(option.value), children: option.label }, option.value))) })] }))] }));
-}
