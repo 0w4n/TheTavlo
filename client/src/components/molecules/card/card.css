@@ -1,0 +1,216 @@
+/* ============================================
+   CARD COMPONENT
+   Componente contenedor para agrupar contenido relacionado
+   ============================================ */
+
+/* Base Card */
+.card {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  
+  transition: all var(--duration-normal) var(--easing-out);
+  
+  /* Permite que el contenido fluya naturalmente */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* Default - Con borde y sombra sutil */
+.card--default {
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-base);
+}
+
+/* Elevated - Mayor elevación, sin borde */
+.card--elevated {
+  box-shadow: var(--shadow-lg);
+  border: none;
+}
+
+/* Outlined - Solo borde, sin sombra */
+.card--outlined {
+  box-shadow: none;
+  border: 2px solid var(--color-border);
+}
+
+/* Flat - Sin decoración */
+.card--flat {
+  box-shadow: none;
+  border: none;
+  background-color: var(--color-bg-tertiary);
+}
+
+/* ============================================
+   INTERACTIVE STATE
+   ============================================ */
+
+.card--interactive {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.card--interactive:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card--default.card--interactive:hover {
+  border-color: var(--color-accent-400);
+  box-shadow: var(--shadow-lg);
+}
+
+.card--outlined.card--interactive:hover {
+  border-color: var(--color-accent-500);
+}
+
+.card--interactive:active {
+  transform: translateY(-1px);
+}
+
+.card--interactive:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   CARD SECTIONS
+   ============================================ */
+
+/* Header */
+.card__header {
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.card__header:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* Title dentro del header */
+.card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+/* Subtitle dentro del header */
+.card__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-1);
+  line-height: var(--line-height-normal);
+}
+
+/* Body */
+.card__body {
+  flex: 1;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+.card__body:not(:first-child) {
+  padding-top: var(--spacing-4);
+}
+
+.card__body:not(:last-child) {
+  padding-bottom: var(--spacing-4);
+}
+
+/* Footer */
+.card__footer {
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-divider);
+  
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.card__footer:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Footer alineado a la izquierda */
+.card__footer--start {
+  justify-content: flex-start;
+}
+
+/* Footer centrado */
+.card__footer--center {
+  justify-content: center;
+}
+
+/* Footer con espacio entre elementos */
+.card__footer--between {
+  justify-content: space-between;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .card {
+    padding: var(--spacing-4);
+  }
+  
+  .card__header {
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-3);
+  }
+  
+  .card__footer {
+    margin-top: var(--spacing-3);
+    padding-top: var(--spacing-3);
+    flex-wrap: wrap;
+  }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.card--loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.card--loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: inherit;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

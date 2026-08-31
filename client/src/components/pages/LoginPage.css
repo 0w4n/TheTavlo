@@ -1,0 +1,50 @@
+#root:has(.loginPage__card) {
+  justify-content: center;
+  align-items: center;
+}
+
+.loginPage__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  max-width: 35%;
+  background-color: var(--color-surface);
+  color: var(--color-textPrimary);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-base);
+}
+
+.loginPage__card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+  text-align: center;
+}
+
+.loginPage__card-header > h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.loginPage__card-header > i {
+  color: var(--color-textSecondary);
+  font-size: 18px;
+}
+
+.loginPage__card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.loginPage__card-content-item > * {
+    color: var(--color-textPrimary);
+}
+
+.loginPage__card-error {
+  color: #c33;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}

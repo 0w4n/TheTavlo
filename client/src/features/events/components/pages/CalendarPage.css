@@ -1,0 +1,90 @@
+.calendar {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+.calendar__header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.calendar__header--navigation {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-4);
+}
+
+.calendar__header--view-selector {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+/* Vista mensual en grid */
+.month-view {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-1);
+}
+
+/* Vista semanal en grid */
+.week-view-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.week-header {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.week-day-header {
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: bold;
+  color: var(--color-textPrimary);
+}
+
+/* Fila de horas */
+.week-hour-row {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 50px;
+}
+
+.week-hour-slot {
+  border-left: 1px solid var(--color-border);
+  padding: 0.2rem;
+  min-height: 50px;
+}
+
+/* Resaltar la hora actual como "today" */
+.current-hour {
+  background-color: beige !important;
+  border-radius: 15px;
+  border: 1px solid beige;
+  color: #1e1e1e; /* Texto oscuro para contraste */
+  position: relative;
+  z-index: 1;
+}
+
+/* Ajustar label dentro del slot */
+.current-hour .hour-label {
+  color: #1e1e1e;
+  font-weight: bold;
+}
+
+/* Los eventos dentro de la hora actual también cambian */
+.current-hour .event-card {
+  background-color: var(--color-background) !important;
+  color: #1e1e1e !important;
+  border-radius: 12px;
+  border: 1px solid var(--color-border); /* suave */
+}

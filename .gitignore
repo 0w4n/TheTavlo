@@ -27,6 +27,4 @@ dist-ssr
 *.sln
 *.sw?
 *.zip
-
-src\features\calendar/*
-src\features\marketplace/*
+*.Identifier

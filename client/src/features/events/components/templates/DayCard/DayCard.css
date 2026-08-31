@@ -1,0 +1,54 @@
+.daycard {
+  padding: 0.5rem;
+  border-radius: 15px;
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 1 / 1;
+  border: 2px solid var(--color-border);
+}
+
+.daycard:hover {
+  background-color: var(--color-surface-hover);
+  & .daycard__header-addButton {
+    visibility: visible;
+  }
+}
+
+.day-footer {
+  text-transform: capitalize;
+}
+
+.daycard.today {
+  background-color: var(--color-backgroundSecondary);
+  border-color: var(--color-border);
+}
+
+.daycard.not-current-month {
+  opacity: 0.85;
+}
+
+.daycard__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: min-content;
+}
+
+.daycard__header > button:hover {
+  background-color: white;
+  color: white;
+}
+
+.daycard__header-addEvent {
+  visibility: hidden;
+  transition: visibility 0.2s ease-in-out;
+}
+
+.event-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

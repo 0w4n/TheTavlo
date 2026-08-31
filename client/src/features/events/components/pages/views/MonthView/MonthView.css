@@ -1,0 +1,11 @@
+.month-view {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, auto);
+  gap: 6px;
+  padding: 6px;
+}
+
+.DateCard {
+  text-align: center;
+}

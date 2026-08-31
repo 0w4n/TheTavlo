@@ -1,0 +1,17 @@
+.add-shared__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.add-shared__hint {
+  color: var(--color-textSecondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.add-shared__error {
+  color: #c33;
+  font-size: 0.85rem;
+  margin: 0;
+}

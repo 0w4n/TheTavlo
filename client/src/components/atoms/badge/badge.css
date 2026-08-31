@@ -1,0 +1,89 @@
+/* ============================================
+   BADGE COMPONENT
+   ============================================ */
+
+/* Base Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: 0.625rem;
+  padding: var(--spacing-1) var(--spacing-2);
+  text-transform: uppercase;
+  white-space: nowrap;
+  
+  border-radius: var(--radius-full);
+  
+  transition: all var(--duration-fast) var(--easing-out);
+}
+
+.badge__collapsed {
+  padding: var(--spacing-1);
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* notStarted */
+.badge__notStarted {
+  background-color: hsl(0, 0%, 15%);
+  color: hsl(0, 0%, 45%);
+  border: 1.5px solid hsl(0, 0%, 45%);
+}
+
+.badge__notStarted > svg {
+  color: hsl(0, 0%, 45%);
+}
+
+/* inProgress */
+.badge__inProgress {
+  background-color: hsl(96, 100%, 15%);
+  color: hsl(96, 100%, 45%);
+  border: 2px solid hsl(96, 100%, 45%);
+}
+
+.badge__inProgress > svg {
+  color: hsl(96, 100%, 45%);
+}
+
+/* Accent */
+.badge__accent {
+  background-color: rgba(107, 125, 246, 0.2);
+  color: var(--color-accent-300);
+  border: 1px solid rgba(107, 125, 246, 0.3);
+}
+
+/* Success */
+.badge__success {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: var(--color-success-light);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* ============================================
+   INTERACTIVE BADGE (optional)
+   ============================================ */
+.badge--interactive {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.badge--interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge--interactive:active {
+  transform: translateY(0);
+}
+
+/* Focus state for clickable badges */
+.badge--interactive:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}

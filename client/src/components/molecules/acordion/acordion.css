@@ -1,0 +1,142 @@
+/* Accordion.module.css
+   TheTavlo Design System v1.0.0
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Tokens locales ─────────────────────────────────────────────────────────
+   Refleja las variables del DS. Si ya tienes un global.css con estas
+   custom properties, puedes borrar este bloque y usar las globales. */
+.accordion {
+  --color-surface: #152419; /* neutral.900  / backgrounds.surface  */
+  --color-border-subtle: #e1e8e4; /* functional.borderSubtle             */
+  --color-divider: rgba(160, 179, 168, 0.2); /* functional.divider  */
+  --color-text-primary: #ffffff; /* neutral.0                           */
+  --color-text-secondary: #c5d1cb; /* neutral.300                         */
+  --color-text-disabled: #5c7568; /* neutral.600                         */
+  --color-hover-bg: rgba(42, 61, 52, 0.5); /* neutral.800/50         */
+  --color-accent: #849aff; /* accent.400                          */
+  --color-neutral-mid: #7a9485; /* neutral.500                         */
+
+  --radius-lg: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-content: 200ms;
+  --duration-content-delay: 50ms;
+}
+
+/* ── Contenedor raíz ────────────────────────────────────────────────────────*/
+
+.accordion {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
+  overflow: hidden;
+}
+
+/* ── Item ────────────────────────────────────────────────────────────────── */
+
+.item {
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+/* ── Trigger (botón) ─────────────────────────────────────────────────────── */
+
+.acordion__item-trigger {
+  /* Layout */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-6);
+  text-align: left;
+
+  /* Tipografía */
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+
+  /* Interacción */
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.acordion__item-trigger:hover {
+  background: var(--color-hover-bg);
+}
+
+/* Estado deshabilitado — via atributo HTML nativo :disabled */
+.acordion__item-trigger:disabled {
+  color: var(--color-text-disabled);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.acordion__item-trigger:disabled:hover {
+  background: transparent;
+}
+
+/* Focus visible — respetar estilo global del DS si existe */
+.acordion__item-trigger:focus-visible {
+  outline: 3px solid #6b7df6; /* accent.500 */
+  outline-offset: -3px; /* interior para no romper el layout */
+}
+
+/* ── Chevron ─────────────────────────────────────────────────────────────── */
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--color-neutral-mid);
+  transition:
+    transform var(--duration-normal) var(--ease-standard),
+    color var(--duration-normal) var(--ease-standard);
+}
+
+/* data-open="true" lo pone el componente React */
+.acordion__item-trigger[data-open="true"] .chevron {
+  transform: rotate(180deg);
+  color: var(--color-accent);
+}
+
+/* ── Panel (grid-rows trick) ─────────────────────────────────────────────── */
+
+.panel {
+  display: grid;
+  transition: grid-template-rows var(--duration-normal) var(--ease-standard);
+}
+
+.panel[data-open="false"] {
+  grid-template-rows: 0fr;
+}
+
+.panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+/* Wrapper interior necesario para el grid-rows trick */
+.panelInner {
+  overflow: hidden;
+}
+
+/* ── Contenido del panel ─────────────────────────────────────────────────── */
+
+.content {
+  padding: 0 var(--spacing-6) var(--spacing-4);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  opacity: 0;
+  transition: opacity var(--duration-content) var(--ease-standard)
+    var(--duration-content-delay);
+}
+
+.panel[data-open="true"] .content {
+  opacity: 1;
+}

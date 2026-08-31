@@ -1,0 +1,668 @@
+import React, { useState } from 'react';
+
+// Simulación de imports
+const Button = ({ children, variant = 'primary', size = 'md', onClick, ...props }: any) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: size === 'lg' ? '0.75rem 1.5rem' : '0.5rem 1rem',
+      background: variant === 'primary' ? '#6b7df6' : variant === 'secondary' ? 'transparent' : '#ef4444',
+      color: variant === 'secondary' ? '#fff' : '#fff',
+      border: variant === 'secondary' ? '1px solid #c5d1cb' : 'none',
+      borderRadius: '0.625rem',
+      fontSize: size === 'lg' ? '1.125rem' : '1rem',
+      fontWeight: 500,
+      cursor: 'pointer',
+      transition: 'all 0.15s'
+    }}
+    {...props}
+  >
+    {children}
+  </button>
+);
+
+const Card = ({ children, variant = 'elevated', ...props }: any) => (
+  <div
+    style={{
+      background: '#152419',
+      borderRadius: '0.75rem',
+      padding: '1.5rem',
+      boxShadow: variant === 'elevated' ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none',
+      border: '1px solid rgba(160, 179, 168, 0.2)'
+    }}
+    {...props}
+  >
+    {children}
+  </div>
+);
+
+export default function RiseDemo() {
+  const [isRiseOpen, setIsRiseOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Sample data
+  const chartData = [
+    { label: 'Lun', value: 30 },
+    { label: 'Mar', value: 45 },
+    { label: 'Mié', value: 35 },
+    { label: 'Jue', value: 60 },
+    { label: 'Vie', value: 50 },
+    { label: 'Sáb', value: 40 },
+    { label: 'Dom', value: 25 }
+  ];
+
+  const riseSections = [
+    {
+      title: 'Tareas Pendientes',
+      icon: '✓',
+      color: '#6b7df6',
+      items: [
+        {
+          id: '1',
+          type: 'task',
+          title: 'Revisar propuesta de diseño',
+          description: 'Análisis completo del nuevo sistema de componentes',
+          time: '09:00',
+          priority: 'high',
+          status: 'pending',
+          tags: ['Diseño', 'Urgente']
+        },
+        {
+          id: '2',
+          type: 'task',
+          title: 'Actualizar documentación',
+          description: 'Añadir ejemplos de los nuevos componentes',
+          time: '14:00',
+          priority: 'medium',
+          status: 'in-progress'
+        }
+      ]
+    },
+    {
+      title: 'Reuniones',
+      icon: '👥',
+      color: '#0d8f5f',
+      items: [
+        {
+          id: '3',
+          type: 'meeting',
+          title: 'Daily Standup',
+          time: '10:00',
+          duration: '15 min',
+          location: 'Sala Virtual',
+          attendees: ['Team Lead', 'Developers'],
+          status: 'pending'
+        },
+        {
+          id: '4',
+          type: 'meeting',
+          title: 'Sprint Review',
+          time: '16:00',
+          duration: '1 hora',
+          location: 'Sala Principal',
+          attendees: ['Todo el equipo'],
+          status: 'pending'
+        }
+      ]
+    },
+    {
+      title: 'Entregas',
+      icon: '📦',
+      color: '#f59e0b',
+      items: [
+        {
+          id: '5',
+          type: 'deadline',
+          title: 'Componente Rise completado',
+          description: 'Implementación final del panel de recap diario',
+          time: '18:00',
+          priority: 'urgent',
+          status: 'pending'
+        }
+      ]
+    }
+  ];
+
+  const quotes = [
+    {
+      text: "El diseño no es solo cómo se ve o cómo se siente. El diseño es cómo funciona.",
+      author: "Steve Jobs",
+      authorTitle: "Co-fundador de Apple"
+    },
+    {
+      text: "La simplicidad es la máxima sofisticación.",
+      author: "Leonardo da Vinci",
+      authorTitle: "Artista e inventor"
+    },
+    {
+      text: "Los buenos diseños son innovadores, hacen que un producto sea útil, son estéticos y honestos.",
+      author: "Dieter Rams",
+      authorTitle: "Diseñador industrial"
+    }
+  ];
+
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: '#0a120d',
+      color: '#ffffff',
+      padding: '2rem'
+    }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: 700,
+            marginBottom: '1rem',
+            background: 'linear-gradient(135deg, #0d8f5f, #6b7df6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Expansión del Sistema de Diseño
+          </h1>
+          <p style={{ fontSize: '1.125rem', color: '#c5d1cb', marginBottom: '2rem' }}>
+            3 Nuevos Átomos + Organismo Rise
+          </p>
+
+          {/* DateTimeBadge Demo */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+            <button
+              onClick={() => setIsRiseOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.75rem 1.5rem',
+                background: '#152419',
+                border: '1px solid #c5d1cb',
+                borderRadius: '0.75rem',
+                color: '#fff',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                fontSize: '1rem'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#2a3d34';
+                e.currentTarget.style.borderColor = '#6b7df6';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#152419';
+                e.currentTarget.style.borderColor = '#c5d1cb';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <span style={{ fontSize: '1.5rem' }}>🕐</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <span style={{ fontWeight: 600 }}>
+                  {new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
+                <span style={{ fontSize: '0.875rem', color: '#c5d1cb' }}>
+                  {new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+              {riseSections.reduce((sum, s) => sum + s.items.length, 0) > 0 && (
+                <span style={{
+                  minWidth: '1.25rem',
+                  height: '1.25rem',
+                  padding: '0 0.25rem',
+                  background: '#ef4444',
+                  color: '#fff',
+                  borderRadius: '9999px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {riseSections.reduce((sum, s) => sum + s.items.length, 0)}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          marginBottom: '2rem',
+          borderBottom: '1px solid rgba(160, 179, 168, 0.2)',
+          overflowX: 'auto'
+        }}>
+          {['overview', 'chart', 'quote'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === tab ? '2px solid #6b7df6' : '2px solid transparent',
+                color: activeTab === tab ? '#6b7df6' : '#c5d1cb',
+                fontSize: '1rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textTransform: 'capitalize'
+              }}
+            >
+              {tab === 'chart' ? 'Gráficos D3.js' : tab === 'quote' ? 'Citas Célebres' : 'Resumen'}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        {activeTab === 'overview' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+            <Card>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>
+                📊 Chart (D3.js)
+              </h3>
+              <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.8', color: '#c5d1cb' }}>
+                <li>4 tipos: line, bar, pie, area</li>
+                <li>Animaciones suaves</li>
+                <li>Tooltips interactivos</li>
+                <li>Responsive y customizable</li>
+              </ul>
+            </Card>
+
+            <Card>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>
+                💬 Quote
+              </h3>
+              <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.8', color: '#c5d1cb' }}>
+                <li>4 variantes visuales</li>
+                <li>Con/sin comillas decorativas</li>
+                <li>Avatar del autor opcional</li>
+                <li>3 tamaños disponibles</li>
+              </ul>
+            </Card>
+
+            <Card>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>
+                🕐 DateTimeBadge
+              </h3>
+              <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.8', color: '#c5d1cb' }}>
+                <li>Hora en tiempo real</li>
+                <li>Indicador de eventos</li>
+                <li>Clickeable para abrir Rise</li>
+                <li>3 variantes de diseño</li>
+              </ul>
+            </Card>
+
+            <Card style={{ gridColumn: '1 / -1' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>
+                🌅 Rise - Panel de Recap Diario
+              </h3>
+              <p style={{ marginBottom: '1.5rem', color: '#c5d1cb', lineHeight: '1.6' }}>
+                Panel full-screen (98% del viewport) que muestra un resumen completo del día: tareas pendientes, eventos, reuniones y entregas.
+              </p>
+              <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.8', color: '#c5d1cb', marginBottom: '1.5rem' }}>
+                <li>Ocupa 98% de la pantalla con animación de entrada</li>
+                <li>Secciones organizadas por tipo (Tareas, Reuniones, Entregas)</li>
+                <li>Items interactivos con checkbox para completar</li>
+                <li>Prioridades visuales (low, medium, high, urgent)</li>
+                <li>Estados: pending, in-progress, completed, overdue</li>
+                <li>Metadata: hora, duración, ubicación, asistentes</li>
+                <li>Estadísticas en el header (Total, Pendientes, Completados)</li>
+              </ul>
+              <Button size="lg" onClick={() => setIsRiseOpen(true)}>
+                Abrir Rise Panel
+              </Button>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'chart' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
+            <Card>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#fff', textAlign: 'center' }}>
+                Gráfico de Líneas
+              </h3>
+              <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', gap: '0.5rem', padding: '1rem', background: '#0a120d', borderRadius: '0.5rem' }}>
+                {chartData.map((d, i) => (
+                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{
+                      height: `${(d.value / 60) * 200}px`,
+                      width: '100%',
+                      background: '#6b7df6',
+                      borderRadius: '0.25rem',
+                      transition: 'all 0.3s',
+                      animation: `growBar 0.8s ease-out ${i * 0.1}s both`
+                    }} />
+                    <span style={{ fontSize: '0.75rem', color: '#c5d1cb' }}>{d.label}</span>
+                  </div>
+                ))}
+              </div>
+              <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.875rem', color: '#c5d1cb' }}>
+                Productividad Semanal
+              </p>
+            </Card>
+
+            <Card>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#fff', textAlign: 'center' }}>
+                Implementado con D3.js
+              </h3>
+              <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.8', color: '#c5d1cb' }}>
+                <li><strong>Line Chart:</strong> Gráficos de línea con curvas suaves y puntos interactivos</li>
+                <li><strong>Bar Chart:</strong> Barras verticales con animaciones de crecimiento</li>
+                <li><strong>Pie Chart:</strong> Gráficos circulares con secciones coloreadas</li>
+                <li><strong>Area Chart:</strong> Áreas rellenas con gradientes</li>
+                <li><strong>Configuración:</strong> Grid, labels, colores personalizables</li>
+                <li><strong>Animaciones:</strong> Entrada suave con delays secuenciales</li>
+              </ul>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'quote' && (
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <Card variant="elevated">
+              <div style={{
+                position: 'relative',
+                padding: '2rem',
+                borderLeft: '4px solid #6b7df6'
+              }}>
+                <span style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  left: '1rem',
+                  fontSize: '3rem',
+                  color: '#6b7df6',
+                  opacity: 0.2,
+                  fontFamily: 'Georgia, serif'
+                }}>
+                  "
+                </span>
+                <p style={{
+                  fontSize: '1.25rem',
+                  lineHeight: '1.75',
+                  fontStyle: 'italic',
+                  marginBottom: '1.5rem',
+                  position: 'relative',
+                  zIndex: 1
+                }}>
+                  {quotes[currentQuoteIndex].text}
+                </p>
+                <div style={{
+                  width: '3rem',
+                  height: '2px',
+                  background: '#6b7df6',
+                  marginBottom: '1rem',
+                  borderRadius: '9999px'
+                }} />
+                <div>
+                  <cite style={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    display: 'block',
+                    marginBottom: '0.25rem'
+                  }}>
+                    {quotes[currentQuoteIndex].author}
+                  </cite>
+                  <span style={{ fontSize: '0.875rem', color: '#c5d1cb' }}>
+                    {quotes[currentQuoteIndex].authorTitle}
+                  </span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                {quotes.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentQuoteIndex(i)}
+                    style={{
+                      width: '0.75rem',
+                      height: '0.75rem',
+                      borderRadius: '9999px',
+                      background: i === currentQuoteIndex ? '#6b7df6' : '#3e564b',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s'
+                    }}
+                  />
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Rise Panel */}
+        {isRiseOpen && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(10, 18, 13, 0.95)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1vh',
+            animation: 'fadeIn 0.25s ease-out'
+          }}>
+            <div style={{
+              width: '98vw',
+              height: '98vh',
+              maxWidth: '1600px',
+              background: '#0a120d',
+              borderRadius: '1.5rem',
+              border: '1px solid #c5d1cb',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              animation: 'scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}>
+              {/* Header */}
+              <header style={{
+                padding: '1.5rem',
+                borderBottom: '1px solid rgba(160, 179, 168, 0.2)',
+                background: 'linear-gradient(to bottom, #0a120d, #152419)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <span style={{ fontSize: '2.5rem' }}>🌅</span>
+                    <div>
+                      <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: 0 }}>Rise</h1>
+                      <p style={{ fontSize: '1.125rem', color: '#c5d1cb', margin: 0 }}>
+                        {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsRiseOpen(false)}
+                    style={{
+                      width: '3rem',
+                      height: '3rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'none',
+                      border: '1px solid #c5d1cb',
+                      borderRadius: '9999px',
+                      color: '#c5d1cb',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#2a3d34';
+                      e.currentTarget.style.borderColor = '#ef4444';
+                      e.currentTarget.style.color = '#ef4444';
+                      e.currentTarget.style.transform = 'rotate(90deg)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'none';
+                      e.currentTarget.style.borderColor = '#c5d1cb';
+                      e.currentTarget.style.color = '#c5d1cb';
+                      e.currentTarget.style.transform = 'rotate(0deg)';
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: '2rem' }}>
+                  <div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>5</div>
+                    <div style={{ fontSize: '0.875rem', color: '#c5d1cb', textTransform: 'uppercase' }}>Total</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>5</div>
+                    <div style={{ fontSize: '0.875rem', color: '#c5d1cb', textTransform: 'uppercase' }}>Pendientes</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>0</div>
+                    <div style={{ fontSize: '0.875rem', color: '#c5d1cb', textTransform: 'uppercase' }}>Completados</div>
+                  </div>
+                </div>
+              </header>
+
+              {/* Content */}
+              <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: '1.5rem',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+                gap: '1.5rem',
+                alignContent: 'start'
+              }}>
+                {riseSections.map((section, i) => (
+                  <div key={i} style={{
+                    background: '#152419',
+                    borderRadius: '0.75rem',
+                    border: '1px solid rgba(160, 179, 168, 0.2)',
+                    padding: '1.25rem',
+                    animation: `slideUp 0.25s ease-out ${i * 0.1}s both`
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      marginBottom: '1rem',
+                      paddingBottom: '0.75rem',
+                      borderBottom: '1px solid rgba(160, 179, 168, 0.2)'
+                    }}>
+                      <span style={{ fontSize: '1.5rem' }}>{section.icon}</span>
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: 600, margin: 0, flex: 1 }}>{section.title}</h3>
+                      <span style={{
+                        padding: '0.25rem 0.5rem',
+                        background: '#6b7df6',
+                        color: '#fff',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700
+                      }}>
+                        {section.items.length}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {section.items.map(item => (
+                        <div key={item.id} style={{
+                          padding: '1rem',
+                          background: '#0a120d',
+                          border: '1px solid rgba(160, 179, 168, 0.2)',
+                          borderRadius: '0.625rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s'
+                        }}>
+                          <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            {(item.type === 'task' || item.type === 'deadline') && (
+                              <div style={{
+                                width: '1.25rem',
+                                height: '1.25rem',
+                                border: '2px solid #c5d1cb',
+                                borderRadius: '0.25rem',
+                                marginTop: '2px',
+                                flexShrink: 0
+                              }} />
+                            )}
+                            <div style={{ flex: 1 }}>
+                              <h4 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 0.25rem 0' }}>{item.title}</h4>
+                              {item.description && (
+                                <p style={{ fontSize: '0.875rem', color: '#c5d1cb', margin: '0 0 0.5rem 0', lineHeight: '1.5' }}>
+                                  {item.description}
+                                </p>
+                              )}
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', fontSize: '0.75rem', color: '#a0b3a8' }}>
+                                {item.time && <span>🕐 {item.time}</span>}
+                                {item.duration && <span>• {item.duration}</span>}
+                                {item.location && <span>📍 {item.location}</span>}
+                              </div>
+                            </div>
+                            {item.priority && (
+                              <span style={{
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: '0.25rem',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                                alignSelf: 'flex-start',
+                                ...(item.priority === 'urgent' ? {
+                                  background: '#ef4444',
+                                  color: '#fff'
+                                } : item.priority === 'high' ? {
+                                  background: 'rgba(239, 68, 68, 0.1)',
+                                  color: '#ef4444'
+                                } : item.priority === 'medium' ? {
+                                  background: 'rgba(245, 158, 11, 0.1)',
+                                  color: '#f59e0b'
+                                } : {
+                                  background: 'rgba(107, 125, 246, 0.1)',
+                                  color: '#6b7df6'
+                                })
+                              }}>
+                                {item.priority}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes growBar {
+          from {
+            height: 0;
+          }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}

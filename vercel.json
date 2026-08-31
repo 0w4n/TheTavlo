@@ -1,9 +1,14 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm --filter client build",
+  "outputDirectory": "client/dist",
   "rewrites": [
     {
+      "source": "/backend/(.*)",
+      "destination": "/backend/api/index.ts"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/client/$1"
     }
   ]
 }
