@@ -8,7 +8,7 @@ import { useState } from "react";
 import type { AddEventProps } from "./AddEvent.type";
 
 export default function AddEvent({ type }: AddEventProps) {
-    const [event, setEvent] = useState();
+    const [_event, _setEvent] = useState();
   return (
     <>
       <ModalHeader

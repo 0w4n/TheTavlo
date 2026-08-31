@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@firebase/auth": "^1.13.5",
     "@gsap/react": "^2.1.2",
     "@tabler/icons": "3.44.0",
     "@types/react-resizable": "^3.0.8",

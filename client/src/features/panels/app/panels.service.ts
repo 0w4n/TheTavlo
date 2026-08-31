@@ -149,7 +149,7 @@ export class PanelsService {
     return this.repository.addSubPanel(parentRef, childRef);
   }
 
-  async archivePanel(id: string): Promise<ResultApp<void, AppErr>> {
+  async archivePanel(id: string): Promise<ResultApp<Panel, AppErr>> {
     return this.repository.archive(id);
   }
 
@@ -210,8 +210,8 @@ export class PanelsService {
   }
 
   async deletePanelArchive(
-    id: DocumentReference,
-  ): Promise<ResultApp<void, AppErr>> {
+    id: string,
+  ): Promise<ResultApp<string, AppErr>> {
     return this.repository.deleteArchived(id);
   }
 }

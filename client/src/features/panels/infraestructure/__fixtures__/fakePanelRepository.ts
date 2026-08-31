@@ -48,12 +48,12 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
     subscribeToHomePanel(onData: (panel: Panel) => void): Unsubscribe {
       const home = Array.from(panels.values())[0];
       if (home) onData(home);
-      return () => {};
+      return () => { };
     },
 
     subscribeToAll(onData: (panels: Panel[]) => void): Unsubscribe {
       onData(Array.from(panels.values()));
-      return () => {};
+      return () => { };
     },
 
     async findAll(): Promise<ResultApp<Panel[], AppErr>> {
@@ -80,26 +80,26 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
     },
 
     async findByRef(
-      ref: DocumentReference,
+      ref: DocumentReference
     ): Promise<ResultApp<Panel | undefined, AppErr>> {
       return ok(panels.get(ref.id));
     },
 
     async findBySharedId(
-      sharedId: DocumentReference,
+      sharedId: DocumentReference
     ): Promise<ResultApp<Panel | undefined, AppErr>> {
       const found = Array.from(panels.values()).find(
-        (p) => p.sharedWith?.id === sharedId.id,
+        (p) => p.sharedWith?.id === sharedId.id
       );
       return ok(found);
     },
 
     async findByParentId(
-      parentId: DocumentReference,
+      parentId: DocumentReference
     ): Promise<ResultApp<Panel[], AppErr>> {
       calls.findByParentId += 1;
       const children = Array.from(panels.values()).filter(
-        (p) => p.parentId?.id === parentId.id,
+        (p) => p.parentId?.id === parentId.id
       );
       return ok(children);
     },
@@ -110,7 +110,7 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
 
     async create(
       data: CreatePanelDTO,
-      parentId?: DocumentReference,
+      parentId?: DocumentReference
     ): Promise<ResultApp<Panel, AppErr>> {
       calls.create += 1;
       const id = nextId();
@@ -134,7 +134,7 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
 
     async update(
       id: string,
-      data: UpdatePanelDTO,
+      data: UpdatePanelDTO
     ): Promise<ResultApp<Panel, AppErr>> {
       calls.update += 1;
       const existing = panels.get(id);
@@ -151,8 +151,8 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
     },
 
     async deleteCascade(
-      id: string,
-    ): Promise<ResultApp<{ deletedIds: string[] }, AppErr>> {
+      id: string
+    ): Promise<ResultApp<{ deletedIds: string[]; }, AppErr>> {
       calls.deleteCascade += 1;
       const deletedIds: string[] = [];
       const queue = [id];
@@ -170,6 +170,22 @@ export function createFakePanelRepository(initialPanels: Panel[] = []) {
 
       return ok({ deletedIds });
     },
+
+    findArchived: function (parentRef: DocumentReference | null): Promise<ResultApp<Panel[] | undefined, AppErr>> {
+      throw new Error("Function not implemented.");
+    },
+    
+    archive: function (id: string): Promise<ResultApp<Panel, AppErr>> {
+      throw new Error("Function not implemented.");
+    },
+    
+    unarchive: function (id: string): Promise<ResultApp<void, AppErr>> {
+      throw new Error("Function not implemented.");
+    },
+    
+    deleteArchived: function (ref: string): Promise<ResultApp<string, AppErr>> {
+      throw new Error("Function not implemented.");
+    }
   };
 
   return {

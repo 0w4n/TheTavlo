@@ -10,10 +10,12 @@ import type { ExamEvent } from "#features/events/domain/events.entity";
 export default function ExamsTimelineWidget() {
   const { state } = useEvents();
 
-  if (state.loading) {
-    <LoadingPage />;
-  } else if (state.event.length === 0) {
-    return <span>No hay nada</span>;
+  if (state.status === "loading") {
+    return <LoadingPage />;
+  } else if ( state.status === "events") {
+    if ( state.event.length === 0) {
+      return <span>No hay nada</span>;
+    }
   } else {
     const items = state.event as unknown as ExamEvent[];
 

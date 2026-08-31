@@ -146,12 +146,9 @@ export default function CalendarPage({
                       <EventCard
                         key={ev.id}
                         type="week"
-                        title={ev.name}
-                        description={ev.description}
-                        icon={ev.icon}
-                        color={ev.color}
                         size="small"
-                        extraClass={isCurrentHour ? "current-event" : ""}
+                        className={isCurrentHour ? "current-event" : ""}
+                        event={ev}
                       />
                     ))}
                   </div>
@@ -184,11 +181,8 @@ export default function CalendarPage({
                 <EventCard
                   key={ev.id}
                   type="month"
-                  title={ev.title}
-                  description={ev.description}
-                  icon={ev.icon}
-                  color={ev.color}
                   size="small"
+                  event={ev}
                 />
               ))}
           </DayCard>

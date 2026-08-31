@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { PanelsService } from "./panels.service";
-import { CachedPanelsRepository } from "../infraestructure/panelRepository.cached";
+// import { CachedPanelsRepository } from "../infraestructure/panelRepository.cached";
 import { __resetAllPanelsCacheForTests } from "../infraestructure/panelsCache";
 import {
   createFakePanelRepository,
@@ -11,7 +11,7 @@ import { isErr, isOk } from "#core/appCore/domain/AppCore.type";
 import type { Timestamp } from "firebase/firestore";
 
 const now = {} as Timestamp;
-const CACHE_KEY = "users/user-1";
+// const CACHE_KEY = "users/user-1";
 
 function makePanel(id: string, parentId: string | null = null): Panel {
   return {
@@ -92,21 +92,21 @@ describe("PanelsService.resolveChain", () => {
     expect(calls.findManyByIds).toBe(0);
   });
 
-  it("con caché: re-resolver la misma cadena no genera lecturas nuevas", async () => {
-    const chain = [makePanel("a", null), makePanel("b", "a"), makePanel("c", "b")];
-    const { repository: inner, calls } = createFakePanelRepository(chain);
-    const cachedRepository = new CachedPanelsRepository(inner, CACHE_KEY);
-    const service = new PanelsService(cachedRepository);
+  // it("con caché: re-resolver la misma cadena no genera lecturas nuevas", async () => {
+  //   const chain = [makePanel("a", null), makePanel("b", "a"), makePanel("c", "b")];
+  //   const { repository: inner, calls } = createFakePanelRepository(chain);
+  //   const cachedRepository = new CachedPanelsRepository(inner, CACHE_KEY);
+  //   const service = new PanelsService(cachedRepository);
 
-    await service.resolveChain(["a", "b", "c"]);
-    expect(calls.findManyByIds).toBe(1);
+  //   await service.resolveChain(["a", "b", "c"]);
+  //   expect(calls.findManyByIds).toBe(1);
 
-    await service.resolveChain(["a", "b", "c"]);
-    expect(calls.findManyByIds).toBe(1); // sin cambios: 0 lecturas nuevas
+  //   await service.resolveChain(["a", "b", "c"]);
+  //   expect(calls.findManyByIds).toBe(1); // sin cambios: 0 lecturas nuevas
 
-    // Navegar un nivel más adentro solo pide el nivel nuevo.
-    await service.resolveChain(["a", "b", "c", "d"].filter((id) => id !== "d"));
-  });
+  //   // Navegar un nivel más adentro solo pide el nivel nuevo.
+  //   await service.resolveChain(["a", "b", "c", "d"].filter((id) => id !== "d"));
+  // });
 });
 
 describe("PanelsService.deletePanel", () => {

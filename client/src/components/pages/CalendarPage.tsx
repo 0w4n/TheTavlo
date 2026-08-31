@@ -10,22 +10,30 @@ import { useEvents } from "#features/events/presentation/hooks/useEvents";
 export default function CalendarPage({ panel }: { panel: Panel }) {
   const { state } = useEvents();
 
+  const status = state.status;
+
   return (
     <section className="calendar-page">
       <h1>Calendario — {panel.name || "Panel"}</h1>
 
-      {state.loading && <p>Cargando eventos…</p>}
-      {state.error && <p role="alert">{state.error}</p>}
+      {status === "loading" && <p>Cargando eventos…</p>}
+      {status === "error" && (
+        <p role="alert">
+          {state.error?.code} {state.error?.message}
+        </p>
+      )}
 
-      {!state.loading && state.event.length === 0 && (
+      {status === "events" && state.event.length === 0 && (
         <p>No hay eventos todavía en este panel.</p>
       )}
 
-      <ul>
-        {state.event.map((event) => (
-          <li key={event.id}>{event.name}</li>
-        ))}
-      </ul>
+      {status === "events" && state.event.length > 0 && (
+        <ul>
+          {state.event.map((event) => (
+            <li key={event.id}>{event.name}</li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

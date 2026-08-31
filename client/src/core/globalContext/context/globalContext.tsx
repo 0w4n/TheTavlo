@@ -2,7 +2,6 @@ import {
   createContext,
   type PropsWithChildren,
   useEffect,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -14,9 +13,6 @@ export type GlobalContextValue = {
   state: GlobalContextProps;
 };
 
-export const GlobalContext = createContext<GlobalContextValue | undefined>(
-  undefined,
-);
 export const GlobalContext = createContext<GlobalContextValue | undefined>(
   undefined,
 );
