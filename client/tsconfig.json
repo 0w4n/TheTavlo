@@ -20,7 +20,6 @@
     "noEmit": true,
     "jsx": "react",
     "isolatedModules": true,
-    "baseUrl": "./src",
     "paths": {
       "#components/*": ["components/*"],
       "#features/*": ["features/*"],
