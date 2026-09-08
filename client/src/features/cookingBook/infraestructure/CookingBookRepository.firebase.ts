@@ -34,10 +34,15 @@ export class FirebaseCookingBookRepository implements CookingBookRepository {
   ) {}
 
   private getCollectionPath(): string {
+    const context = this.getContext();
+    if (context.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+
     const {
       user: { userId, accountType },
       panel: { panelId },
-    } = this.getContext().state;
+    } = context.state.state;
 
     if (panelId.length > 0) {
       // path for cookingRecipe is `${accountType}/${userId}/panels/${panelId}/cookingBook/${cookingBookId}/cookingRecipe/${cookingRecipeId}`

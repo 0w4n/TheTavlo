@@ -69,7 +69,11 @@ export class FirebaseInvitationRepository implements InvitationRepository {
     // padre fallaba siempre. Además usamos el accountType real del
     // propietario (puede ser un "guest" compartiendo su propio panel),
     // en vez de asumir siempre "users".
-    const { userId, accountType } = this.getContext().state.user;
+    const context = this.getContext();
+    if (context.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+    const { userId, accountType } = context.state.state.user;
 
     const parentDocRef = doc(
       this.firestore,
