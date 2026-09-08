@@ -18,7 +18,7 @@ import type {
   UpdateAnyTaskDTO,
 } from "../domain/task.entity";
 import type { TaskRepository } from "../app/taskRepository.interface";
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import { firebaseErr, type AppErr } from "#core/appCore/domain/AppCore.type";
 import { withoutId } from "#shared/infraestructure/firebase/withoutId";
@@ -32,16 +32,22 @@ export class FirebaseTaskRepository implements TaskRepository {
 
   private getCollectionPath(): string {
     const ctx = this.getContext();
-    const { panelId } = ctx.state.panel;
+    if (ctx.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+
+    const { panelId } = ctx.state.state.panel;
+    const { accountType, ownerId } = resolvePanelOwner(ctx);
+
+    console.log(`${accountType}/${ownerId}/panels/${panelId}/tasks`);
 
     if (panelId.length > 0) {
-      const { accountType, ownerId } = resolvePanelOwner(ctx);
       return `${accountType}/${ownerId}/panels/${panelId}/tasks`;
     }
     // Sin panel activo: solo puede referirse a los paneles propios del
     // usuario actual (nunca a los de un dueño ajeno).
-    const { userId, accountType } = ctx.state.user;
-    return `${accountType}/${userId}/panels`;
+    
+    return `${accountType}/${ownerId}/panels`;
   }
 
   private getContext(): GlobalContextValue {

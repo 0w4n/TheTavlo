@@ -162,6 +162,43 @@ async function assertCanManageSharing(params: {
 }
 
 export const invitationsRouter = router({
+  findByToken: publicProcedure
+    .input((raw) => ({ token: asString(asObject(raw).token, "token") }))
+    .query(async ({ input }) => {
+      const snapshot = await adminDb.collection("shared").where("token", "==", input.token).limit(1).get();
+      if (snapshot.empty) return null;
+      const invitation = snapshot.docs[0]!;
+      return serializeInvitation(invitation.id, invitation.data());
+    }),
+
+  findSharedUser: protectedProcedure
+    .input((raw) => {
+      const value = asObject(raw);
+      return {
+        invitationId: asString(value.invitationId, "invitationId"),
+        userId: asString(value.userId, "userId"),
+      };
+    })
+    .query(async ({ ctx, input }) => {
+      if (input.userId !== ctx.user.uid) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "No puedes consultar otro usuario." });
+      }
+      const snapshot = await adminDb.doc(`shared/${input.invitationId}/invitedUsers/${input.userId}`).get();
+      return snapshot.exists ? serializeSharedUser(snapshot.data()!) : null;
+    }),
+
+  listSharedUsers: protectedProcedure
+    .input((raw) => ({ invitationId: asString(asObject(raw).invitationId, "invitationId") }))
+    .query(async ({ ctx, input }) => {
+      const invitation = await adminDb.doc(`shared/${input.invitationId}`).get();
+      const target = invitation.data()?.targetRef as DocumentReference | undefined;
+      if (!target || target.path.split("/")[1] !== ctx.user.uid) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Solo el dueño puede listar invitados." });
+      }
+      const snapshot = await invitation.ref.collection("invitedUsers").get();
+      return snapshot.docs.map((document) => serializeSharedUser(document.data()));
+    }),
+
   /**
    * Invita por correo (Q1: b+c). Si el email ya tiene cuenta en Firebase
    * Auth, queda pendiente de inmediato en su índice de "compartidos

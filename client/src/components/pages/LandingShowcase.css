@@ -1,0 +1,262 @@
+.showcase {
+  padding: var(--landing-space-lg) 0;
+}
+
+.showcase__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.showcase__intro h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--spacing-2);
+  max-width: 24ch;
+}
+
+.showcase__intro p {
+  color: var(--color-textSecondary);
+  margin: 0;
+  max-width: 40ch;
+}
+
+/* ---------- Modo por defecto: carrusel nativo (mobile, reduced-motion, o mientras GSAP no inicializó) ---------- */
+
+.showcase__track {
+  display: flex;
+  gap: var(--spacing-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 var(--spacing-6) var(--spacing-2);
+  -webkit-overflow-scrolling: touch;
+}
+
+.showcase__panel {
+  flex: 0 0 82%;
+  max-width: 22rem;
+  scroll-snap-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.showcase__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--landing-accent);
+}
+
+.showcase__panel h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.showcase__panel p {
+  color: var(--color-textSecondary);
+  line-height: 1.55;
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.showcase__visual {
+  height: 8rem;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: var(--spacing-2);
+}
+
+/* ---------- Modo "pinneado": GSAP tomó el control (desktop, sin reduced-motion) ---------- */
+
+/* Estado base para desktop cuando la sección está pinned */
+.showcase.showcase--pinned .showcase__track {
+  display: flex;
+  will-change: transform;
+}
+
+.showcase.showcase--pinned .showcase__panel {
+  width: 100vw; /* Cada panel ocupa la pantalla completa */
+  flex-shrink: 0;
+}
+
+.showcase.showcase--pinned .showcase__visual {
+  height: 11rem;
+}
+
+/* ---------- Mini-visuales ---------- */
+
+.scheduleVisual {
+  display: flex;
+  gap: var(--spacing-2);
+  width: 100%;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.scheduleVisual__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.scheduleVisual__block {
+  width: 100%;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--landing-accent);
+  opacity: 0.85;
+}
+
+.scheduleVisual__block--empty {
+  background-color: transparent;
+  border: 1px dashed var(--color-border);
+}
+
+.scheduleVisual__day {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-textSecondary);
+}
+
+.agendaVisual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+.agendaVisual__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-size: 0.875rem;
+}
+
+.agendaVisual__time {
+  color: var(--color-textSecondary);
+  font-variant-numeric: tabular-nums;
+  width: 3rem;
+  flex-shrink: 0;
+}
+
+.agendaVisual__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--landing-accent-soft);
+  flex-shrink: 0;
+}
+
+.projectVisual {
+  display: flex;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+.projectVisual__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  background-color: var(--color-backgroundSecondary);
+  border-radius: var(--radius-base);
+  padding: var(--spacing-2);
+}
+
+.projectVisual__title {
+  font-size: 0.6875rem;
+  color: var(--color-textSecondary);
+  text-align: center;
+}
+
+.projectVisual__card {
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--landing-accent);
+  opacity: 0.75;
+}
+
+.shareVisual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+.shareVisual__avatars {
+  display: flex;
+}
+
+.shareVisual__avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  background-color: var(--landing-accent-soft);
+  color: #0a120d;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-surface);
+  margin-left: -0.6rem;
+}
+
+.shareVisual__avatar:first-child {
+  margin-left: 0;
+}
+
+.shareVisual__roles {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.shareVisual__chip {
+  font-size: 0.75rem;
+  padding: 0.25rem var(--spacing-3);
+  border-radius: var(--radius-full);
+  background-color: color-mix(in srgb, var(--landing-accent) 22%, transparent);
+  color: var(--color-textPrimary);
+}
+
+.shareVisual__chip--muted {
+  background-color: var(--color-backgroundSecondary);
+  color: var(--color-textSecondary);
+}
+
+.moreVisual {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-2);
+  width: 100%;
+}
+
+.moreVisual__tile {
+  padding: var(--spacing-3);
+  border-radius: var(--radius-base);
+  background-color: var(--color-backgroundSecondary);
+  color: var(--color-textSecondary);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .showcase__intro {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .showcase__intro p {
+    margin: 0 auto;
+  }
+}

@@ -18,7 +18,7 @@ import type {
   SharedUser,
   UpdatedInvitationDTO,
 } from "../domain/invitation.entity";
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import { invitationConverter, sharedUserConverter } from "./invitation.converter";
 
 export class FirebaseInvitationRepository implements InvitationRepository {

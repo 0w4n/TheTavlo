@@ -1,4 +1,14 @@
 import type { AccountType } from "#core/auth/domain/user.entity";
+import { createContext } from "react";
+import type { GlobalContextState } from "./globalContextReducer";
+
+export const GlobalContext = createContext<GlobalContextValue | undefined>(
+  undefined,
+);
+
+export type GlobalContextValue = {
+  state: GlobalContextState;
+};
 
 export interface GlobalContextProps {
   user: {

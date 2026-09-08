@@ -13,8 +13,12 @@ export class TRPCRequestError extends Error {
 }
 
 async function authHeaders(): Promise<HeadersInit> {
+  await firebaseService.auth.authStateReady();
   const user = firebaseService.auth.currentUser;
-  if (!user) return {};
+
+  if (!user) {
+    throw new TRPCRequestError("Necesitas iniciar sesión.", "UNAUTHORIZED");
+  }
   const token = await user.getIdToken();
   return { Authorization: `Bearer ${token}` };
 }

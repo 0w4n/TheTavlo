@@ -1,5 +1,6 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { adminAuth } from "../firebase/config.ts";
+import { adminDb } from "../firebase/config.ts";
 
 export interface AuthedUser {
   uid: string;
@@ -10,6 +11,7 @@ export interface AuthedUser {
 
 export interface Context {
   user: AuthedUser | null;
+  db: FirebaseFirestore.Firestore;
 }
 
 /**
@@ -21,7 +23,7 @@ export interface Context {
  */
 export async function createContext({ req }: CreateExpressContextOptions): Promise<Context> {
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) return { user: null };
+  if (!authHeader?.startsWith("Bearer ")) return { user: null, db: adminDb };
 
   const idToken = authHeader.slice("Bearer ".length);
   try {
@@ -32,8 +34,10 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
         email: decoded.email ?? null,
         isAnonymous: decoded.firebase.sign_in_provider === "anonymous",
       },
+      db: adminDb,
     };
-  } catch {
-    return { user: null };
+  } catch (error) {
+    console.error("No se pudo verificar el token de Firebase:", error);
+    return { user: null, db: adminDb };
   }
 }

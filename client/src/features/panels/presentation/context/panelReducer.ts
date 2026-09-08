@@ -98,14 +98,19 @@ export function panelsReducer(
     case "FETCH_PANELS_SUCCESS": {
       const incoming = action.payload;
       const currentPanel = incoming[0];
+      const isSameCurrentPanel =
+        state.status === "panel" && state.currentPanel.id === currentPanel.id;
 
       return {
         status: "panel",
         currentPanel,
-        selectedPanel: undefined,
-        // Se recarga vía el efecto de sincronización en cuanto cambie
-        // currentPanel.id — ver panelsContext.tsx.
-        subPanels: [],
+        selectedPanel: isSameCurrentPanel ? state.selectedPanel : undefined,
+        // El listener del panel home puede emitir actualizaciones del mismo
+        // panel después de cargar los hijos. No debemos vaciarlos en cada
+        // emisión; solo se recargan cuando cambia currentPanel.id.
+        subPanels: isSameCurrentPanel && state.status === "panel"
+          ? state.subPanels
+          : [],
       };
     }
 

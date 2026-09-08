@@ -26,8 +26,8 @@ import StepAuth from "./onBoardingStep/auth.step";
 import "./OnboardingPage.css";
 
 /**
- * Onboarding de TheTavlo — se muestra en `/login?onBoarding` (ver el branch
- * agregado en `LoginPage.tsx`).
+ * Onboarding de TheTavlo — se muestra en `/register`; `/login?onBoarding`
+ * se conserva como enlace legacy.
  *
  * Decisiones de diseño, por si alguien retoma esto después:
  *
@@ -170,7 +170,7 @@ export default function OnboardingPage() {
     setStep(5);
   }
 
-  async function completeAuth(action: () => Promise<void>) {
+  async function completeAuth(action: () => Promise<unknown>) {
     setAuthLoading(true);
     justCompletedRef.current = true;
     try {

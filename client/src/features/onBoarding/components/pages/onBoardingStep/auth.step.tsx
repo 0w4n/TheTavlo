@@ -1,7 +1,7 @@
 import { Button } from "#components/atoms/button";
 import Icon from "#shared/ui/atoms/icons";
 
-// ─── Paso 5: entrar ─────────────────────────────────────────────────────────
+// ─── Paso 5: crear cuenta ───────────────────────────────────────────────────
 
 export default function StepAuth({
   onGoogle,
@@ -40,8 +40,8 @@ export default function StepAuth({
         Guardemos tu espacio
       </h1>
       <p className="onboarding__subtitle">
-        Entrá como invitado y probá todo sin compromiso, o con Google si
-        preferís tener tu cuenta desde ya.
+        Crea tu cuenta con Google o empieza con una cuenta provisional de
+        invitado. Podrás vincularla con Google más adelante.
       </p>
 
       {errorMessage && (
@@ -55,7 +55,7 @@ export default function StepAuth({
           variant="secondary"
           size="lg"
           icon="IconBrandGoogleFilled"
-          label="Continuar con Google"
+          label="Crear cuenta con Google"
           onClick={onGoogle}
           disabled={isLoading}
           className="button__full-width"
@@ -64,7 +64,7 @@ export default function StepAuth({
           variant="secondary"
           size="lg"
           icon="IconSpy"
-          label="Entrar como invitado"
+          label="Crear cuenta provisional"
           onClick={onGuest}
           disabled={isLoading}
           className="button__full-width"

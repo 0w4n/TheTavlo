@@ -1,4 +1,4 @@
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import {
   addDoc,
@@ -25,13 +25,16 @@ export class FirebaseNoteRepository implements NoteRepository {
 
   private getCollectionPath(): string {
     const ctx = this.getContext();
-    const { panelId } = ctx.state.panel;
+    if (ctx.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+    const { panelId } = ctx.state.state.panel;
 
     if (panelId.length > 0) {
       const { accountType, ownerId } = resolvePanelOwner(ctx);
       return `${accountType}/${ownerId}/panels/${panelId}/notes`;
     }
-    const { userId, accountType } = ctx.state.user;
+    const { userId, accountType } = ctx.state.state.user;
     return `${accountType}/${userId}/panels`;
   }
 
