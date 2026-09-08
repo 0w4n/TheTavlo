@@ -1,6 +1,7 @@
 import {
   signInAnonymously as firebaseSignInAnonymously,
   signInWithPopup,
+  getAdditionalUserInfo,
   GoogleAuthProvider,
   linkWithPopup,
   onAuthStateChanged as firebaseOnAuthStateChanged,
@@ -52,13 +53,16 @@ export class FirebaseAuthRepository implements AuthRepository {
     return this.mapFirebaseUser(userCredential.user) as GuestUser;
   }
 
-  async signInWithGoogle(): Promise<GoogleUser> {
+  async signInWithGoogle(): Promise<{ user: GoogleUser; isNewUser: boolean }> {
     try {
       const userCredential = await signInWithPopup(
         this.auth,
         this.googleProvider,
       );
-      return this.mapFirebaseUser(userCredential.user) as GoogleUser;
+      return {
+        user: this.mapFirebaseUser(userCredential.user) as GoogleUser,
+        isNewUser: getAdditionalUserInfo(userCredential)?.isNewUser ?? false,
+      };
     } catch (error) {
       console.error("Google sign-in error:", error);
       throw error;

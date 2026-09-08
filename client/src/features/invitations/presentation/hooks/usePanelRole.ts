@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
+import { trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 
-export type PanelRole = "owner" | "editor" | "viewer" | "unknown";
+const POLL_INTERVAL_MS = 30_000;
+
+export type PanelRole = "owner" | "editor" | "viewer" | "unknown" | "loading";
 
 /**
  * Rol del usuario actual sobre el panel activo (Q3 de la conversación de
@@ -22,12 +23,20 @@ export type PanelRole = "owner" | "editor" | "viewer" | "unknown";
  */
 export function usePanelRole(): PanelRole {
   const { state } = useGlobalContext();
-  const { panel, user } = state;
-  const isOwner = !panel.ownerId || panel.ownerId === user.userId;
+  const panel = state.status === "ready" ? state.state.panel : undefined;
+  const user = state.status === "ready" ? state.state.user : undefined;
+  const isOwner = Boolean(
+    panel && user && (!panel.ownerId || panel.ownerId === user.userId),
+  );
 
-  const [role, setRole] = useState<PanelRole>(isOwner ? "owner" : "unknown");
+  const [role, setRole] = useState<PanelRole>("loading");
 
   useEffect(() => {
+    if (!panel || !user) {
+      setRole("unknown");
+      return;
+    }
+
     if (isOwner) {
       setRole("owner");
       return;
@@ -37,20 +46,23 @@ export function usePanelRole(): PanelRole {
       return;
     }
 
-    const ref = doc(
-      firebaseService.firestore,
-      "sharedPanelIndex",
-      user.userId,
-      "panels",
-      panel.panelId,
-    );
-
-    return onSnapshot(
-      ref,
-      (snap) => setRole((snap.data()?.role as PanelRole) ?? "unknown"),
-      () => setRole("unknown"),
-    );
-  }, [isOwner, panel.panelId, user.userId]);
+    setRole("loading");
+    let stopped = false;
+    const refresh = async () => {
+      try {
+        const nextRole = await trpcQuery<PanelRole>("panels.role", { panelId: panel.panelId });
+        if (!stopped) setRole(nextRole);
+      } catch {
+        if (!stopped) setRole("unknown");
+      }
+    };
+    void refresh();
+    const timer = window.setInterval(refresh, POLL_INTERVAL_MS);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+  }, [isOwner, panel?.panelId, panel?.ownerId, user?.userId]);
 
   return role;
 }

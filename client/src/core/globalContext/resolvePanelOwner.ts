@@ -1,5 +1,5 @@
 import type { AccountType } from "#core/auth/domain/user.entity";
-import type { GlobalContextValue } from "./context/globalContext";
+import type { GlobalContextValue } from "./context/globalContex.type";
 
 /**
  * Resuelve bajo qué cuenta (accountType + id) viven los datos del panel
@@ -21,7 +21,11 @@ import type { GlobalContextValue } from "./context/globalContext";
 export function resolvePanelOwner(
   ctx: GlobalContextValue,
 ): { accountType: AccountType; ownerId: string } {
-  const { user, panel } = ctx.state;
+  if (ctx.state.status !== "ready") {
+    throw new Error("GlobalContext aún no está listo");
+  }
+
+  const { user, panel } = ctx.state.state;
 
   return {
     accountType: panel.ownerAccountType ?? user.accountType,

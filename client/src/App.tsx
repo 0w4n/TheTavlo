@@ -1,7 +1,7 @@
 import MigrationDialog from "#components/MigrationDialog";
 import AuthService from "#core/auth/app/auth.service";
 import { FirebaseAuthRepository } from "#core/auth/infraestructure/authRepository.firebase";
-import { FirebaseMigrationRepository } from "#core/auth/infraestructure/migrationRepository.firebase";
+import { TrpcMigrationRepository } from "#core/auth/infraestructure/migrationRepository.trpc";
 import { AuthProvider } from "#core/auth/presentation/context/authContext";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
 import LoadingPage from "#components/pages/LoadingPage";
@@ -9,12 +9,12 @@ import { useEffect, useMemo } from "react";
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
 import { PanelsProvider } from "#features/panels/presentation/context/panelsContext";
 import { WidgetsProvider } from "#features/widgets/presentation/context/widgetsContext";
-import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
+import { TrpcPanelsRepository } from "#features/panels/infraestructure/panelRepository.trpc";
 import {
   clearPanelsCache,
   getPanelsCacheKey,
 } from "#features/panels/infraestructure/panelsCache";
-import { FirebaseWidgetRepository } from "#features/widgets/infraestructure/widgetRepository.firebase";
+import { TrpcWidgetRepository } from "#features/widgets/infraestructure/widgetRepository.trpc";
 import { PanelsService } from "#features/panels/app/panels.service";
 import { WidgetService } from "#features/widgets/app/widget.service";
 import { RouterProvider, Navigate, Outlet } from "react-router-dom";
@@ -23,13 +23,13 @@ import LandingPage from "#components/pages/LandingPage";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 import { GlobalContextProvider } from "#core/globalContext/context/globalContext";
 import { InvitationService } from "#features/invitations/app/invitation.service";
-import { FirebaseInvitationRepository } from "#features/invitations/infraestructure/invitationRepository.firebase";
+import { TrpcInvitationRepository } from "#features/invitations/infraestructure/invitationRepository.trpc";
 import { InvitationProvider } from "#features/invitations/presentation/context/invitationContext";
-import { FirebaseTaskRepository } from "#features/task/infraestructure/taskRepository.firebase";
+import { TrpcTaskRepository } from "#features/task/infraestructure/taskRepository.trpc";
 import { TasksService } from "#features/task/app/task.service";
 import { TasksProvider } from "#features/task/presentation/context/TasksContext";
 import { EventsProvider } from "#features/events/presentation/context/eventContext";
-import { FirebaseEventRepository } from "#features/events/infraestructure/eventRepository.firebase";
+import { TrpcEventRepository } from "#features/events/infraestructure/eventRepository.trpc";
 import { EventsService } from "#features/events/app/events.service";
 import type { User } from "#core/auth/domain/user.entity";
 import { AnnouncerProvider } from "#core/a11y/AnnouncerProvider";
@@ -88,9 +88,7 @@ function AuthenticatedApp() {
   const authRepository = useMemo(() => {
     return new FirebaseAuthRepository(firebaseService.auth);
   }, [firebaseService.auth]);
-  const migrationRepository = useMemo(() => {
-    return new FirebaseMigrationRepository(firebaseService.firestore);
-  }, [firebaseService.firestore]);
+  const migrationRepository = useMemo(() => new TrpcMigrationRepository(), []);
   const authService = useMemo(() => {
     return new AuthService(authRepository, migrationRepository);
   }, [authRepository, migrationRepository]);
@@ -106,6 +104,7 @@ function AuthenticatedApp() {
 
 export function ProtectedLayout() {
   const { state } = useAuth();
+  console.log(state, "Auth state in ProtectedLayout");
 
   switch (state.status) {
     case "initializing":
@@ -126,6 +125,7 @@ export function ProtectedLayout() {
 }
 
 function AuthenticatedLayout({ user }: { user: User }) {
+  console.log("User:", user);
   // Deps intencionalmente angostas: cacheKey solo debe cambiar si cambian
   // accountType/id, no en cada nueva referencia de `user`.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,10 +135,7 @@ function AuthenticatedLayout({ user }: { user: User }) {
   );
 
   const panelsService = useMemo(() => {
-    const repository = new FirebasePanelsRepository(
-      firebaseService.firestore,
-      () => user,
-    );
+    const repository = new TrpcPanelsRepository(() => user);
     // TODO [Resolver conflicto en el PanelService]
     // Caché progresiva en memoria: navegar por paneles ya visitados en esta
     // sesión no vuelve a leer Firestore. Ver panelsCache.ts.
@@ -165,39 +162,33 @@ function AuthenticatedLayout({ user }: { user: User }) {
 
 function ProviderApp() {
   const globalContext = useGlobalContext();
-  console.log("GlobalContext:", globalContext);
 
   const widgetService = useMemo(() => {
-    const widgetRepository = new FirebaseWidgetRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
+    const widgetRepository = new TrpcWidgetRepository(() => globalContext);
     return new WidgetService(widgetRepository);
   }, [globalContext]);
 
   const invitationService = useMemo(() => {
-    const invitationRepository = new FirebaseInvitationRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
+    const invitationRepository = new TrpcInvitationRepository(() => globalContext);
     return new InvitationService(invitationRepository);
   }, [globalContext]);
 
   const eventService = useMemo(() => {
-    const eventRepository = new FirebaseEventRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
+    const eventRepository = new TrpcEventRepository(() => globalContext);
     return new EventsService(eventRepository);
   }, [globalContext]);
 
   const taskService = useMemo(() => {
-    const taskRepository = new FirebaseTaskRepository(
-      firebaseService.firestore,
-      () => globalContext,
-    );
+    const taskRepository = new TrpcTaskRepository(() => globalContext);
     return new TasksService(taskRepository);
   }, [globalContext]);
+
+  if (
+    globalContext.state.status === "loading" ||
+    !globalContext.state.state.panel.panelId
+  ) {
+    return <LoadingPage />;
+  }
 
   return (
     <>

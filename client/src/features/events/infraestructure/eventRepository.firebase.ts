@@ -12,7 +12,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import type { EventRepository } from "../app/eventRepository.interface";
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import type {
@@ -31,7 +31,10 @@ export class FirebaseEventRepository implements EventRepository {
   private getCollectionPath(): string {
     const ctx = this.getContext();
     const { accountType, ownerId } = resolvePanelOwner(ctx);
-    const { panelId } = ctx.state.panel;
+    if (ctx.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+    const { panelId } = ctx.state.state.panel;
     return `${accountType}/${ownerId}/panels/${panelId}/event`;
   }
 

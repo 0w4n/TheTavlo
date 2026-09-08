@@ -1,4 +1,4 @@
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import type { Firestore, Unsubscribe } from "firebase/firestore";
 import {
   addDoc,

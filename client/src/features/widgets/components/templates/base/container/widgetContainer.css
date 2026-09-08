@@ -1,6 +1,11 @@
 .widget {
   display: flex;
   flex: 1;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   flex-direction: column;
   gap: var(--spacing-3);
   box-sizing: border-box;
@@ -8,6 +13,15 @@
   border: solid 3px var(--color-border);
   border-radius: 15px;
   padding: 10px;
+}
+
+.widget--editing {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
 }
 
 .widget__header {
@@ -25,7 +39,7 @@
 .widget__header > div:last-child {
   background-color: var(--color-backgroundSecondary);
   background-color: var(--color-backgroundSecondary);
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .widget__header > div:last-child {
@@ -42,6 +56,8 @@
 
 .widget__header-searchBar {
   display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
   align-items: center;
   gap: var(--spacing-1);
   background-color: transparent;
@@ -58,6 +74,7 @@
   color: var(--color-textPrimary);
   font-size: var(--font-size-sm);
   flex: 1;
+  min-width: 0;
 }
 
 .widget__header-searchBar-input:hover {
@@ -113,6 +130,9 @@
 .widget__content {
   display: flex;
   flex: 1;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   text-align: center;
   flex-direction: column;
   gap: var(--spacing-4);
@@ -121,9 +141,30 @@
   padding-right: 0px;
 }
 
+.widget__content > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .widget__content-scroll {
   padding-right: 8px;
 } 
+
+.widget-error {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  min-height: 120px;
+  color: var(--color-textSecondary);
+  text-align: center;
+}
+
+.widget-error p {
+  margin: 0;
+}
 
 .widget__content::-webkit-scrollbar {
   width: 8px;

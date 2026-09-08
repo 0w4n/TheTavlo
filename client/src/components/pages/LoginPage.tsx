@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuth from "../../core/auth/presentation/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "#components/atoms/button";
@@ -11,41 +11,43 @@ import "./LoginPage.css";
 export default function LoginPage() {
   useDocumentTitle("Iniciar sesión");
 
-  const { state } = useAuth();
+  const { signInWithGoogle, state } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = safeReturnTo(searchParams.get("returnTo"));
+  const isSigningInRef = useRef(false);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    isSigningInRef.current = true;
     try {
-      navigate(withReturnTo("/login?onBoarding", returnTo), { replace: true });
+      const isNewUser = await signInWithGoogle();
+      navigate(
+        isNewUser
+          ? withReturnTo("/register", returnTo)
+          : (returnTo ?? "/home"),
+        { replace: true },
+      );
     } catch (error) {
       console.error("Error al iniciar sesión con Google:", error);
     } finally {
+      isSigningInRef.current = false;
       setIsLoading(false);
     }
   };
 
-  const handleGuestSignIn = async () => {
-    setIsLoading(true);
-    try {
-      navigate(withReturnTo("/login?onBoarding", returnTo), { replace: true });
-    } catch (error) {
-      throw new Error(error as string);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleCreateAccount = () => {
+    navigate(withReturnTo("/register", returnTo), { replace: true });
   };
 
   useEffect(() => {
-    if (state.status === "authenticated") {
+    if (state.status === "authenticated" && !isSigningInRef.current) {
       navigate(returnTo ?? "/home", { replace: true });
     }
-  });
+  }, [navigate, returnTo, state.status]);
 
-  // /login?onBoarding — mismo login, pero guiado. Ver OnboardingPage.tsx.
+  // Compatibilidad: /login?onBoarding sigue mostrando el onboarding legacy.
   if (searchParams.has("onBoarding")) {
     return <OnboardingPage />;
   }
@@ -68,27 +70,27 @@ export default function LoginPage() {
           variant="secondary"
           onClick={handleGoogleSignIn}
           icon="IconBrandGoogleFilled"
-          label="Entrar con Google"
+          label="Iniciar sesión con Google"
           disabled={isLoading || state.status === "initializing"}
         />
         <Button
           className="loginPage__card-content-item"
           variant="secondary"
-          onClick={handleGuestSignIn}
-          icon="IconSpy"
-          label="Entrar como Invitado"
+          onClick={handleCreateAccount}
+          icon="IconUserPlus"
+          label="Crear una cuenta"
           disabled={isLoading || state.status === "initializing"}
         />
       </div>
 
       <footer>
         <span>
-          Para crear una cuenta es <strong>aquí también</strong>.
+          Las cuentas nuevas empiezan con una configuración guiada.
         </span>
       </footer>
 
       {/* La nota de "modo invitado" que vivía comentada acá ahora está en
-          OnboardingPage.tsx (StepAuth) — ver /login?onBoarding. */}
+          OnboardingPage.tsx (StepAuth) — el flujo nuevo usa /register. */}
     </div>
   );
 }

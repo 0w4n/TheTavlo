@@ -27,16 +27,17 @@ import type { WidgetsState } from "#features/widgets/presentation/context/widget
 import LoadingPage from "#components/pages/LoadingPage";
 import ModalPortal from "#components/molecules/modal/portal";
 import AddWidget from "#components/templates/dialog/modWidget/addWidget";
+import WidgetErrorBoundary from "#features/widgets/components/templates/base/container/WidgetErrorBoundary";
 
 function buildInitialLayouts(
   widgets: Widget[]
 ): ResponsiveLayouts {
   const makeLayout = (breakPoint: Breakpoint): LayoutItem[] =>
     widgets.flatMap((widget) => {
-      const layout = widget.layout[breakPoint];
+      const layout = widget.layout[breakPoint] ?? widget.layout.lg;
 
       if (!layout) {
-        throw new Error("No tiene layout");
+        return [];
       }
 
       const itemMap = [];
@@ -92,27 +93,26 @@ type Props = {
   widgetState: WidgetsState;
 };
 
+const EMPTY_WIDGETS: Widget[] = [];
+
 export function Dashboard({ widgetState }: Props) {
-  const { width, containerRef, mounted } = useContainerWidth({
-    measureBeforeMount: true,
-  });
+  const { width, containerRef, mounted } = useContainerWidth();
   const { updateLayout, addWidget } = useWidgets();
 
-  if (widgetState == undefined || widgetState.isLoading) {
-    return <LoadingPage />;
-  }
+  const isLoading = widgetState?.isLoading ?? true;
+  const widgetList = isLoading ? EMPTY_WIDGETS : widgetState.widgets;
+  const editMode = isLoading ? false : widgetState.editMode;
 
   // TODO: Hay que poner un `calcGridCellDimensions` para hacer un overlay
 
-  const widgetList = widgetState.widgets;
-  const editMode = widgetState.editMode;
-  const initalLay = buildInitialLayouts(widgetList);
+  const initialLayouts = buildInitialLayouts(widgetList);
 
-  const [layouts, setLayouts] = useState<ResponsiveLayouts>(initalLay);
+  const [layouts, setLayouts] = useState<ResponsiveLayouts>(initialLayouts);
 
   const layoutsRef = useRef<ResponsiveLayouts>(layouts);
   const hasChangesRef = useRef(false);
   const prevEditModeRef = useRef(editMode);
+  const isApplyingEditModeRef = useRef(false);
 
   const handleAddWidget = async (type: WidgetType) => {
     return addWidget(type);
@@ -126,7 +126,11 @@ export function Dashboard({ widgetState }: Props) {
   }, [widgetList]);
 
   useEffect(() => {
+    isApplyingEditModeRef.current = true;
     setLayouts((prev) => toggleEditMode(prev, editMode));
+    requestAnimationFrame(() => {
+      isApplyingEditModeRef.current = false;
+    });
   }, [editMode]);
 
   useEffect(() => {
@@ -137,26 +141,44 @@ export function Dashboard({ widgetState }: Props) {
     prevEditModeRef.current = editMode;
   }, [editMode]);
 
-  console.log("widgetList length: ", widgetList.length);
+  const hasLayouts =
+    widgetList.length === 0 || layouts.lg?.length === widgetList.length;
 
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  console.log("widgetList length: ", widgetList.length);
+  
   return (
     <div className="dashboard" data-edit-mode={editMode} ref={containerRef}>
       {widgetList.length > 0 ? (
-        mounted && (
+        mounted && hasLayouts && (
           <ResponsiveGridLayout
             breakpoints={DEFAULT_BREAKPOINTS}
             cols={DEFAULT_COLS}
             width={width}
             rowHeight={150}
             layouts={layouts}
+            onLayoutChange={(_currentLayout, allLayouts) => {
+              if (!editMode || isApplyingEditModeRef.current) return;
+              setLayouts(allLayouts);
+              layoutsRef.current = allLayouts;
+              hasChangesRef.current = true;
+            }}
             containerPadding={[0, 0]}
             margin={[10, 10]}
             positionStrategy={absoluteStrategy}
             compactor={verticalCompactor}
           >
             {widgetList.map((widget) => (
-              <div key={widget.id} style={{ display: "flex" }}>
-                <WidgetContainer type={widget.type} widget={widget} editMode={editMode} />
+              <div
+                key={widget.id}
+                style={{ display: "flex", width: "100%", height: "100%", minWidth: 0, minHeight: 0 }}
+              >
+                  <WidgetErrorBoundary>
+                    <WidgetContainer type={widget.type} widget={widget} editMode={editMode} />
+                  </WidgetErrorBoundary>
               </div>
             ))}
           </ResponsiveGridLayout>

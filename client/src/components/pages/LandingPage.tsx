@@ -1,5 +1,10 @@
 import "./LandingPage.css";
+import LandingShowcase from "./LandingShowcase";
 import "../base/colors.css";
+import logoSrc from "../../assets/TheTavlo_logo.svg";
+import { Button } from "#components/atoms/button";
+// Lista para activarse, ver el comentario junto a <LandingPricing/> más abajo.
+// import LandingPricing from "./LandingPricing";
 
 /**
  * Se renderiza FUERA de <RouterProvider> (ver App.tsx) — vive en la raíz
@@ -12,25 +17,36 @@ export default function LandingPage() {
   return (
     <div className="landing">
       <header className="landing__header">
-        <span className="landing__wordmark">TheTavlo</span>
-        <a className="landing__navLink" href="/app/login">
-          Iniciar sesión
-        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-4)" }}>
+          <img
+            src={logoSrc}
+            alt="TheTavlo Logo"
+            style={{ aspectRatio: "auto", height: "1.5rem" }}
+          />
+          <span className="landing__wordmark">TheTavlo</span>
+        </div>
+        <Button variant="primary" label="Iniciar sesión" href="/app/login" iconPosition="right" icon="IconArrowRight"/>
       </header>
 
-      <main>
+      <main className="landing__main">
         <section className="landing__hero">
           <div className="landing__heroText">
-            <h1>Tu semestre, en un solo panel.</h1>
+            <h1>Tus proyectos, organizados en un solo panel.</h1>
             <p>
-              Tareas, horario, notas y exámenes en un mismo lugar — y lo
-              compartís con quien estudiás, si querés.
+              Tareas, entregas, eventos y objetivos centralizados — colabora y
+              comparte el progreso con tu equipo o clientes sin esfuerzo.
             </p>
             <div className="landing__ctaRow">
-              <a className="landing__button landing__button--primary" href="/app/login?onBoarding">
-                Crear cuenta gratis
+              <a
+                className="landing__button landing__button--primary"
+                href="/app/register"
+              >
+                Empezar gratis
               </a>
-              <a className="landing__button landing__button--ghost" href="/app/login">
+              <a
+                className="landing__button landing__button--ghost"
+                href="/app/login"
+              >
                 Iniciar sesión
               </a>
             </div>
@@ -41,83 +57,51 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="landing__features">
-          <FeatureRow
-            title="Organizá todo por panel"
-            description="Cada materia, proyecto o grupo de estudio tiene su propio espacio — con tareas, notas y calendario adentro, no repartidos en cinco apps distintas."
-            align="left"
-          />
-          <FeatureRow
-            title="Tu horario, con asistencia"
-            description="Cargás tus clases una vez. Si cambia el aula o el horario a mitad de cuatrimestre, TheTavlo guarda el historial en vez de pisar los datos viejos — y te deja anotar las faltas."
-            align="right"
-          />
-          <FeatureRow
-            title="Compartilo con tu grupo"
-            description="Invitás por correo o mandás un enlace. Vos decidís si la otra persona puede editar el panel o solo mirarlo."
-            align="left"
-          />
-          <FeatureRow
-            title="Widgets, no una lista más"
-            description="Armás el panel con lo que de verdad querés ver: próximos exámenes, tareas pendientes, la semana que viene."
-            align="right"
-          />
-        </section>
+        <LandingShowcase />
+
+        {/*
+          Precio todavía no confirmado — la sección ya está armada
+          (LandingPricing.tsx) y pasa TypeScript/ESLint, pero no se
+          renderiza hasta descomentar la línea de abajo (y el import
+          de arriba). 12€/mes o 92€/año, más un plan gratis.
+        */}
+        {/* <LandingPricing /> */}
 
         <section className="landing__closing">
-          <h2>Empezá gratis, no hace falta tarjeta.</h2>
-          <a className="landing__button landing__button--primary" href="/app/login?onBoarding">
+          <h2>Empieza gratis, sin tarjeta de crédito.</h2>
+          <a
+            className="landing__button landing__button--primary"
+            href="/app/register"
+          >
             Crear cuenta gratis
           </a>
         </section>
       </main>
-
-      <footer className="landing__footer">
-        <span>© {new Date().getFullYear()} TheTavlo</span>
-        <a href="/app/login">Iniciar sesión</a>
-      </footer>
     </div>
   );
 }
 
-/** Vista previa estática de un panel real — el "elemento con firma" de la página: mostrar el producto en vez de una ilustración genérica. */
+/** Vista previa estática de un panel real — muestra un flujo de trabajo generalista en lugar de académico. */
 function PanelMock() {
   return (
     <div className="panelMock">
       <div className="panelMock__header">
         <span className="panelMock__dot" />
-        <span>Cálculo II</span>
+        <span>Rediseño Web</span>
       </div>
       <div className="panelMock__row panelMock__row--done">
         <span className="panelMock__check" />
-        Guía de límites
+        Aprobar wireframes
       </div>
       <div className="panelMock__row">
         <span className="panelMock__check panelMock__check--empty" />
-        Repasar derivadas
+        Revisar feedback del cliente
       </div>
       <div className="panelMock__divider" />
-      <div className="panelMock__chip">Lun 10:00 · Física</div>
+      <div className="panelMock__chip">Lun 10:00 · Reunión de equipo</div>
       <div className="panelMock__chip panelMock__chip--accent">
-        Examen parcial · 14 oct
+        Entrega final · 14 oct
       </div>
-    </div>
-  );
-}
-
-function FeatureRow({
-  title,
-  description,
-  align,
-}: {
-  title: string;
-  description: string;
-  align: "left" | "right";
-}) {
-  return (
-    <div className={`featureRow featureRow--${align}`}>
-      <h3>{title}</h3>
-      <p>{description}</p>
     </div>
   );
 }

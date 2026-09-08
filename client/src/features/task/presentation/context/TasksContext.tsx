@@ -58,24 +58,6 @@ export function TasksProvider({ children, tasksService }: TasksProviderProps) {
 
   // ─── Fetch puntual (por compatibilidad / refresh manual) ─────────────────
 
-  // ─── Suscripción en tiempo real ──────────────────────────────────────────
-  // tasksService cambia cuando panelId cambia (ver App.tsx / ProviderApp),
-  // lo que recrea la suscripción automáticamente para el nuevo panel.
-
-  useEffect(() => {
-    dispatch({ type: "FETCH_TASKS_START" });
-
-    const unsubscribe = tasksService.subscribe(
-      (tasks) => dispatch({ type: "FETCH_TASKS_SUCCESS", payload: tasks }),
-      (error) => dispatch({ type: "FETCH_TASKS_ERROR", payload: error }),
-    );
-
-    // Limpieza: cancela la suscripción de Firestore
-    return unsubscribe;
-  }, [tasksService]);
-
-  // ─── Fetch puntual (por compatibilidad / refresh manual) ─────────────────
-
   const fetchTasks = useCallback(async () => {
     dispatch({ type: "FETCH_TASKS_START" });
     try {

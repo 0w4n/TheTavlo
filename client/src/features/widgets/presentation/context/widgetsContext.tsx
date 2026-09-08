@@ -42,9 +42,11 @@ export function WidgetsProvider({
   widgetService,
 }: PropsWithChildren<{ widgetService: WidgetService }>) {
   const [state, dispatch] = useReducer(widgetsReducer, initialState);
-  const { state: stateGlobal } = useGlobalContext();
-  const panelId = stateGlobal.panel.panelId;
-  const userId = stateGlobal.user.userId;
+  const { state: globalState } = useGlobalContext();
+  const panelId =
+    globalState.status === "ready" ? globalState.state.panel.panelId : "";
+  const userId =
+    globalState.status === "ready" ? globalState.state.user.userId : "";
 
   // ─── Suscripción en tiempo real ──────────────────────────────────────────
   // Se crea cuando panelId cambia y se limpia automáticamente al desmontar

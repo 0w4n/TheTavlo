@@ -11,17 +11,20 @@ export interface ButtonProps
   variant?: ButtonVariant;
   size?: "sm" | "md" | "lg";
   icon?: string;
+  iconPosition?: "left" | "right";
   label?: string;
   iconSize?: number;
   iconColor?: string;
   isLoading?: boolean;
   children?: ReactNode;
+  href?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   size = "md",
   icon,
+  iconPosition = "left",
   label,
   iconSize,
   iconColor,
@@ -29,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = "",
   disabled,
   children,
+  href,
   ...props
 }) => {
   const classes = [
@@ -48,13 +52,22 @@ export const Button: React.FC<ButtonProps> = ({
         <span className="button__icon">Cargando...</span>
       ) : icon && label ? (
         <>
-          <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
+          {iconPosition === "left" && (
+            <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
+          )}
           <span>{label}</span>
+          {iconPosition === "right" && (
+            <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
+          )}
         </>
       ) : icon != undefined ? (
         <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
       ) : label ? (
         <span>{label}</span>
+      ) : href ? (
+        <a href={href} className="button__link">
+          {children}
+        </a>
       ) : null}
       {children}
     </button>

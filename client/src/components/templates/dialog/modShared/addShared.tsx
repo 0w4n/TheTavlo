@@ -27,7 +27,8 @@ export default function AddShared({ type, onClose }: AddSharedProps) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
   const isPublicLink = type === "public";
-  const panelId = ctx.state.panel.panelId;
+  const panelId =
+    ctx.state.status === "ready" ? ctx.state.state.panel.panelId : "";
   const { ownerId, accountType: ownerAccountType } = resolvePanelOwner(ctx);
   const panelName =
     panelsState.status === "panel"

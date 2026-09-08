@@ -9,18 +9,18 @@ import useAuth from "#core/auth/presentation/hooks/useAuth";
 import { Rise } from "#components/molecules/rise";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import { useDocumentTitle } from "#core/routing/useDocumentTitle";
-import usePanels from "#features/panels/presentation/hooks/usePanels";
 import { useOnBoardingBootstrap } from "#features/onBoarding/presentation/hooks/useOnBoardingBootstrap";
+import usePanels from "#features/panels/presentation/hooks/usePanels";
 
 export default function HomePage() {
   useDocumentTitle("Inicio");
   const { fetchHomePanel } = usePanels();
 
   useEffect(() => {
-    fetchHomePanel();
+    void fetchHomePanel();
   }, [fetchHomePanel]);
 
-  // Si la persona vino de /login?onBoarding, esto personaliza el panel home,
+  // Si la persona vino de /register, esto personaliza el panel home,
   // agrega el widget elegido y crea la primera tarea (si cargó una). No hace
   // nada si no hay un plan pendiente — ver useOnBoardingBootstrap.ts.
   useOnBoardingBootstrap();

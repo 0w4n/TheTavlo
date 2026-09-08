@@ -20,7 +20,7 @@ const initialAuthState: AuthState = {
 type AuthContextValue = {
   state: AuthState;
   signInAsGuest: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: () => Promise<boolean>;
   upgradeToGoogle: () => Promise<void>;
   completeMigration: (strategy: MigrationStrategy) => Promise<void>;
   signOut: () => Promise<void>;
@@ -72,6 +72,8 @@ export function AuthProvider({
 
       throw new Error(result.error);
     }
+
+    return result.isNewUser ?? false;
   }, [authService]);
 
   const upgradeToGoogle = useCallback(async () => {

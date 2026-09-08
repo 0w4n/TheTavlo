@@ -22,7 +22,7 @@ import type {
   LayoutItemDTO,
 } from "../domain/widget.entity";
 
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import { withoutId } from "#shared/infraestructure/firebase/withoutId";
 import type { ResponsiveLayouts } from "react-grid-layout";
@@ -43,7 +43,10 @@ export class FirebaseWidgetRepository implements WidgetRepository {
     // ownerAccountType del dueño, no del usuario que está mirando).
     const ctx = this.getContext();
     const { accountType, ownerId } = resolvePanelOwner(ctx);
-    const { panelId } = ctx.state.panel;
+    if (ctx.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+    const { panelId } = ctx.state.state.panel;
     return `${accountType}/${ownerId}/panels/${panelId}/widgets`;
   }
 

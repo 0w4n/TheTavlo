@@ -150,10 +150,15 @@ function PanelHeader({
   leftAction?: React.ReactNode;
 }) {
   const headerRef = useRef<HTMLElement>(null);
+  const navigate = useNavigate();
   // Solo dueño/editor pueden compartir (Q3 + assertCanManageSharing en el
   // backend) — un VIEWER ni siquiera debería ver la opción.
   const panelRole = usePanelRole();
   const canShare = panelRole === "owner" || panelRole === "editor";
+
+  useEffect(() => {
+    if (panelRole === "unknown") navigate("/home", { replace: true });
+  }, [navigate, panelRole]);
 
   useEffect(() => {
     headerRef.current?.style.setProperty(

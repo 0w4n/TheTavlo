@@ -22,10 +22,10 @@ export default class AuthService {
     }
   }
 
-  async signInWithGoogle(): Promise<{ user?: GoogleUser; error?: string }> {
+  async signInWithGoogle(): Promise<{ user?: GoogleUser; isNewUser?: boolean; error?: string }> {
     try {
-      const user = await this.authRepository.signInWithGoogle();
-      return { user };
+      const result = await this.authRepository.signInWithGoogle();
+      return { user: result.user, isNewUser: result.isNewUser };
     } catch (error: any) {
       return { error: this.handleAuthError(error) };
     }

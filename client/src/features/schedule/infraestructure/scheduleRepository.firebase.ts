@@ -23,7 +23,7 @@ import type { AttendanceRecord, UpsertAttendanceDTO } from "../domain/attendance
 import { buildAttendanceId } from "../domain/attendanceRecord.entity";
 import { timestampToLocalDateKey } from "../domain/weekMath";
 import type { ClassSlotChangePlan } from "../domain/classSlotVersioning";
-import type { GlobalContextValue } from "#core/globalContext/context/globalContext";
+import type { GlobalContextValue } from "#core/globalContext/context/globalContex.type";
 import { resolvePanelOwner } from "#core/globalContext/resolvePanelOwner";
 import {
   err,
@@ -65,7 +65,10 @@ export class FirebaseScheduleRepository implements ScheduleRepository {
   private getPanelPath(): string {
     const ctx = this.getContext();
     const { accountType, ownerId } = resolvePanelOwner(ctx);
-    const { panelId } = ctx.state.panel;
+    if (ctx.state.status !== "ready") {
+      throw new Error("GlobalContext aún no está listo");
+    }
+    const { panelId } = ctx.state.state.panel;
     return `${accountType}/${ownerId}/panels/${panelId}`;
   }
 

@@ -1,3 +1,7 @@
+html:has(.landing), body:has(.landing), #root:has(.landing) {
+  max-height: 100dvh;
+}
+
 .landing {
   /* La app real todavía no define --color-primary/--color-accent en
      ningún lado (grep confirma que button.css los referencia pero nunca
@@ -8,12 +12,14 @@
   --landing-accent-soft: #4db894;
   --landing-space-lg: 4rem;
   --landing-space-xl: 6rem;
-
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   color: var(--color-textPrimary);
   background-color: var(--color-background);
+}
+
+.landing > * {
+    margin-inline: 6dvw;
 }
 
 .landing a {
@@ -32,10 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-5) var(--spacing-6);
-  max-width: 72rem;
-  width: 100%;
-  margin: 0 auto;
+  padding-block: var(--spacing-5);
 }
 
 .landing__wordmark {
@@ -55,16 +58,24 @@
   color: var(--color-textPrimary);
 }
 
+/* ---------- Main ---------- */
+
+.landing__main {
+  height: 100dvh;
+  scroll-snap-type: x mandatory;
+}
+
+.landing__main > * {
+  scroll-snap-align: center;
+  height: 100%;
+}
+
 /* ---------- Hero ---------- */
 
 .landing__hero {
   display: flex;
-  flex-direction: column;
+  height: 100%;
   gap: var(--spacing-8);
-  max-width: 72rem;
-  width: 100%;
-  margin: 0 auto;
-  padding: var(--spacing-6) var(--spacing-6) var(--landing-space-lg);
 }
 
 .landing__heroText h1 {
@@ -216,52 +227,10 @@
   color: var(--color-textPrimary);
 }
 
-/* ---------- Features (filas alternadas, sin cards idénticas) ---------- */
-
-.landing__features {
-  max-width: 56rem;
-  width: 100%;
-  margin: 0 auto;
-  padding: var(--landing-space-lg) var(--spacing-6);
-  display: flex;
-  flex-direction: column;
-}
-
-.featureRow {
-  padding: var(--spacing-8) 0;
-  border-top: 1px solid var(--color-border);
-  max-width: 38ch;
-}
-
-.featureRow:last-child {
-  border-bottom: 1px solid var(--color-border);
-}
-
-.featureRow--right {
-  margin-left: auto;
-  text-align: right;
-}
-
-.featureRow h3 {
-  font-size: 1.375rem;
-  font-weight: 700;
-  margin: 0 0 var(--spacing-2);
-  letter-spacing: -0.01em;
-}
-
-.featureRow p {
-  color: var(--color-textSecondary);
-  line-height: 1.6;
-  margin: 0;
-}
-
 /* ---------- Cierre ---------- */
 
 .landing__closing {
-  max-width: 72rem;
-  width: 100%;
-  margin: 0 auto;
-  padding: var(--landing-space-xl) var(--spacing-6);
+  padding-block: var(--spacing-6);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -280,10 +249,7 @@
 /* ---------- Footer ---------- */
 
 .landing__footer {
-  max-width: 72rem;
-  width: 100%;
-  margin: 0 auto;
-  padding: var(--spacing-6);
+  padding-block: var(--spacing-5);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -306,8 +272,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding-top: var(--landing-space-xl);
-    padding-bottom: var(--landing-space-xl);
   }
 
   .landing__heroText {
@@ -316,10 +280,6 @@
 
   .landing__mock {
     flex: 1;
-  }
-
-  .featureRow--left {
-    margin-right: auto;
   }
 }
 

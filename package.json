@@ -4,5 +4,8 @@
   "scripts": {
     "dev": "pnpm --parallel --filter client --filter backend dev",
     "build": "pnpm --filter client build"
+  },
+  "devDependencies": {
+    "eslint": "^10.9.1"
   }
 }

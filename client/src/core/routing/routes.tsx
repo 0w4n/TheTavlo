@@ -7,6 +7,7 @@ import LoadingPage from "#components/pages/LoadingPage";
 
 const HomePage = lazy(() => import("#components/pages/HomePage"));
 const LoginPage = lazy(() => import("#components/pages/LoginPage"));
+const OnboardingPage = lazy(() => import("#features/onBoarding/components/pages/OnboardingPage"));
 const PanelRoute = lazy(() => import("#components/pages/PanelRoute"));
 const ErrorPage = lazy(() => import("#components/pages/error"));
 const CommingPage = lazy(() => import("#components/pages/Comming"));
@@ -21,6 +22,14 @@ export const routes = [
     element: (
       <Suspense fallback={<LoadingPage />}>
         <LoginPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+      <Suspense fallback={<LoadingPage />}>
+        <OnboardingPage />
       </Suspense>
     ),
   },

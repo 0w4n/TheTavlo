@@ -123,6 +123,22 @@ export default function WidgetContainer({
     removeWidget(widget.id);
   };
 
+  if (editMode) {
+    return (
+      <div className="widget widget--editing">
+        <Button
+          variant="primary"
+          icon="IconTrash"
+          iconSize={24}
+          title="Eliminar widget"
+          aria-label="Eliminar widget"
+          onClick={handleRemoving}
+          disabled={!canManage || widget.locked}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="widget" style={{ cursor: editMode ? "grab" : "default" }}>
       <div className="widget__header">
