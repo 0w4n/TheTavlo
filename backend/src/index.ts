@@ -36,7 +36,7 @@ app.use(express.json());
 app.use("/api/v1", apiRouter);
 
 app.use(
-  "/trpc",
+  "/backend/trpc",
   createExpressMiddleware({
     router: appRouter,
     createContext,
