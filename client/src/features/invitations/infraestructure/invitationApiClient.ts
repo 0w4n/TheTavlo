@@ -1,4 +1,4 @@
-import { trpcMutation, trpcQuery } from "#shared/infraestructure/api/trpcClient";
+import { trpcMutation, trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
 import type { AccountType } from "#core/auth/domain/user.entity";
 import { UserRole } from "../domain/invitation.entity";
 
@@ -82,7 +82,9 @@ export const InvitationApiClient = {
     );
   },
 
-  resolveAccess(input: { invitationId: string; token: string }) {
+  async resolveAccess(
+    input: ResolveAccessInput,
+  ): Promise<InvitationAccessResponse> {
     return trpcQuery<InvitationAccessResponse>("invitations.resolveAccess", input);
   },
 
