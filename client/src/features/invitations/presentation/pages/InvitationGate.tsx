@@ -45,7 +45,7 @@ export default function InvitationGate() {
     let cancelled = false;
     setLoading(true);
     InvitationApiClient.resolveAccess({ invitationId, token })
-      .then((result) => {
+      .then((result: InvitationAccessResponse) => {
         if (!cancelled) setAccess(result);
       })
       .catch(() => {
