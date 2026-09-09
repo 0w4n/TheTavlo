@@ -41,12 +41,29 @@ async function authHeaders(): Promise<HeadersInit> {
 
 async function handle<T>(res: Response): Promise<T> {
   const body = await res.json().catch(() => null);
+
+  console.log("tRPC response:", {
+    status: res.status,
+    ok: res.ok,
+    body,
+  });
+
   if (!res.ok || !body || body.error) {
+    console.error("tRPC ERROR:", {
+      httpStatus: res.status,
+      body,
+      error: body?.error,
+      message: body?.error?.message,
+      code: body?.error?.data?.code,
+      shape: body?.error?.data,
+    });
+
     throw new TRPCRequestError(
-      body?.error?.message ?? `Error de red (${res.status})`,
+      body?.error?.message ?? `Error HTTP (${res.status})`,
       body?.error?.data?.code,
     );
   }
+
   return body.result.data as T;
 }
 
@@ -59,7 +76,7 @@ async function handle<T>(res: Response): Promise<T> {
  */
 export async function trpcQuery<T>(path: string, input: unknown): Promise<T> {
   const headers = await authHeaders();
-  const url = `${API_BASE_URL}/backend/trpc/${path}?input=${encodeURIComponent(JSON.stringify(input))}`;
+  const url = `${API_BASE_URL}/trpc/${path}?input=${encodeURIComponent(JSON.stringify(input))}`;
   const res = await fetch(url, { headers });
   return handle<T>(res);
 }
