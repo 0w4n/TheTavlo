@@ -1,6 +1,22 @@
 import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
+export function resolveApiBaseUrl(env: Record<string, string | undefined> = import.meta.env): string {
+  const candidate = env.VITE_API_BASE_URL ?? env.VITE_BACKEND_URI ?? "http://localhost:3000";
+  const value = String(candidate).trim().replace(/\/+$/, "");
+
+  if (!value) {
+    return "http://localhost:3000";
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  const isLocalHost = /^(localhost|127\.0\.0\.1)(?::\d+)?$/i.test(value);
+  return `${isLocalHost ? "http" : "https"}://${value}`;
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export class TRPCRequestError extends Error {
   constructor(
