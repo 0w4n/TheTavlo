@@ -10,14 +10,37 @@ import { createContext } from "./trpc/context.ts";
 
 const app = express();
 const PORT = process.env.EXPRESS_PORT || 3000;
+const allowedOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com").split(",").map((origin) => origin.trim()).filter(Boolean);
 
 app.use(helmet());
 app.use(
   cors({
-    origin: (process.env.CLIENT_ORIGIN ?? "http://localhost:5173").split(","),
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin not allowed by CORS: ${origin}`));
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   }),
 );
+app.options("*", cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+}));
 app.use(express.json());
 
 // API REST "clásica" — reservada a superficie pública/legacy (ver sección C
