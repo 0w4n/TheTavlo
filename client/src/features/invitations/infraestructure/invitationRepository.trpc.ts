@@ -1,5 +1,5 @@
 import { Timestamp, type DocumentReference } from "firebase/firestore";
-import { trpcQuery } from "#shared/infraestructure/api/trpcClient";
+import { trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
 import type { InvitationRepository } from "../app/invitationRepository.interface";
 import { InvitationStatus, type CreatedInvitationDTO, type CreatedSharedUserDTO, type Invitation, type SharedUser, type UpdatedInvitationDTO } from "../domain/invitation.entity";
 import type { SerializedInvitation, SerializedSharedUser } from "./invitationApiClient";
