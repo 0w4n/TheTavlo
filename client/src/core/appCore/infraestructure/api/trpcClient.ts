@@ -67,7 +67,7 @@ export async function trpcQuery<T>(path: string, input: unknown): Promise<T> {
 /** Llama a un procedure tRPC tipo `mutation` (POST, body JSON). */
 export async function trpcMutation<T>(path: string, input: unknown): Promise<T> {
   const headers = await authHeaders();
-  const res = await fetch(`${API_BASE_URL}/trpc/${path}`, {
+  const res = await fetch(`${API_BASE_URL}/backend/trpc/${path}`, {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify(input),
