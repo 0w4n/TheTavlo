@@ -82,9 +82,7 @@ export const InvitationApiClient = {
     );
   },
 
-  async resolveAccess(
-    input: ResolveAccessInput,
-  ): Promise<InvitationAccessResponse> {
+  resolveAccess(input: { invitationId: string; token: string }) {
     return trpcQuery<InvitationAccessResponse>("invitations.resolveAccess", input);
   },
 
