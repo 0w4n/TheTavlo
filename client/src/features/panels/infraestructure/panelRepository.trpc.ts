@@ -47,7 +47,22 @@ function encodePanel(data: CreatePanelDTO | UpdatePanelDTO) {
 }
 
 function toAppError(error: unknown): AppErr {
-  return firebaseErr(error instanceof Error ? error.message : "Error al consultar paneles");
+  if (error instanceof TRPCRequestError) {
+    if (error.httpStatus === 0) return networkErr(error.message);
+    switch (error.trpcCode) {
+      case "UNAUTHORIZED":
+      case "FORBIDDEN":
+        return authErr(error.message);
+      case "NOT_FOUND":
+        return notFoundErr(error.message);
+      case "BAD_REQUEST":
+      case "PARSE_ERROR":
+        return validationErr(error.message);
+      default:
+        return unexpectedErr(error.message, error.stack);
+    }
+  }
+  return unexpectedErr(error instanceof Error ? error.message : "Error al consultar paneles");
 }
 
 export class TrpcPanelsRepository implements PanelRepository {
