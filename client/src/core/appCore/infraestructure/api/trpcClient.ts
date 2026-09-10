@@ -21,11 +21,33 @@ const API_BASE_URL = resolveApiBaseUrl();
 export class TRPCRequestError extends Error {
   constructor(
     message: string,
-    public code?: string,
+    public httpStatus: number,
+    public trpcCode?: string, // "UNAUTHORIZED", "NOT_FOUND", etc.
   ) {
     super(message);
     this.name = "TRPCRequestError";
   }
+}
+
+async function handle<T>(res: Response): Promise<T> {
+  const body = await res.json().catch(() => null);
+
+  if (!body) {
+    // 200 con cuerpo no-JSON: normalmente significa que pegamos contra el
+    // fallback de la SPA (index.html) en vez del backend real.
+    throw new TRPCRequestError(
+      `Respuesta inesperada del servidor (status ${res.status})`,
+      res.status,
+    );
+  }
+  if (!res.ok || body.error) {
+    throw new TRPCRequestError(
+      body?.error?.message ?? `Error de red (${res.status})`,
+      res.status,
+      body?.error?.data?.code,
+    );
+  }
+  return body.result.data as T;
 }
 
 async function authHeaders(): Promise<HeadersInit> {
@@ -33,38 +55,10 @@ async function authHeaders(): Promise<HeadersInit> {
   const user = firebaseService.auth.currentUser;
 
   if (!user) {
-    throw new TRPCRequestError("Necesitas iniciar sesión.", "UNAUTHORIZED");
+    throw new TRPCRequestError("Necesitas iniciar sesión.", 401, "UNAUTHORIZED");
   }
   const token = await user.getIdToken();
   return { Authorization: `Bearer ${token}` };
-}
-
-async function handle<T>(res: Response): Promise<T> {
-  const body = await res.json().catch(() => null);
-
-  console.log("tRPC response:", {
-    status: res.status,
-    ok: res.ok,
-    body,
-  });
-
-  if (!res.ok || !body || body.error) {
-    console.error("tRPC ERROR:", {
-      httpStatus: res.status,
-      body,
-      error: body?.error,
-      message: body?.error?.message,
-      code: body?.error?.data?.code,
-      shape: body?.error?.data,
-    });
-
-    throw new TRPCRequestError(
-      body?.error?.message ?? `Error HTTP (${res.status})`,
-      body?.error?.data?.code,
-    );
-  }
-
-  return body.result.data as T;
 }
 
 /**
@@ -77,7 +71,12 @@ async function handle<T>(res: Response): Promise<T> {
 export async function trpcQuery<T>(path: string, input: unknown): Promise<T> {
   const headers = await authHeaders();
   const url = `${API_BASE_URL}/api/trpc/${path}?input=${encodeURIComponent(JSON.stringify(input))}`;
-  const res = await fetch(url, { headers });
+  let res: Response;
+  try {
+    res = await fetch(url, { headers });
+  } catch {
+    throw new TRPCRequestError("No se pudo contactar al servidor.", 0);
+  }
   return handle<T>(res);
 }
 
