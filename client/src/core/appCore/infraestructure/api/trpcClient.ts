@@ -55,7 +55,7 @@ async function authHeaders(): Promise<HeadersInit> {
   const user = firebaseService.auth.currentUser;
 
   if (!user) {
-    throw new TRPCRequestError("Necesitas iniciar sesión.", "UNAUTHORIZED");
+    throw new TRPCRequestError("Necesitas iniciar sesión.", 401, "UNAUTHORIZED");
   }
   const token = await user.getIdToken();
   return { Authorization: `Bearer ${token}` };
