@@ -1,7 +1,17 @@
 import { Timestamp, type DocumentReference, type Unsubscribe } from "firebase/firestore";
-import { trpcMutation, trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
+import { TRPCRequestError, trpcMutation, trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
 import type { User } from "#core/auth/domain/user.entity";
-import { err, firebaseErr, ok, type AppErr, type ResultApp } from "#core/appCore/domain/AppCore.type";
+import {
+  authErr,
+  err,
+  networkErr,
+  notFoundErr,
+  ok,
+  unexpectedErr,
+  validationErr,
+  type AppErr,
+  type ResultApp,
+} from "#core/appCore/domain/AppCore.type";
 import type { PanelRepository } from "../app/panelsRepository.interface";
 import type { CreatePanelDTO, Panel, UpdatePanelDTO } from "../domain/panel.entity";
 
