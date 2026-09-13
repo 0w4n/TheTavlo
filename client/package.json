@@ -15,7 +15,6 @@
   "dependencies": {
     "@firebase/auth": "^1.13.5",
     "@gsap/react": "^2.1.2",
-    "@tabler/icons": "3.44.0",
     "@types/react-resizable": "^3.0.8",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
