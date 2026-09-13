@@ -1,4 +1,4 @@
-import type { WidgetDefinition } from "#features/widgets/domain/widgetDefinition.types.tsypes.ts";
+import type { WidgetDefinition } from "#features/widgets/domain/widgetDefinition.types";
 
 const upcomingDeadlinesWidget: WidgetDefinition = {
   type: "upcoming-deadlines",
