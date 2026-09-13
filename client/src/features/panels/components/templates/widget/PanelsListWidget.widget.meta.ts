@@ -1,4 +1,4 @@
-import type { WidgetDefinition } from "#core/widgets/domain/widgetDefinition.types";
+import type { WidgetDefinition } from "#features/widgets/domain/widgetDefinition.types.tsypes.ts";
 
 const panelsListWidget: WidgetDefinition = {
   type: "panels-list",

@@ -1,4 +1,4 @@
-import type { WidgetDefinition } from "#core/widgets/domain/widgetDefinition.types";
+import type { WidgetDefinition } from "#features/widgets/domain/widgetDefinition.types.tsypes.ts";
 
 // Metadata liviana del widget de tareas. A propósito NO importa
 // "./TaskWidget" ni "./AddTask" de forma estática — solo los referencia a
