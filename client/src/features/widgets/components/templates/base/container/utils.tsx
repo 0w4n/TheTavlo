@@ -1,7 +1,7 @@
 import type { WidgetType } from "#features/widgets/domain/widget.entity";
 import type { JSX } from "react";
-import { AddTask } from "../../task/addTask";
-import { AddPanels } from "../../../../../panels/components/templates/widget/addPanel/addPanels";
+import AddTask from "#features/task/components/templates/widget/AddTask";
+import AddPanels  from "#features/panels/components/templates/widget/addPanel/addPanels";
 
 export function getIconWidgetType(widgetType: WidgetType): string {
   switch (widgetType) {

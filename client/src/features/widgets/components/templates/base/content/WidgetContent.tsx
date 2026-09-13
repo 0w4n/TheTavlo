@@ -3,7 +3,7 @@ import PanelsWidget from "../../../../../panels/components/templates/widget/pane
 import UpcomingDeadlinesWidget from "../../upcomingDeadLine/upcomingDeadLine";
 import ExamsTimelineWidget from "../../examsTimeline/examsTimelineWidget";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
-import { TaskWidget } from "../../task/taskWidget";
+import TaskWidget from "#features/task/components/templates/widget/TaskWidget";
 import CookingBookWidget from "#features/cookingBook/components/template/widget/CookingBook";
 import NoteWidget from "#features/note/components/templates/widget/Note.widget";
 

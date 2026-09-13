@@ -1,5 +1,5 @@
 import type { Widget } from "#features/widgets/domain/widget.entity";
-import WidgetRenderer from "#core/widgets/presentation/WidgetRenderer";
+import WidgetRenderer from "../renderer/WidgetRenderer";
 
 export default function WidgetDragPreview({ widget }: { widget: Widget }) {
   return (

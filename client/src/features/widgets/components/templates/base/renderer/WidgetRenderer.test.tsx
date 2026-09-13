@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { WidgetRegistry } from "#core/widgets/domain/widgetRegistry";
+import { WidgetRegistry } from "#features/widgets/domain/widgetRegistry";
+import type { WidgetComponentProps } from "#features/widgets/domain/widgetDefinition.types";
 
 // Registro de prueba, aislado del registry real poblado por
 // import.meta.glob — así este test no depende de qué widgets existan hoy
@@ -47,7 +48,7 @@ describe("WidgetRenderer", () => {
         category: "other",
       },
       load: async () => ({
-        default: ({ widgetId, panelId, config }) => (
+        default: ({ widgetId, panelId, config }: WidgetComponentProps) => (
           <div>
             {widgetId}-{panelId}-{JSON.stringify(config)}
           </div>
