@@ -1,8 +1,8 @@
 import { redirect, type LoaderFunctionArgs } from "react-router-dom";
 import type { Auth } from "firebase/auth";
-import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
+import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
 import { PanelsService } from "#features/panels/app/panels.service";
-import { TrpcPanelsRepository } from "#features/panels/infraestructure/panelRepository.trpc";
+import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
 import { CachedPanelsRepository } from "#features/panels/infraestructure/panelRepository.cached";
 import { getPanelsCacheKey } from "#features/panels/infraestructure/panelsCache";
 import { isErr } from "#core/appCore/domain/AppCore.type";
@@ -31,7 +31,7 @@ function defaultDeps(): PanelLoaderDeps {
     createPanelsService: (user) =>
       new PanelsService(
         new CachedPanelsRepository(
-          new TrpcPanelsRepository(() => user),
+          new FirebasePanelsRepository(firebaseService.firestore, () => user),
           getPanelsCacheKey(user),
         ),
       ),

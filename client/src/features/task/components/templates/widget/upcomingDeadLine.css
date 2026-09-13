@@ -1,0 +1,23 @@
+.upcomingDeadlines-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2);
+  border-radius: var(--radius-base);
+  background-color: var(--color-backgroundSecondary);
+  gap: var(--spacing-2);
+}
+
+.upcomingDeadlines-item__date {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 10px;
+  padding: var(--spacing-3);
+  background-color: var(--color-background);
+}
+
+.upcomingDeadlines-item__info {
+  text-align: left;
+  width: 100%;
+}

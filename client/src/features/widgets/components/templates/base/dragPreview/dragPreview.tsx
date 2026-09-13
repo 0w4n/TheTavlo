@@ -1,5 +1,5 @@
 import type { Widget } from "#features/widgets/domain/widget.entity";
-import WidgetContent from "../content/WidgetContent";
+import WidgetRenderer from "#core/widgets/presentation/WidgetRenderer";
 
 export default function WidgetDragPreview({ widget }: { widget: Widget }) {
   return (
@@ -14,7 +14,11 @@ export default function WidgetDragPreview({ widget }: { widget: Widget }) {
       }}
     >
       <div style={{ padding: "1rem", maxHeight: 180, overflow: "hidden" }}>
-        <WidgetContent widget={widget} multiSelection={false} />
+        <WidgetRenderer
+          type={widget.type}
+          widgetId={widget.id}
+          config={widget.config}
+        />
       </div>
     </div>
   );

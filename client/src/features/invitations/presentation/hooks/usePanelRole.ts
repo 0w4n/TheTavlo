@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
+import { doc, onSnapshot } from "firebase/firestore";
+import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
-
-const POLL_INTERVAL_MS = 30_000;
 
 export type PanelRole = "owner" | "editor" | "viewer" | "unknown" | "loading";
 
@@ -47,21 +46,24 @@ export function usePanelRole(): PanelRole {
     }
 
     setRole("loading");
-    let stopped = false;
-    const refresh = async () => {
-      try {
-        const nextRole = await trpcQuery<PanelRole>("panels.role", { panelId: panel.panelId });
-        if (!stopped) setRole(nextRole);
-      } catch {
-        if (!stopped) setRole("unknown");
-      }
-    };
-    void refresh();
-    const timer = window.setInterval(refresh, POLL_INTERVAL_MS);
-    return () => {
-      stopped = true;
-      window.clearInterval(timer);
-    };
+    const indexRef = doc(
+      firebaseService.firestore,
+      "sharedPanelIndex",
+      user.userId,
+      "panels",
+      panel.panelId,
+    );
+
+    const unsubscribe = onSnapshot(
+      indexRef,
+      (snap) => {
+        const data = snap.data() as { role?: PanelRole } | undefined;
+        setRole(data?.role ?? "unknown");
+      },
+      () => setRole("unknown"),
+    );
+
+    return unsubscribe;
   }, [isOwner, panel?.panelId, panel?.ownerId, user?.userId]);
 
   return role;

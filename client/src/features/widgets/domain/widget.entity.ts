@@ -17,21 +17,14 @@ export type LayoutItemDTO = Omit<
   | "constraints"
 >;
 
-export type WidgetType =
-  | "task-list"
-  | "panels-list"
-  | "event-calendar"
-  | "event-list"
-  | "exam-timeline"
-  | "exam-countdown"
-  | "statistics"
-  | "quick-add"
-  | "recent-activity"
-  | "upcoming-deadlines"
-  | "productivity-chart"
-  | "notes"
-  | "cooking-book"
-  | "custom";
+// A propósito NO es una unión de literales ("task-list" | "notes" | ...).
+// Ese enum central obligaba a tocar este archivo cada vez que se agregaba
+// un widget nuevo — justo lo que el WidgetRegistry (ver #core/widgets)
+// existe para eliminar. El identificador válido en la práctica es
+// cualquier `type` que un widget haya registrado vía su propio
+// `*.widget.meta.ts`; `widgetRegistry.has(type)` es la única fuente de
+// verdad real en runtime — este alias solo documenta la intención.
+export type WidgetType = string;
 
 export interface Widget {
   id: string;

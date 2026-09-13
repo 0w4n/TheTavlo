@@ -26,8 +26,8 @@ import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import type { WidgetsState } from "#features/widgets/presentation/context/widgetReducer";
 import LoadingPage from "#components/pages/LoadingPage";
 import ModalPortal from "#components/molecules/modal/portal";
-import AddWidget from "#components/templates/dialog/modWidget/addWidget";
-import WidgetErrorBoundary from "#features/widgets/components/templates/base/container/WidgetErrorBoundary";
+import AddWidget from "#features/widgets/components/templates/modWidget/addWidget";
+import WidgetErrorBoundary from "#features/widgets/components/templates/base/errorBoundary/WidgetErrorBoundary";
 
 function buildInitialLayouts(
   widgets: Widget[]

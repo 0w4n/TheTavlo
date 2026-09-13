@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "#components/atoms/button";
 import type {
   Widget,
   WidgetType,
 } from "#features/widgets/domain/widget.entity";
 import Icon from "#shared/ui/atoms/icons";
-import WidgetContent from "../content/WidgetContent";
-import { GetDialogWdigetType } from "./utils";
+import WidgetRenderer from "../renderer/WidgetRenderer";
+import { widgetRegistry } from "#features/widgets/infraestructure/widgetDiscovery";
+import { getLazyQuickAdd } from "../component/widgetComponentCache";
 import { Dropdown } from "#components/molecules/dropdown";
 
 import "./widgetContainer.css";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import ModalPortal from "#components/molecules/modal/portal";
-import { DelWidget } from "#components/templates/dialog/modWidget/delWidget";
+import { DelWidget } from "#features/widgets/components/templates/modWidget/delWidget";
 import { usePanelRole } from "#features/invitations/presentation/hooks/usePanelRole";
 
 export default function WidgetContainer({
@@ -26,7 +27,7 @@ export default function WidgetContainer({
   onResize?: (layout: Widget["layout"]) => void;
 }) {
   const [_search, setSearch] = useState("");
-  const [enable, _setEnable] = useState(false);
+  const [_enable, _setEnable] = useState(false);
   // const [multipleSelecction, setMultipleSelecction] = useState([]);
 
   // Compartir/eliminar son acciones de EDITOR (o dueño) hacia arriba — un
@@ -123,6 +124,13 @@ export default function WidgetContainer({
     removeWidget(widget.id);
   };
 
+  // La acción rápida ("+") solo existe para los widgets que la declaran en
+  // su propio `*.widget.meta.ts` (hoy: task-list, panels-list). Antes esto
+  // se resolvía con un switch que devolvía "Error" para todo lo demás; con
+  // el registry, simplemente no hay nada que mostrar.
+  const definition = widgetRegistry.get(type);
+  const QuickAdd = definition ? getLazyQuickAdd(definition) : undefined;
+
   if (editMode) {
     return (
       <div className="widget widget--editing">
@@ -202,12 +210,20 @@ export default function WidgetContainer({
       </div>
 
       <div ref={contentRef} className="widget__content">
-        <WidgetContent widget={widget} multiSelection={enable}/>
-        <ModalPortal label={type} iconName="IconPlus">
-          {(onClose: () => void) => (
-            <GetDialogWdigetType widgetType={type} onClose={onClose} />
-          )}
-        </ModalPortal>
+        <WidgetRenderer
+          type={widget.type}
+          widgetId={widget.id}
+          config={widget.config}
+        />
+        {QuickAdd && (
+          <ModalPortal label={type} iconName="IconPlus">
+            {(onClose: () => void) => (
+              <Suspense fallback={null}>
+                <QuickAdd onClose={onClose} />
+              </Suspense>
+            )}
+          </ModalPortal>
+        )}
         {/* <div className="widget__content-add">
           <Icon name={"IconPlus"} strokeWidth={2.0} size={32} />
           <div className="widget__content-add-text">

@@ -1,7 +1,7 @@
 import type { Unsubscribe } from "firebase/firestore";
 import type { Widget, WidgetType } from "../domain/widget.entity";
 import { WidgetRules } from "../domain/widget.rules";
-import { WIDGET_TEMPLATES } from "../domain/widgetTemplates";
+import { widgetRegistry } from "../infraestructure/widgetDiscovery";
 import type { WidgetRepository } from "./widgetRepository.interface";
 import { Timestamp } from "firebase/firestore";
 import type { ResponsiveLayouts } from "react-grid-layout";
@@ -34,16 +34,14 @@ export class WidgetService {
   async addWidget(
     type: WidgetType,
   ): Promise<{ widget?: Widget; error?: unknown }> {
-    const template = WIDGET_TEMPLATES.find((t) => t.type === type);
-    if (!template) return { error: "Tipo de widget no encontrado" };
-
-    const layout = WidgetRules.getDefaultLayout(type);
+    const definition = widgetRegistry.get(type);
+    if (!definition) return { error: "Tipo de widget no encontrado" };
 
     try {
       const widget = await this.repository.create({
         type,
-        layout,
-        config: template.defaultConfig,
+        layout: definition.defaultLayout ?? WidgetRules.FALLBACK_LAYOUT,
+        config: definition.defaultConfig ?? {},
         locked: false,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),

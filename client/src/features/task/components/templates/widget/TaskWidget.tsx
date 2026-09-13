@@ -7,7 +7,7 @@ import { Badge } from "#components/atoms/badge";
 
 import "./taskWidget.css";
 
-export function TaskWidget() {
+export default function TaskWidget() {
   const { state: taskState } = useTasks();
   const { state: panelState } = usePanels();
 
