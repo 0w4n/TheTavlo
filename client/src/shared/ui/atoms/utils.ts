@@ -11,10 +11,3 @@ export function pascalToKebab(name: string): {
     .toLowerCase();
   return { file: name, isFilled };
 }
-
-export function extractSvgContent(svgString: string) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(svgString, "image/svg+xml");
-  const svg = doc.querySelector("svg");
-  return svg?.innerHTML ?? "";
-}
