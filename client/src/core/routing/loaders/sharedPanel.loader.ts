@@ -1,6 +1,7 @@
 import { redirect, type LoaderFunctionArgs } from "react-router-dom";
-import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
-import { TrpcPanelsRepository } from "#features/panels/infraestructure/panelRepository.trpc";
+import { doc } from "firebase/firestore";
+import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
+import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
 import { isErr } from "#core/appCore/domain/AppCore.type";
 import type { PanelLoaderData } from "./panel.loader";
 import { getCurrentUser } from "./getCurrentUser";
@@ -38,8 +39,18 @@ export default async function sharedPanelLoader({
     throw redirect(withReturnTo("/login", returnPath));
   }
 
-  const panelsRepository = new TrpcPanelsRepository(() => user);
-  const result = await panelsRepository.findByOwner(ownerAccountType, ownerId, panelId);
+  const panelsRepository = new FirebasePanelsRepository(
+    firebaseService.firestore,
+    () => user,
+  );
+  const panelRef = doc(
+    firebaseService.firestore,
+    ownerAccountType,
+    ownerId,
+    "panels",
+    panelId,
+  );
+  const result = await panelsRepository.findByRef(panelRef);
 
   if (isErr(result) || !result.value) {
     // Sin acceso (las reglas lo bloquearon) o el panel ya no existe.

@@ -43,7 +43,7 @@ function toLocalDatetimeString(date: Date): string {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function AddTask({ onClose }: AddTaskFormProps) {
+export default function AddTask({ onClose }: AddTaskFormProps) {
   // Field States (Faltaban estas declaraciones)
   const [title, setTitle] = useState("");
   const [openAt, setOpenAt] = useState("");

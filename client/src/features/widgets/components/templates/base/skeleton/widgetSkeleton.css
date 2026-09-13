@@ -1,0 +1,33 @@
+.widget-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.widget-skeleton__line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--color-backgroundSecondary, #e5e7eb) 25%,
+    var(--color-backgroundTertiary, #f3f4f6) 50%,
+    var(--color-backgroundSecondary, #e5e7eb) 75%
+  );
+  background-size: 200% 100%;
+  animation: widget-skeleton-shimmer 1.5s infinite;
+}
+
+.widget-skeleton__line--title {
+  width: 40%;
+  height: 16px;
+}
+
+@keyframes widget-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

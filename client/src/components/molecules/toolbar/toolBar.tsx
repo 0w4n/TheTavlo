@@ -4,7 +4,7 @@ import "./toolBar.css";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import ModalPortal from "../modal/portal";
 import { createPortal } from "react-dom";
-import AddWidget from "#components/templates/dialog/modWidget/addWidget";
+import AddWidget from "#features/widgets/components/templates/modWidget/addWidget";
 import type {
   Widget,
   WidgetType,

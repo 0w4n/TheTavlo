@@ -16,7 +16,7 @@ interface AddPanelsForm {
 
 type Step = "name" | "icon" | "review";
 
-export function AddPanels({ onClose }: AddPanelsForm) {
+export default function AddPanels({ onClose }: AddPanelsForm) {
   const now = Timestamp.now();
 
   const initPanel: CreatePanelDTO = {

@@ -1,4 +1,4 @@
-import { firebaseService } from "#shared/infraestructure/firebase/firebaseConfig";
+import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
 
 export function resolveApiBaseUrl(env: Record<string, string | undefined> = import.meta.env): string {
   const candidate = env.VITE_API_BASE_URL ?? env.VITE_BACKEND_URI ?? "http://localhost:3000";

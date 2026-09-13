@@ -2,9 +2,9 @@ import type {
   Widget,
   WidgetType,
 } from "#features/widgets/domain/widget.entity";
-import { WIDGET_TEMPLATES } from "#features/widgets/domain/widgetTemplates";
+import { widgetRegistry } from "../../../infraestructure/widgetDiscovery";
 import { useState } from "react";
-import { Button } from "../../../atoms/button";
+import { Button } from "../../../../../components/atoms/button";
 import { Modal } from "#components/molecules/modal";
 import WidgetPreview from "#features/widgets/components/templates/base/preview/widgetPreview";
 import ModalPortal from "#components/molecules/modal/portal";
@@ -30,10 +30,11 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
     { key: "other", icon: "IconDots", isHome: true },
   ];
 
+  const allDefinitions = widgetRegistry.getAll();
   const filteredTemplates =
     selectedCategory === "all"
-      ? WIDGET_TEMPLATES
-      : WIDGET_TEMPLATES.filter((t) => t.category === selectedCategory);
+      ? allDefinitions
+      : allDefinitions.filter((d) => d.metadata.category === selectedCategory);
 
   const handleAddWidget = async (type: WidgetType) => {
     setLoading(true);
@@ -80,15 +81,15 @@ export default function AddWidget({ onClose, onAddWidget }: AddWidgetProps) {
         </aside>
 
         <div className="ContentDialog">
-          {filteredTemplates.map((template) => (
+          {filteredTemplates.map((definition) => (
             <Button
-              key={template.type}
-              disabled={loading || template.commingSoon}
-              label={template.commingSoon ? "Comming Soon" : template.title}
-              icon={template.commingSoon ? undefined : template.icon}
-              onClick={() => handleSelectedWidget(template.type)}
-              onDoubleClick={() => handleAddWidget(template.type)}
-              className={`ContentDialog-Item ${selectedWidget === template.type ? " :focus" : ""}`}
+              key={definition.type}
+              disabled={loading}
+              label={definition.metadata.name}
+              icon={definition.metadata.icon}
+              onClick={() => handleSelectedWidget(definition.type)}
+              onDoubleClick={() => handleAddWidget(definition.type)}
+              className={`ContentDialog-Item ${selectedWidget === definition.type ? " :focus" : ""}`}
             />
           ))}
         </div>
