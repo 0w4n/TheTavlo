@@ -30,13 +30,13 @@ export const Badge: React.FC<BadgeProps> = ({
   if (collapsed) {
     return (
       <div className={classes}>
-        <Icon name={getIconWithTaskProgress(variant)} size={16} stroke="2" />
+        <Icon name={getIconWithTaskProgress(variant)} size={16} stroke={2} />
       </div>
     );
   } else {
     return (
       <div className={classes}>
-        <Icon name={getIconWithTaskProgress(variant)} size={16} stroke="2" />
+        <Icon name={getIconWithTaskProgress(variant)} size={16} stroke={2} />
         <span>{variant.toString()}</span>
       </div>
     );
