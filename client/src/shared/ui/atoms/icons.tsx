@@ -17,13 +17,13 @@ export default function Icon({
   if (isFilled) {
     return (
       <>
-        <i className={`ti ti-${file}-filled ${className}`} style={{"strokeWidth": stroke, "strokeColor": color, "color": color, "width": size, "height": size }}></i>
+        <i className={`ti ti-${file}-filled ${className}`} style={{"strokeWidth": stroke, "color": color, "fontSize": size }}></i>
       </>
     );
   } else {
     return (
       <>
-        <i className={`ti ti-${file} ${className}`} style={{"strokeWidth": stroke, "strokeColor": color, "width": size, "height": size }}></i>
+        <i className={`ti ti-${file} ${className}`} style={{"strokeWidth": stroke, "color": color, "fontSize": size }}></i>
       </>
     );
   }

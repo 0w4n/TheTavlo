@@ -7,6 +7,8 @@ const ai = new GoogleGenAI({
   location: process.env.GOOGLE_CLOUD_LOCATION,
 });
 
+
+
 // --- SERVICIO DE GEMINI CON SOPORTE DE IDIOMA ---
 export async function fetchEmojisFromGemini(
   word: string,
