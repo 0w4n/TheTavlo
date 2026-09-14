@@ -96,7 +96,7 @@ type Props = {
 const EMPTY_WIDGETS: Widget[] = [];
 
 export function Dashboard({ widgetState }: Props) {
-  const { width, containerRef, mounted } = useContainerWidth();
+  const { width, containerRef, mounted } = useContainerWidth({measureBeforeMount: true});
   const { updateLayout, addWidget } = useWidgets();
 
   const isLoading = widgetState?.isLoading ?? true;

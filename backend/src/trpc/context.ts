@@ -1,6 +1,5 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
-import { adminAuth } from "../firebase/config.ts";
-import { adminDb } from "../firebase/config.ts";
+import { adminAuth, adminDb, firebaseApp } from "../firebase/config.ts";
 
 export interface AuthedUser {
   uid: string;
@@ -37,7 +36,12 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
       db: adminDb,
     };
   } catch (error) {
-    console.error("No se pudo verificar el token de Firebase:", error);
+    const verificationError = error as { code?: string; message?: string };
+    console.error("No se pudo verificar el token de Firebase", {
+      code: verificationError.code ?? "unknown",
+      message: verificationError.message ?? "unknown",
+      projectId: firebaseApp.options.projectId ?? "unknown",
+    });
     return { user: null, db: adminDb };
   }
 }

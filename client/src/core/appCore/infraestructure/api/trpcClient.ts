@@ -50,15 +50,22 @@ async function handle<T>(res: Response): Promise<T> {
   return body.result.data as T;
 }
 
-async function authHeaders(): Promise<HeadersInit> {
+async function authHeaders(forceRefresh = false): Promise<HeadersInit> {
   await firebaseService.auth.authStateReady();
   const user = firebaseService.auth.currentUser;
 
   if (!user) {
     throw new TRPCRequestError("Necesitas iniciar sesión.", 401, "UNAUTHORIZED");
   }
-  const token = await user.getIdToken();
+  const token = await user.getIdToken(forceRefresh);
   return { Authorization: `Bearer ${token}` };
+}
+
+function isUnauthorized(error: unknown): error is TRPCRequestError {
+  return (
+    error instanceof TRPCRequestError &&
+    (error.httpStatus === 401 || error.trpcCode === "UNAUTHORIZED")
+  );
 }
 
 /**
@@ -69,24 +76,48 @@ async function authHeaders(): Promise<HeadersInit> {
  * sincronizado a mano con los routers del backend (carpeta src/features).
  */
 export async function trpcQuery<T>(path: string, input: unknown): Promise<T> {
-  const headers = await authHeaders();
   const url = `${API_BASE_URL}/api/trpc/${path}?input=${encodeURIComponent(JSON.stringify(input))}`;
-  let res: Response;
-  try {
-    res = await fetch(url, { headers });
-  } catch {
-    throw new TRPCRequestError("No se pudo contactar al servidor.", 0);
+  for (const forceRefresh of [false, true]) {
+    const headers = await authHeaders(forceRefresh);
+    console.log("Fetching tRPC query:", url, "with headers:", headers);
+    let res: Response;
+    try {
+      console.log("Sending request to:", url, "with headers:", headers);
+      res = await fetch(url, { headers });
+      console.log("Received response:", res);
+    } catch {
+      throw new TRPCRequestError("No se pudo contactar al servidor.", 0);
+    }
+
+    try {
+      return await handle<T>(res);
+    } catch (error) {
+      if (!forceRefresh && isUnauthorized(error)) continue;
+      throw error;
+    }
   }
-  return handle<T>(res);
+
+  throw new TRPCRequestError("No se pudo autenticar la sesión.", 401, "UNAUTHORIZED");
 }
 
 /** Llama a un procedure tRPC tipo `mutation` (POST, body JSON). */
 export async function trpcMutation<T>(path: string, input: unknown): Promise<T> {
-  const headers = await authHeaders();
-  const res = await fetch(`${API_BASE_URL}/api/trpc/${path}`, {
-    method: "POST",
-    headers: { ...headers, "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
-  return handle<T>(res);
+  const url = `${API_BASE_URL}/api/trpc/${path}`;
+  for (const forceRefresh of [false, true]) {
+    const headers = await authHeaders(forceRefresh);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    try {
+      return await handle<T>(res);
+    } catch (error) {
+      if (!forceRefresh && isUnauthorized(error)) continue;
+      throw error;
+    }
+  }
+
+  throw new TRPCRequestError("No se pudo autenticar la sesión.", 401, "UNAUTHORIZED");
 }

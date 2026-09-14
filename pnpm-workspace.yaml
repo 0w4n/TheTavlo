@@ -1,7 +1,7 @@
 packages:
-  - 'client'
-  - 'backend'
-  
+  - "client"
+  - "backend"
+
 allowBuilds:
   "@firebase/util": true
   "@google/genai": true
