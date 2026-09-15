@@ -7,7 +7,6 @@ import type {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "#components/atoms/button";
-import EmojiPicker, { Theme, type EmojiClickData } from "emoji-picker-react";
 
 import "./panelsWidget.css";
 
@@ -68,7 +67,7 @@ export function PanelPreview({ panel }: { panel: CreatePanelDTO }) {
   const lightColor = `hsl(${color}, 100%, 70%)`;
   const darkColor = `hsl(${color}, 100%, 20%)`;
 
-  const [chosenEmoji, setChosenEmoji] = useState(icon);
+  const [chosenEmoji, _setChosenEmoji] = useState(icon);
 
   const isIcon = icon.startsWith("Icon");
 
