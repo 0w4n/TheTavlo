@@ -62,6 +62,7 @@ app.get("/api/trpc/suggestions/emoji", async (req, res) => {
       ? JSON.parse(req.query.input)
       : {};
     const result = await getEmojiSuggestions(parseEmojiInput(rawInput));
+    console.log("Emoji suggestions result:", result);
     res.json({ result: { data: result } });
   } catch (error) {
     const isBadInput = error instanceof TRPCError && error.code === "BAD_REQUEST";
