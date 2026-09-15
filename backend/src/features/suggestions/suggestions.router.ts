@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../../trpc/trpc.ts";
 import { asObject, asString } from "../../trpc/validate.ts";
-import { fetchEmojisFromGemini } from "./getEmoji.ts";
+import { fetchEmojisFromGemini } from "./emojis/getEmoji.ts";
 
 export interface EmojiInput {
   word: string;
@@ -19,7 +19,7 @@ export function parseEmojiInput(raw: unknown): EmojiInput {
   };
 }
 
-export async function getEmojiSuggestions(input: EmojiInput): Promise<string> {
+export async function getEmojiSuggestions(input: EmojiInput): Promise<Record<string, number>> {
   try {
     return await fetchEmojisFromGemini(input.word, input.lang);
   } catch (err) {
