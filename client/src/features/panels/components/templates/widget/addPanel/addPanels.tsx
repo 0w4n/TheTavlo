@@ -6,12 +6,58 @@ import { Timestamp } from "firebase/firestore";
 import { ReturnType } from "#features/panels/presentation/context/panelsContext.types";
 import { Button } from "#components/atoms/button";
 import { trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
+import { PanelPreview } from "../panelsWidget";
 
 import "./addPanels.css";
-import { PanelPreview } from "../panelsWidget";
 
 interface AddPanelsForm {
   onClose: () => void;
+}
+
+interface EmojiWithHue {
+  emoji: string;
+  hue: number;
+}
+
+function normalizeEmojiSuggestions(response: unknown): EmojiWithHue[] {
+  if (Array.isArray(response)) {
+    return response as EmojiWithHue[];
+  }
+
+  if (!response || typeof response !== "object") {
+    return [];
+  }
+
+  const entries = Object.entries(response as Record<string, unknown>);
+
+  if (entries.length === 0) {
+    return [];
+  }
+
+  // Formato esperado: { "😀": 210, "🧁": 42 }
+  if (entries.every(([, value]) => typeof value === "number")) {
+    return entries.map(([emoji, hue]) => ({ emoji, hue: Number(hue) }));
+  }
+
+  // Compatibilidad con payloads antiguos o invertidos: { "0": "😀", "1": "🌮" }
+  if (entries.every(([, value]) => typeof value === "string")) {
+    return entries.map(([index, emoji]) => ({
+      emoji: String(emoji),
+      hue: Number(index),
+    }));
+  }
+
+  // Compatibilidad con objetos anidados: { "0": { emoji: "😀", hue: 210 } }
+  return entries.flatMap(([, value]) => {
+    if (!value || typeof value !== "object" || !("emoji" in value) || !("hue" in value)) {
+      return [];
+    }
+
+    return [{
+      emoji: String((value as { emoji: string }).emoji),
+      hue: Number((value as { hue: number }).hue),
+    }];
+  });
 }
 
 type Step = "name" | "icon" | "review";
@@ -31,7 +77,7 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
 
   const [panel, setPanel] = useState<CreatePanelDTO>(initPanel);
   const [step, setStep] = useState<Step>("name");
-  const [suggestedIcons, setSuggestedIcons] = useState<string[]>([]);
+  const [suggestedIcons, setSuggestedIcons] = useState<EmojiWithHue[]>([]);
   const [selectedIconIndex, setSelectedIconIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>();
@@ -51,19 +97,34 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
       setError(undefined);
       setIsLoading(true);
       try {
-        const response = await trpcQuery<string>("suggestions.emoji", {
+        const response = await trpcQuery<Record<string, number> | EmojiWithHue[] | Record<string, string>>("suggestions.emoji", {
           word: name,
           lang: "es_ES",
         });
-        const icons = Array.from(response.trim()).filter(Boolean);
-        if (icons.length === 0) {
-          console.log(icons)
+
+        const suggestions = normalizeEmojiSuggestions(response);
+
+        if (!suggestions || suggestions.length === 0) {
           setError("No se encontraron emojis para este nombre.");
           return;
         }
-        setSuggestedIcons(icons);
+
+        setSuggestedIcons(suggestions);
         setSelectedIconIndex(0);
-        setPanel((current) => ({ ...current, name, icon: icons[0] }));
+
+        console.log("Sugerencias de emojis:", suggestions);
+        
+        // Aplica automáticamente el primer emoji y su hue correspondiente al panel
+        const firstSuggestion = suggestions[0];
+        setPanel((current) => ({
+          ...current,
+          name,
+          icon: firstSuggestion.emoji,
+          color: firstSuggestion.hue,
+        }));
+
+        console.log("Panel sugerido:", panel);
+        
         setStep("icon");
       } catch {
         setError("No se pudieron obtener sugerencias de emojis.");
@@ -94,21 +155,32 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
     }
   }
 
-  const selectedIcon = suggestedIcons[selectedIconIndex] ?? panel.icon;
+  const selectedItem = suggestedIcons[selectedIconIndex];
+  const selectedIcon = selectedItem?.emoji ?? panel.icon;
 
   function selectIcon(index: number) {
+    const item = suggestedIcons[index];
+    if (!item) return;
+
     setSelectedIconIndex(index);
-    setPanel((current) => ({ ...current, icon: suggestedIcons[index] }));
+    // Actualiza tanto el icono como el color/hue en el estado para la previsualización
+    setPanel((current) => ({
+      ...current,
+      icon: item.emoji,
+      color: item.hue,
+    }));
   }
 
   function previousIcon() {
-    selectIcon(
-      (selectedIconIndex - 1 + suggestedIcons.length) % suggestedIcons.length,
-    );
+    if (suggestedIcons.length === 0) return;
+    const prevIndex = (selectedIconIndex - 1 + suggestedIcons.length) % suggestedIcons.length;
+    selectIcon(prevIndex);
   }
 
   function nextIcon() {
-    selectIcon((selectedIconIndex + 1) % suggestedIcons.length);
+    if (suggestedIcons.length === 0) return;
+    const nextIndex = (selectedIconIndex + 1) % suggestedIcons.length;
+    selectIcon(nextIndex);
   }
 
   return (
@@ -119,15 +191,15 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
         <form onSubmit={step === "review" ? handleCreatePanels : handleNext} method="post">
           {step === "name" && (
             <Field label="Nombre" required error={error}>
-            <input
-              type="text"
-              value={panel?.name}
-              placeholder="Nombre del panel"
-              onChange={(e) => {
-                setPanel((p) => ({ ...p, name: e.target.value }));
-                setError(undefined);
-              }}
-            />
+              <input
+                type="text"
+                value={panel?.name}
+                placeholder="Nombre del panel"
+                onChange={(e) => {
+                  setPanel((p) => ({ ...p, name: e.target.value }));
+                  setError(undefined);
+                }}
+              />
             </Field>
           )}
 
@@ -156,26 +228,6 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
               <div className="add-panel__summary">
                 <span>{panel.name}</span>
                 <span className="add-panel__summary-icon">{panel.icon}</span>
-              </div>
-              <span className="add-panel__color-label">Elige un color</span>
-              <div className="add-panel__colors">
-                {Array.from({ length: 320 / 20 }).map((_, i) => {
-                  const hue = i * 20;
-                  return (
-                    <button
-                      key={hue}
-                      type="button"
-                      className={`add-panel__color${panel.color === hue ? " add-panel__color--selected" : ""}`}
-                      style={{ backgroundColor: `hsl(${hue}, 100%, 20%)` }}
-                      aria-label={`Color ${hue}`}
-                      aria-pressed={panel.color === hue}
-                      onClick={() => {
-                        setPanel((p) => ({ ...p, color: hue }));
-                        setError(undefined);
-                      }}
-                    />
-                  );
-                })}
               </div>
             </Field>
           )}
