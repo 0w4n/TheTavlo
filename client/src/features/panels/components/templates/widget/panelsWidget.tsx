@@ -68,14 +68,7 @@ export function PanelPreview({ panel }: { panel: CreatePanelDTO }) {
   const lightColor = `hsl(${color}, 100%, 70%)`;
   const darkColor = `hsl(${color}, 100%, 20%)`;
 
-  const [chosenEmoji, setChosenEmoji] = useState("✏️");
-  const [showPicker, setShowPicker] = useState(false);
-
-  // Handle emoji selection
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    setChosenEmoji(emojiData.emoji);
-    setShowPicker(false); // Hide picker after selection
-  };
+  const [chosenEmoji, setChosenEmoji] = useState(icon);
 
   const isIcon = icon.startsWith("Icon");
 
@@ -91,22 +84,12 @@ export function PanelPreview({ panel }: { panel: CreatePanelDTO }) {
           icon={isIcon ? icon : undefined}
           iconSize={32}
           iconColor={darkColor}
-          onClick={() => setShowPicker((prev) => !prev)}
         />
       </div>
       <div className="panels__widget--item__name">
         <span>{name}</span>
         <Icon name="IconArrowNarrowRightDashed" color={lightColor} size={32} />
       </div>
-
-      {showPicker && (
-        <EmojiPicker
-          onEmojiClick={onEmojiClick}
-          theme={Theme.AUTO}
-          lazyLoadEmojis={true}
-          className="emoji-picker"
-        />
-      )}
     </div>
   );
 }
