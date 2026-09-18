@@ -5,8 +5,6 @@ import type {
   PanelConfig,
 } from "#features/panels/domain/panel.entity";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Button } from "#components/atoms/button";
 
 import "./panelsWidget.css";
 
