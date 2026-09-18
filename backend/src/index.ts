@@ -1,21 +1,22 @@
 import "dotenv/config";
 import express from "express";
-import serverless from 'serverless-http';
+import serverless from "serverless-http";
 import cors from "cors";
 import helmet from "helmet";
-import { TRPCError } from "@trpc/server";
-import {
-  createExpressMiddleware,
-  type CreateExpressContextOptions,
-} from "@trpc/server/adapters/express";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import apiRouter from "./router/api.ts";
 import { appRouter } from "./trpc/root.router.ts";
 import { createContext } from "./trpc/context.ts";
-import { getEmojiSuggestions, parseEmojiInput } from "./features/suggestions/suggestions.router.ts";
 
 const app = express();
 const PORT = process.env.EXPRESS_PORT || 3000;
-const allowedOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com").split(",").map((origin) => origin.trim()).filter(Boolean);
+const allowedOrigins = (
+  process.env.CLIENT_ORIGIN ??
+  "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(helmet());
 app.use(
@@ -40,46 +41,12 @@ app.use(express.json());
 // (incluyendo invitaciones) vive en tRPC, montado abajo.
 app.use("/api/v1", apiRouter);
 
-app.get("/api/trpc/suggestions/emoji", async (req, res) => {
-  const context = await createContext({
-    req,
-    res,
-    info: {} as CreateExpressContextOptions["info"],
-  });
-
-  if (!context.user) {
-    res.status(401).json({
-      error: {
-        message: "Necesitas iniciar sesión.",
-        data: { code: "UNAUTHORIZED" },
-      },
-    });
-    return;
-  }
-
-  try {
-    const rawInput = typeof req.query.input === "string"
-      ? JSON.parse(req.query.input)
-      : {};
-    const result = await getEmojiSuggestions(parseEmojiInput(rawInput));
-    console.log("Emoji suggestions result:", result);
-    res.json({ result: { data: result } });
-  } catch (error) {
-    const isBadInput = error instanceof TRPCError && error.code === "BAD_REQUEST";
-    res.status(isBadInput ? 400 : 500).json({
-      error: {
-        message: error instanceof Error ? error.message : "Error interno del servidor.",
-        data: { code: isBadInput ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR" },
-      },
-    });
-  }
-});
-
 app.use(
   "/api/trpc",
   createExpressMiddleware({
     router: appRouter,
     createContext,
+    onError: ({error, path, type}) => { console.log(`ERRO: ${error} on ${path}, with type ${type}`)}
   }),
 );
 
@@ -89,6 +56,7 @@ app.get("/", (req, res) => {
 
 //export default serverless(app);
 
-app.listen(PORT, () => {
+app.listen(PORT, (error) => {
   console.log(`Server is running on port ${PORT}`);
+  console.error(error);
 });

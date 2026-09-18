@@ -20,6 +20,7 @@ interface EmojiWithHue {
 }
 
 function normalizeEmojiSuggestions(response: unknown): EmojiWithHue[] {
+  console.log("Pre-Normalize respone: ", response);
   if (Array.isArray(response)) {
     return response as EmojiWithHue[];
   }
@@ -97,7 +98,7 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
       setError(undefined);
       setIsLoading(true);
       try {
-        const response = await trpcQuery<Record<string, number> | EmojiWithHue[] | Record<string, string>>("suggestions.emoji", {
+        const response = await trpcQuery<Record<string, number> | EmojiWithHue[]>("suggestions.emoji", {
           word: name,
           lang: "es_ES",
         });

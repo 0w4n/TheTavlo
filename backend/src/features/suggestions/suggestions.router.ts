@@ -30,6 +30,7 @@ export async function getEmojiSuggestions(input: EmojiInput): Promise<Record<str
 
 export const suggestionsRouter = router({
   emoji: protectedProcedure.input(parseEmojiInput).query(async ({ input }) => {
+    console.log("Input:", input);
     return getEmojiSuggestions(input);
   }),
 

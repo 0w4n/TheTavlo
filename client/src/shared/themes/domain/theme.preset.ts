@@ -385,7 +385,7 @@ export const THEME_PRESETS: Record<
       success: "#06d6a0",
       successLight: "#023436",
       warning: "#ffbe0b",
-      warningLight: "#3d3000",
+      warningLight: "#3d3080",
       error: "#ff6b77",
       errorLight: "#4a0e0e",
       info: "#3a86ff",

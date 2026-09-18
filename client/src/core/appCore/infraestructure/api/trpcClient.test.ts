@@ -5,8 +5,8 @@ import { resolveApiBaseUrl } from "./trpcClient";
 describe("resolveApiBaseUrl", () => {
   it("prefiere VITE_API_BASE_URL sobre VITE_BACKEND_URI", () => {
     const env = {
-      VITE_API_BASE_URL: "https://api.thetavlo.com",
-      VITE_BACKEND_URI: "http://localhost:3000",
+      VITE_API_BASE_URL: "https://thetavlo.com/backend",
+      VITE_BACKEND_URI: "http://localhost:3080",
     } as Record<string, string | undefined>;
 
     expect(resolveApiBaseUrl(env)).toBe("https://api.thetavlo.com");
@@ -23,6 +23,6 @@ describe("resolveApiBaseUrl", () => {
 
   it("usa localhost solo en desarrollo local", () => {
     const env = {} as Record<string, string | undefined>;
-    expect(resolveApiBaseUrl(env)).toBe("http://localhost:3000");
+    expect(resolveApiBaseUrl(env)).toBe("http://localhost:3080");
   });
 });
