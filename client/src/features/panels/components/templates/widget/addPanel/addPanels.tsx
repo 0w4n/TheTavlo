@@ -156,20 +156,23 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
     }
   }
 
-  const selectedItem = suggestedIcons[selectedIconIndex];
-  const selectedIcon = selectedItem?.emoji ?? panel.icon;
-
   function selectIcon(index: number) {
     const item = suggestedIcons[index];
+    console.log("IconItem:", item)
     if (!item) return;
 
     setSelectedIconIndex(index);
+    console.log(selectedIconIndex);
+    
+
     // Actualiza tanto el icono como el color/hue en el estado para la previsualización
     setPanel((current) => ({
       ...current,
       icon: item.emoji,
       color: item.hue,
     }));
+    console.log(panel);
+    
   }
 
   function previousIcon() {
@@ -208,14 +211,6 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
             <Field label="Elige un emoji" required error={error}>
               <div className="emoji-carousel" aria-label="Emojis sugeridos">
                 <Button type="button" variant="ghost" label="Anterior" onClick={previousIcon} />
-                <button
-                  type="button"
-                  className="emoji-carousel__option"
-                  onClick={() => selectIcon(selectedIconIndex)}
-                  aria-label={`Emoji ${selectedIcon}`}
-                >
-                  {selectedIcon}
-                </button>
                 <Button type="button" variant="ghost" label="Siguiente" onClick={nextIcon} />
               </div>
               <span className="emoji-carousel__position">
