@@ -1,11 +1,11 @@
 import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
 
 export function resolveApiBaseUrl(env: Record<string, string | undefined> = import.meta.env): string {
-  const candidate = env.VITE_API_BASE_URL ?? env.VITE_BACKEND_URI ?? "http://localhost:3000";
+  const candidate = env.CLIENT_API_BASE_URL ?? env.CLIENT_BACKEND_URI ?? "http://localhost:3080";
   const value = String(candidate).trim().replace(/\/+$/, "");
 
   if (!value) {
-    return "http://localhost:3000";
+    return "http://localhost:3080";
   }
 
   if (/^https?:\/\//i.test(value)) {

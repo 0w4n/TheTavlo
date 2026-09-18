@@ -1,5 +1,18 @@
-import { createCanvas } from "@napi-rs/canvas";
+import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
+import path from "path";
 
+// Registra la fuente descargada (hazlo una sola vez al iniciar la aplicación)
+const fontPath = path.join(
+  process.cwd(),
+  "src",
+  "assets",
+  "fonts",
+  "NotoColorEmoji.ttf",
+);
+GlobalFonts.registerFromPath(fontPath, "Noto Color Emoji");
+
+// Cambia el STACK para usar el nombre registrado
+const EMOJI_FONT_STACK = `"Noto Color Emoji"`;
 /**
  * Error especializado para fallos de renderizado de emoji en canvas.
  * Permite distinguir entre "no se pudo calcular el color" y
@@ -7,11 +20,7 @@ import { createCanvas } from "@napi-rs/canvas";
  * porque la función devolvía 0 en ambos casos.
  */
 export class EmojiRenderError extends Error {
-  constructor(
-    public readonly emoji: string,
-    message: string,
-    public readonly cause?: unknown
-  ) {
+  constructor(emoji: String, message: string, cause?: unknown) {
     super(message);
     this.name = "EmojiRenderError";
   }
@@ -44,8 +53,6 @@ function rgbToHue(r: number, g: number, b: number): number {
   return hue < 0 ? hue + 360 : hue;
 }
 
-const EMOJI_FONT_STACK = `"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
-
 /**
  * Renderiza un emoji en un Canvas y calcula su tono Hue promedio.
  *
@@ -62,42 +69,43 @@ const EMOJI_FONT_STACK = `"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emo
  */
 export function getEmojiHue(emoji: string): number {
   const size = 64;
-
-  console.log(`[getEmojiHue] Renderizando "${emoji}" en canvas ${size}x${size}px`);
-
   let imageData;
+
   try {
     const canvas = createCanvas(size, size);
     const ctx = canvas.getContext("2d");
 
-    ctx.font = `${size * 0.75}px ${EMOJI_FONT_STACK}`;
+    ctx.font = `${size * 1}px ${EMOJI_FONT_STACK}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(emoji, size / 2, size / 2);
 
     imageData = ctx.getImageData(0, 0, size, size);
   } catch (error) {
-    console.error(`[getEmojiHue] Fallo al renderizar "${emoji}" en canvas:`, error);
     throw new EmojiRenderError(
       emoji,
       `No se pudo renderizar el emoji "${emoji}" en canvas`,
-      error
+      error,
     );
   }
 
   const data = imageData.data;
-
   let totalR = 0;
   let totalG = 0;
   let totalB = 0;
   let pixelCount = 0;
 
   for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
     const alpha = data[i + 3];
-    if (alpha > 50) {
-      totalR += data[i];
-      totalG += data[i + 1];
-      totalB += data[i + 2];
+
+    // Solo tomar en cuenta píxeles visibles Y que no sean completamente negros puros (0,0,0)
+    if (alpha > 128 && (r > 0 || g > 0 || b > 0)) {
+      totalR += r;
+      totalG += g;
+      totalB += b;
       pixelCount++;
     }
   }
@@ -107,7 +115,6 @@ export function getEmojiHue(emoji: string): number {
       `El emoji "${emoji}" se renderizó vacío (sin píxeles visibles). ` +
       `Probablemente falta una fuente de emoji a color en este entorno ` +
       `(instala "Noto Color Emoji" en el sistema/contenedor).`;
-    console.warn(`[getEmojiHue] ${msg}`);
     throw new EmojiRenderError(emoji, msg);
   }
 
@@ -115,8 +122,5 @@ export function getEmojiHue(emoji: string): number {
   const avgG = Math.round(totalG / pixelCount);
   const avgB = Math.round(totalB / pixelCount);
 
-  const hue = rgbToHue(avgR, avgG, avgB);
-  console.log(`[getEmojiHue] "${emoji}" → RGB(${avgR}, ${avgG}, ${avgB}) → Hue: ${hue}`);
-
-  return hue;
+  return rgbToHue(avgR, avgG, avgB);
 }
