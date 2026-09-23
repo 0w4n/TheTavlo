@@ -7,7 +7,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
 # Copiar archivos de dependencias
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Instalar todas las dependencias (incluyendo devDependencies para compilar)
 RUN pnpm install --frozen-lockfile
@@ -26,7 +26,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
 # Copiar archivos de dependencias
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Instalar solo las dependencias de producción
 RUN pnpm install --prod --frozen-lockfile
@@ -34,8 +34,8 @@ RUN pnpm install --prod --frozen-lockfile
 # Copiar el código compilado desde la etapa anterior
 COPY --from=builder /app/dist ./dist
 
-# Exponer el puerto del backend (ej. 3000)
-EXPOSE 3000
+# Exponer el puerto del backend (ej. 3030)
+EXPOSE 3030
 
 # Comando para ejecutar la aplicación
 CMD ["pnpm", "run", "start"]
