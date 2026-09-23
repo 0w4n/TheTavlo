@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { middleware, procedure } from './trpc';
+import { middleware, procedure } from './trpc.js';
 import { getFirestore } from 'firebase-admin/firestore';
 
 const db = getFirestore();

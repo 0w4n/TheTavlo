@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { EmojiRenderError, getEmojiHue } from "./utils.ts";
+import { EmojiRenderError, getEmojiHue } from "./utils.js";
 
 const USE_VERTEX = process.env.GOOGLE_GENAI_USE_VERTEX === "true";
 

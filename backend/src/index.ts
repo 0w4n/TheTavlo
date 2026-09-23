@@ -4,9 +4,9 @@ import serverless from "serverless-http";
 import cors from "cors";
 import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import apiRouter from "./router/api.ts";
-import { appRouter } from "./trpc/root.router.ts";
-import { createContext } from "./trpc/context.ts";
+import apiRouter from "./router/api.js";
+import { appRouter } from "./trpc/root.router.js";
+import { createContext } from "./trpc/context.js";
 
 const app = express();
 const PORT = process.env.EXPRESS_PORT || 3000;

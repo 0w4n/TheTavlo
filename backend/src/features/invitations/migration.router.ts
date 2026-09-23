@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
-import { router, protectedProcedure } from "../../trpc/trpc.ts";
-import { asObject, asOneOf, asString } from "../../trpc/validate.ts";
+import { router, protectedProcedure } from "../../trpc/trpc.js";
+import { asObject, asOneOf, asString } from "../../trpc/validate.js";
 
 const COLLECTIONS = ["tasks", "events", "exams", "boards"] as const;
 const STRATEGIES = ["move", "merge", "keep-separate"] as const;

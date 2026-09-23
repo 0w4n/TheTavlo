@@ -1,10 +1,10 @@
 import { randomBytes } from "node:crypto";
 import { TRPCError } from "@trpc/server";
 import { FieldValue, type DocumentReference } from "firebase-admin/firestore";
-import { protectedProcedure, publicProcedure, router } from "../../trpc/trpc.ts";
-import { adminAuth, adminDb } from "../../firebase/config.ts";
-import { sendInvitationEmail } from "../../services/resend.ts";
-import { asEmail, asObject, asOneOf, asOneOfWithDefault, asString } from "../../trpc/validate.ts";
+import { protectedProcedure, publicProcedure, router } from "../../trpc/trpc.js";
+import { adminAuth, adminDb } from "../../firebase/config.js";
+import { sendInvitationEmail } from "../../services/resend.js";
+import { asEmail, asObject, asOneOf, asOneOfWithDefault, asString } from "../../trpc/validate.js";
 
 // Mismos valores que UserRole/AccountType del dominio en el cliente
 // (client/src/features/invitations/domain/invitation.entity.ts y

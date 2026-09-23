@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import { router, protectedProcedure } from "../../trpc/trpc.ts";
-import { asObject, asString } from "../../trpc/validate.ts";
-import { fetchEmojisFromGemini } from "./emojis/getEmoji.ts";
+import { router, protectedProcedure } from "../../trpc/trpc.js";
+import { asObject, asString } from "../../trpc/validate.js";
+import { fetchEmojisFromGemini } from "./emojis/getEmoji.js";
 
 export interface EmojiInput {
   word: string;

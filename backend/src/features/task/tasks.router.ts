@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
-import { router, protectedProcedure } from "../../trpc/trpc.ts";
-import { asObject, asString } from "../../trpc/validate.ts";
+import { router, protectedProcedure } from "../../trpc/trpc.js";
+import { asObject, asString } from "../../trpc/validate.js";
 
 const ACCOUNT_TYPES = ["users", "guests"] as const;
 type AccountType = (typeof ACCOUNT_TYPES)[number];

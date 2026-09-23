@@ -1,5 +1,5 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
-import { adminAuth, adminDb, firebaseApp } from "../firebase/config.ts";
+import { adminAuth, adminDb, firebaseApp } from "../firebase/config.js";
 
 export interface AuthedUser {
   uid: string;
