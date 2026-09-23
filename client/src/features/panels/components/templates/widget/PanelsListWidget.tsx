@@ -9,7 +9,7 @@ import PanelsWidget from "./panelsWidget";
 export default function PanelsListWidget({
   multiSelection,
 }: {
-  multiSelection: boolean;
+  multiSelection?: boolean;
 }) {
   const { state } = usePanels();
   const subPanels = state.status === "panel" ? state.subPanels : [];
@@ -18,7 +18,7 @@ export default function PanelsListWidget({
     <PanelsWidget
       items={subPanels}
       config={{ typeView: "list" }}
-      multiSelection={multiSelection}
+      multiSelection={multiSelection!}
     />
   );
 }
