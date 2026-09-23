@@ -6,8 +6,8 @@ describe("UserAvatar", () => {
     render(<UserAvatar name="alice" />);
 
     const svg = screen.getByRole("img", { hidden: true });
-    expect(svg).toBeInTheDocument();
-    expect(svg).toHaveAttribute("width", "32");
-    expect(svg).toHaveAttribute("height", "32");
+    expect(svg).toBeTruthy();
+    expect(svg.getAttribute("width")).toBe("32");
+    expect(svg.getAttribute("height")).toBe("32");
   });
 });

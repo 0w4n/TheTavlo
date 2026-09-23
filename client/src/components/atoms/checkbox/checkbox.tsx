@@ -4,8 +4,7 @@ import type { CheckBoxProps } from "./checkbox.types";
 export function CheckBox({
   label,
   variant = "square",
-  className,
-  ...props
+  className
 }: CheckBoxProps) {
       const classes = [
     "input-checkbox",

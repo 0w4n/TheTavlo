@@ -1,6 +1,6 @@
 import { Button } from "#components/atoms/button";
 import { ModalHeader, ModalFooter } from "#components/molecules/modal";
-import useNotes from "#features/dirtyNote/presentation/hooks/useDirtyNote";
+import useDirtyNote from "#features/dirtyNote/presentation/hooks/useDirtyNote";
 
 interface DelNoteProps {
   id: string;
@@ -8,7 +8,7 @@ interface DelNoteProps {
 }
 
 export default function DelNote({ id, onClose }: DelNoteProps) {
-  const { deleteDirtyNote } = useNotes();
+  const { deleteDirtyNote } = useDirtyNote();
 
   return (
     <>
