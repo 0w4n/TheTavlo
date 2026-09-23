@@ -14,10 +14,10 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
       - '-f'
-      - 'frontend/Dockerfile'
-      - './frontend'
+      - 'client/Dockerfile'
+      - './client'
 
   # 3. Subir la imagen del Backend a Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -29,7 +29,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
 
   # 5. Desplegar el Backend en Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -49,15 +49,15 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'frontend-service'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+      - 'client-service'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY

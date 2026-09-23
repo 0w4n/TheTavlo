@@ -13,11 +13,11 @@ services:
       - PORT=3000
     restart: unless-stopped
 
-  frontend:
+  client:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: mi-frontend
+    container_name: mi-client
     ports:
       - "8080:80"
     depends_on:
