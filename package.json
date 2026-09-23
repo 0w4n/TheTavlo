@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --parallel --filter client --filter backend dev",
-    "build": "pnpm --filter client build"
+    "build": "pnpm --filter client --filter backend build"
   },
   "devDependencies": {
     "eslint": "^10.9.1"

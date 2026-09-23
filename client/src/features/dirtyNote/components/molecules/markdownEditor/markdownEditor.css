@@ -1,0 +1,57 @@
+.markdown-textarea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-height: 0;
+}
+
+.markdown-textarea__input {
+  flex: 1;
+}
+
+/* ─── Barra de herramientas ─── */
+.markdown-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-1);
+  border: 1px solid var(--color-border, rgba(128, 128, 128, 0.4));
+  border-radius: var(--radius-md);
+  background: var(--color-backgroundSecondary, transparent);
+}
+
+.markdown-toolbar__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-textSecondary, inherit);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+
+.markdown-toolbar__button:hover {
+  background: var(--color-surface, rgba(128, 128, 128, 0.16));
+  color: var(--color-textPrimary, inherit);
+}
+
+.markdown-toolbar__button:focus-visible {
+  outline: 3px solid var(--color-primary, #6b7df6);
+  outline-offset: 1px;
+}
+
+/* Separador visual entre grupos de acciones afines (negrita/cursiva,
+   títulos, cita/código, enlace/imagen, listas, inserciones). */
+.markdown-toolbar__button--group-start {
+  margin-left: var(--spacing-2);
+  padding-left: calc(var(--spacing-2) + 2px);
+  border-left: 1px solid var(--color-border, rgba(128, 128, 128, 0.4));
+}

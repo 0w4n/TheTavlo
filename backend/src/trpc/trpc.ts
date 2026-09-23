@@ -10,7 +10,7 @@ const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
 
 export const router = t.router;
 export const middleware = t.middleware;
-const procedure = t.procedure.use(loggerMiddleware);
+export const procedure = t.procedure.use(loggerMiddleware);
 
 
 /** Sin requisito de sesión (ej. resolveAccess, que debe funcionar con un link sin login). */

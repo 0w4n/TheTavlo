@@ -22,6 +22,7 @@ import {
 } from "#features/dirtyNote/utils/downloadDirtyNote";
 import { DirtyNoteStatusPicker } from "#features/dirtyNote/components/molecules/DirtyNoteStatusPicker";
 import { DirtyNotePreview } from "#features/dirtyNote/components/molecules/DirtyNotePreview";
+import { MarkdownTextarea } from "#features/dirtyNote/components/molecules/markdownEditor/MarkdownTextarea";
 
 import "./dirtyNoteEditor.css";
 
@@ -289,11 +290,11 @@ export function DirtyNoteEditor({
                 <label htmlFor={textareaId} className="dirty-note-editor__label">
                   Contenido (Markdown)
                 </label>
-                <textarea
+                <MarkdownTextarea
                   id={textareaId}
                   className="dirty-note-editor__textarea"
                   value={draft.content}
-                  onChange={(event) => setContent(event.target.value)}
+                  onChange={setContent}
                   readOnly={readOnly}
                   spellCheck
                   placeholder={

@@ -12,6 +12,7 @@ import {
 } from "#features/dirtyNote/domain/DirtyNote.rules";
 import useDirtyNote from "#features/dirtyNote/presentation/hooks/useDirtyNote";
 import { DirtyNoteStatusPicker } from "#features/dirtyNote/components/molecules/DirtyNoteStatusPicker";
+import { MarkdownTextarea } from "#features/dirtyNote/components/molecules/markdownEditor/MarkdownTextarea";
 
 import "./addDirtyNote.css";
 
@@ -114,11 +115,11 @@ export default function AddDirtyNote({ onClose }: { onClose: () => void }) {
             <label htmlFor={contentId} className="add-dirty-note__label">
               Contenido (Markdown, opcional)
             </label>
-            <textarea
+            <MarkdownTextarea
               id={contentId}
               className="add-dirty-note__textarea"
               value={content}
-              onChange={(event) => setContent(event.target.value)}
+              onChange={setContent}
               rows={10}
               spellCheck
               placeholder={"# Título\n\nEscribe en **Markdown**…"}
