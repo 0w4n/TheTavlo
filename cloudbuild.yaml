@@ -4,7 +4,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/backend:$COMMIT_SHA'
       - '-f'
       - 'backend/Dockerfile'
       - './backend'
@@ -14,7 +14,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/client:$COMMIT_SHA'
       - '-f'
       - 'client/Dockerfile'
       - './client'
@@ -23,13 +23,13 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/backend:$COMMIT_SHA'
 
   # 4. Subir la imagen del Frontend a Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/client:$COMMIT_SHA'
 
   # 5. Desplegar el Backend en Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -38,7 +38,7 @@ steps:
       - 'run'
       - 'deploy'
       - 'backend-service'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/backend:$COMMIT_SHA'
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
@@ -50,14 +50,14 @@ steps:
       - 'run'
       - 'deploy'
       - 'client-service'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/client:$COMMIT_SHA'
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
 
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/client:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/backend:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repo/client:$COMMIT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
