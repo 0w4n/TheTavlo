@@ -31,6 +31,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
 # Instalar solo las dependencias de producción
 RUN pnpm install --prod --frozen-lockfile
 
+CMD [ "ls" ]
+
 # Copiar el código compilado desde la etapa anterior
 COPY --from=builder /app/dist ./dist
 
@@ -38,4 +40,4 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 3030
 
 # Comando para ejecutar la aplicación
-CMD ["pnpm", "run", "start"]
+# CMD ["pnpm", "run", "start"]
