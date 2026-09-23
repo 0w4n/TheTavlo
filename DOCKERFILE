@@ -1,0 +1,79 @@
+# syntax=docker/dockerfile:1.7
+#
+# Dockerfile para backend/ (Express + tRPC) — TheTavlo
+#
+# IMPORTANTE: el contexto de build debe ser la RAÍZ del monorepo, no backend/,
+# porque el pnpm-lock.yaml y pnpm-workspace.yaml reales viven ahí:
+#
+#   docker build -f backend/Dockerfile -t thetavlo-backend .
+#
+# Este Dockerfile ignora backend/pnpm-lock.yaml y backend/pnpm-workspace.yaml
+# (son ficheros sueltos/obsoletos dentro de backend/, no forman parte del
+# workspace real definido en la raíz).
+
+########################################
+# Stage 1: base — Node + pnpm vía corepack
+########################################
+FROM node:22-slim AS base
+RUN corepack enable && corepack prepare pnpm@10 --activate
+WORKDIR /app
+
+########################################
+# Stage 2: deps — instala SOLO las dependencias de "backend"
+########################################
+FROM base AS deps
+
+# Copiamos primero los manifiestos del workspace (raíz) para aprovechar
+# la cache de Docker: si el código cambia pero no las dependencias,
+# esta capa no se reconstruye.
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY backend/package.json ./backend/package.json
+
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm install --filter backend --frozen-lockfile --prod
+
+########################################
+# Stage 3: runner — imagen final de producción
+########################################
+FROM node:22-slim AS runner
+
+ENV NODE_ENV=production
+# Cloud Run inyecta PORT, pero el código de esta app lee EXPRESS_PORT
+# (ver backend/src/index.ts). Lo fijamos aquí para que coincida con el
+# puerto de contenedor configurado en el servicio de Cloud Run (8080).
+ENV EXPRESS_PORT=8080
+
+WORKDIR /app/backend
+
+# Usuario sin privilegios — Cloud Run no lo exige, pero es buena práctica
+# no correr el proceso como root.
+RUN groupadd --system nodejs && \
+    useradd --system --gid nodejs --home /app nodejs
+
+# Copiamos node_modules preservando la estructura pnpm (raíz + backend),
+# porque backend/node_modules son symlinks relativos que apuntan a
+# ../../node_modules/.pnpm/... Si se copian por separado sin la misma
+# jerarquía, los symlinks quedan rotos.
+COPY --from=deps --chown=nodejs:nodejs /app/node_modules /app/node_modules
+COPY --from=deps --chown=nodejs:nodejs /app/backend/node_modules ./node_modules
+COPY --chown=nodejs:nodejs backend/package.json ./package.json
+
+# Código fuente. Se copia entero (incluye src/assets/fonts/NotoColorEmoji.ttf,
+# necesaria para el render de emojis en @napi-rs/canvas — utils.ts la busca
+# como path.join(process.cwd(), "src/assets/fonts/...")), así que el
+# WORKDIR de arriba (/app/backend) tiene que coincidir con esa ruta relativa.
+COPY --chown=nodejs:nodejs backend/src ./src
+
+USER nodejs
+
+EXPOSE 8080
+
+# Healthcheck simple contra la raíz ("Hello world!" en index.ts).
+# Cloud Run no usa HEALTHCHECK de Docker (tiene sus propios probes),
+# pero es útil para docker-compose / pruebas locales.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://localhost:'+process.env.EXPRESS_PORT+'/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
+# Igual que "start" en package.json (tsx src/index.ts), pero sin depender
+# de pnpm/corepack en la imagen final.
+CMD ["node_modules/.bin/tsx", "src/index.ts"]
