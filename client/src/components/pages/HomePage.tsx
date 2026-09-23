@@ -2,7 +2,7 @@ import { Header } from "#components/organisms/header";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import { DateTimeBadge } from "#components/atoms/datetimebadge";
 import { Dashboard } from "#components/organisms/dashboard/dashboard";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
@@ -10,7 +10,10 @@ import { Rise } from "#components/molecules/rise";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 import { useOnBoardingBootstrap } from "#features/onBoarding/presentation/hooks/useOnBoardingBootstrap";
+import { UserAvatar } from "#components/atoms/userAvatar/UserAvatar";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
+import LoadingPage from "./LoadingPage";
+import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 
 export default function HomePage() {
   useDocumentTitle("Inicio");
@@ -124,6 +127,13 @@ function InvalidPanelNotice() {
 
 function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
   const { signOut } = useAuth();
+  const { state } = useGlobalContext();
+
+  if (state.status === "loading") {
+    console.log("LoadingPage for Blobatar");
+    return <LoadingPage />;
+  }
+
   // const { config, isDark, setMode } = useTheme();
   const { state: widgetsState, toggleEditMode } = useWidgets();
 
@@ -150,7 +160,7 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
           },
           {
             type: "dropdown",
-            iconTrigger: "IconUser",
+            childrenTrigger: <UserAvatar name={state.state.user.userId} />,
             options: [
               {
                 icon: "IconUser",

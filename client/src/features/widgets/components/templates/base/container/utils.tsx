@@ -2,6 +2,7 @@ import type { WidgetType } from "#features/widgets/domain/widget.entity";
 import type { JSX } from "react";
 import AddTask from "#features/task/components/templates/widget/AddTask";
 import AddPanels  from "#features/panels/components/templates/widget/addPanel/addPanels";
+import AddDirtyNote from "#features/dirtyNote/components/templates/widget/AddDirtyNote";
 
 export function getIconWidgetType(widgetType: WidgetType): string {
   switch (widgetType) {
@@ -27,8 +28,8 @@ export function getIconWidgetType(widgetType: WidgetType): string {
       return "IconClock";
     case "productivity-chart":
       return "IconActivity";
-    case "notes":
-      return "IconNotes";
+    case "dirty-note":
+      return "IconMarkdown";
     case "custom":
       return "IconWidget";
     default:
@@ -48,6 +49,8 @@ export function GetDialogWdigetType({
       return <AddTask onClose={onClose} />;
     case "panels-list":
       return <AddPanels onClose={onClose} />;
+    case "dirty-note":
+      return <AddDirtyNote onClose={onClose} />;
     // case "event-calendar":
     //   return "IconCalendar";
     // case "event-list":

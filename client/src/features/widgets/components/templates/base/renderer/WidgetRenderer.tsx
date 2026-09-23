@@ -11,6 +11,7 @@ export interface WidgetRendererProps {
   widgetId: string;
   panelId?: string;
   config?: Record<string, unknown>;
+  multiSelection?: boolean;
 }
 
 /**
@@ -27,6 +28,7 @@ export default function WidgetRenderer({
   widgetId,
   panelId,
   config = {},
+  multiSelection,
 }: WidgetRendererProps) {
   const definition = widgetRegistry.get(type);
 
@@ -39,7 +41,12 @@ export default function WidgetRenderer({
   return (
     <WidgetErrorBoundary>
       <Suspense fallback={<WidgetSkeleton />}>
-        <Component widgetId={widgetId} panelId={panelId} config={config} />
+        <Component
+          widgetId={widgetId}
+          panelId={panelId}
+          config={config}
+          multiSelection={multiSelection}
+        />
       </Suspense>
     </WidgetErrorBoundary>
   );

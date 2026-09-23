@@ -5,7 +5,7 @@ import ExamsTimelineWidget from "../../examsTimeline/examsTimelineWidget";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import TaskWidget from "#features/task/components/templates/widget/TaskWidget";
 import CookingBookWidget from "#features/cookingBook/components/template/widget/CookingBook";
-import NoteWidget from "#features/note/components/templates/widget/Note.widget";
+import DirtyNoteWidget from "#features/dirtyNote/components/templates/widget/DirtyNote.widget";
 
 export default function WidgetContent({
   widget,
@@ -26,7 +26,7 @@ export default function WidgetContent({
       return <TaskWidget />;
 
     case "panels-list":
-      return <PanelsWidget items={subPanels} config={{typeView:"list"}}/>;
+      return <PanelsWidget items={subPanels} config={{typeView:"list"}} multiSelection={multiSelection}/>;
 
     // case "event-calendar":
     //   return (
@@ -72,8 +72,8 @@ export default function WidgetContent({
     //     <ProductivityChartWidget panelId={panelId} config={widget.config} />
     //   );
 
-    case "notes":
-      return <NoteWidget />;
+    case "dirty-note":
+      return <DirtyNoteWidget />;
 
     case "cooking-book":
       return <CookingBookWidget />;

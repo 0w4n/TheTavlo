@@ -5,5 +5,7 @@ packages:
 allowBuilds:
   "@firebase/util": true
   "@google/genai": true
+  core-js: true
   esbuild: true
   protobufjs: true
+  'true': true

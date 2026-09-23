@@ -6,9 +6,19 @@ import PanelsWidget from "./panelsWidget";
 // actual. Este wrapper es el único lugar que conoce ese detalle — resuelve
 // `subPanels` vía el propio contexto de paneles y delega en el componente
 // de presentación real (`PanelsWidget`), que no cambió.
-export default function PanelsListWidget() {
+export default function PanelsListWidget({
+  multiSelection,
+}: {
+  multiSelection: boolean;
+}) {
   const { state } = usePanels();
   const subPanels = state.status === "panel" ? state.subPanels : [];
 
-  return <PanelsWidget items={subPanels} config={{ typeView: "list" }} />;
+  return (
+    <PanelsWidget
+      items={subPanels}
+      config={{ typeView: "list" }}
+      multiSelection={multiSelection}
+    />
+  );
 }

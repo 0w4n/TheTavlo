@@ -11,6 +11,31 @@
   scroll-snap-align: start;
 }
 
+.panels__widget--item.is-selected {
+  outline: 2px solid hsl(var(--panels__widget--color), 100%, 70%);
+}
+
+.panels__widget--checkButton {
+  color: hsl(var(--panels__widget--color), 100%, 70%);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  display: flex;
+  cursor: pointer;
+}
+
+.panels__widget--actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-1);
+  margin-top: var(--spacing-2);
+}
+
+.panels__widget--actions > span {
+  margin-right: auto;
+}
+
 .widgetContent__view--list {
   display: flex;
   width: 100%;

@@ -1,0 +1,121 @@
+/* Color por estado. Siempre va acompañado de ícono + texto (no solo color). */
+.dirty-note-status--sucio {
+  --dn-status-color: var(--color-warning, #f59e0b);
+}
+.dirty-note-status--en-progreso {
+  --dn-status-color: var(--color-info, #3b82f6);
+}
+.dirty-note-status--final {
+  --dn-status-color: var(--color-success, #10b981);
+}
+
+/* ─── Badge ─── */
+.dirty-note-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: 2px var(--spacing-2);
+  border-radius: var(--radius-full);
+  border: 1px solid color-mix(in srgb, var(--dn-status-color) 45%, transparent);
+  background: color-mix(in srgb, var(--dn-status-color) 18%, transparent);
+  color: var(--color-textPrimary, inherit);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.dirty-note-badge__icon {
+  display: inline-flex;
+  color: var(--dn-status-color);
+}
+
+/* ─── Selector (radios nativos con aspecto de botones) ─── */
+.dirty-note-status-picker {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.dirty-note-status-picker__legend {
+  padding: 0;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-textPrimary, inherit);
+}
+
+.dirty-note-status-picker__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.dirty-note-status-picker__option {
+  position: relative;
+}
+
+/* Oculto solo visualmente: sigue en el árbol de accesibilidad y recibe foco. */
+.dirty-note-status-picker__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.dirty-note-status-picker__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-height: 44px;
+  padding: 0 var(--spacing-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border, rgba(128, 128, 128, 0.4));
+  background: var(--color-surface, transparent);
+  color: var(--color-textSecondary, inherit);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+
+.dirty-note-status-picker__label > span:first-child {
+  display: inline-flex;
+}
+
+.dirty-note-status-picker__label:hover {
+  border-color: var(--dn-status-color);
+}
+
+.dirty-note-status-picker__input:checked + .dirty-note-status-picker__label {
+  border-color: var(--dn-status-color);
+  background: color-mix(in srgb, var(--dn-status-color) 18%, transparent);
+  color: var(--color-textPrimary, inherit);
+}
+
+.dirty-note-status-picker__input:checked
+  + .dirty-note-status-picker__label
+  > span:first-child {
+  color: var(--dn-status-color);
+}
+
+.dirty-note-status-picker__input:focus-visible + .dirty-note-status-picker__label {
+  outline: 3px solid var(--color-primary, #6b7df6);
+  outline-offset: 2px;
+}
+
+.dirty-note-status-picker:disabled .dirty-note-status-picker__label {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dirty-note-status-picker__label {
+    transition: none;
+  }
+}

@@ -27,8 +27,7 @@ export default function WidgetContainer({
   onResize?: (layout: Widget["layout"]) => void;
 }) {
   const [_search, setSearch] = useState("");
-  const [_enable, _setEnable] = useState(false);
-  // const [multipleSelecction, setMultipleSelecction] = useState([]);
+  const [multiSelection, setMultiSelection] = useState(false);
 
   // Compartir/eliminar son acciones de EDITOR (o dueño) hacia arriba — un
   // VIEWER no debe verlas (Q3: "ambos" — esto es solo la mitad de UX, la
@@ -76,7 +75,7 @@ export default function WidgetContainer({
       {
         label: "Selección múltiple",
         icon: "IconSquareRoundedCheck",
-        onClick: () => console.log("Opción 6 seleccionada"),
+        onClick: () => setMultiSelection(!multiSelection),
       },
     ],
   };
@@ -214,6 +213,7 @@ export default function WidgetContainer({
           type={widget.type}
           widgetId={widget.id}
           config={widget.config}
+          multiSelection={multiSelection}
         />
         {QuickAdd && (
           <ModalPortal label={type} iconName="IconPlus">
