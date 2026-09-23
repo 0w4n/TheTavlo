@@ -1,0 +1,60 @@
+steps:
+  # 1. Construir la imagen del Backend
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+      - '-f'
+      - 'backend/Dockerfile'
+      - './backend'
+
+  # 2. Construir la imagen del Frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+      - '-f'
+      - 'frontend/Dockerfile'
+      - './frontend'
+
+  # 3. Subir la imagen del Backend a Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+
+  # 4. Subir la imagen del Frontend a Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+
+  # 5. Desplegar el Backend en Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'backend-service'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+
+  # 6. Desplegar el Frontend en Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'frontend-service'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
