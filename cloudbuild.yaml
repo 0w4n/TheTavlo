@@ -58,3 +58,6 @@ steps:
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/backend:$COMMIT_SHA'
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/mi-repositorio/frontend:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
