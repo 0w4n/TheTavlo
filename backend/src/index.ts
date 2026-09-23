@@ -9,7 +9,7 @@ import { appRouter } from "./trpc/root.router.js";
 import { createContext } from "./trpc/context.js";
 
 const app = express();
-const PORT = process.env.EXPRESS_PORT || 3000;
+const PORT = process.env.EXPRESS_PORT|| 3000;
 const allowedOrigins = (
   process.env.CLIENT_ORIGIN ??
   "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com"
@@ -56,7 +56,7 @@ app.get("/", (req, res) => {
 
 // export default serverless(app);
 
-app.listen(PORT, (error) => {
+app.listen(Number(PORT), "0.0.0.0", (error) => {
   console.log(`Server is running on port ${PORT}`);
   console.error(error);
 });
