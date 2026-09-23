@@ -1,0 +1,20 @@
+.input-checkbox {
+    background-color: var(--color-backgroundSecondary) ;
+    color: var(--color-onPrimary);
+}
+
+.input-checkbox:hover {
+    background-color: var(--color-backgroundSecondary);
+}
+
+.input-checkbox:active {
+    background-color: var(--color-primary-darker);
+}
+
+.input-checkbox__square {
+    border-radius: var(--radius-0);
+}
+
+.input-checkbox__rounded {
+    border-radius: var(--radius-lg);
+}

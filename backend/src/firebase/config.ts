@@ -30,7 +30,17 @@ function buildApp(): App {
     Buffer.from(credentials, 'base64').toString('utf-8')
   );
 
-  return initializeApp({ credential: cert(serviceAccount), databaseURL });
+  if (!serviceAccount.project_id) {
+    throw new Error(
+      "FIREBASE_CRED no contiene project_id. Usa el JSON completo de la service account.",
+    );
+  }
+
+  return initializeApp({
+    credential: cert(serviceAccount),
+    databaseURL,
+    projectId: serviceAccount.project_id,
+  });
 }
 
 export const firebaseApp = buildApp();

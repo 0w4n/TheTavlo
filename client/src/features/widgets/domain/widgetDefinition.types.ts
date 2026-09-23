@@ -61,6 +61,7 @@ export interface WidgetComponentProps {
   widgetId: string;
   panelId?: string;
   config: Record<string, unknown>;
+  multiSelection?: boolean;
 }
 
 export type WidgetComponentModule = {

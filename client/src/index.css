@@ -16,6 +16,11 @@
   --color-border: hsl(0, 0%, 34%);
 }
 
+:root::selection {
+  background-color: var(--color-textPrimary);
+  color: var(--color-surface)
+}
+
 #root {
   display: flex;
   flex-direction: column;

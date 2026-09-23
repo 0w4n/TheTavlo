@@ -11,6 +11,8 @@ const firebaseConfig = {
   appId: import.meta.env.CLIENT_FIREBASE_APP_ID,
 };
 
+console.log(firebaseConfig);
+
 class FirebaseService {
   private app: FirebaseApp;
   private _auth: Auth;

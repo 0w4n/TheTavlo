@@ -1,5 +1,5 @@
 import React from "react";
-import type { HeaderProps, HeaderAction } from "./header.types";
+import { type HeaderProps, type HeaderAction, isIconTrigger } from "./header.types";
 import "./header.css";
 import { Button } from "#components/atoms/button";
 import ModalPortal from "#components/molecules/modal/portal";
@@ -81,36 +81,38 @@ function HeaderActionRenderer({ action }: { action: HeaderAction }) {
         </ModalPortal>
       );
 
-    case "dropdown":
+    case "dropdown": {
+      const triggerDropDown = isIconTrigger(action) ? (
+        <Button icon={action.iconTrigger} />
+      ) : (
+        <Button variant="ghost">{action.childrenTrigger}</Button>
+      );
+
       return (
-        <Dropdown
-          trigger={
-            <Button variant="primary" icon={action.iconTrigger || "IconHelp"} iconSize={16}>
-            </Button>
-          }
-        >
-          {action.options.map((option, index) => 
+        <Dropdown trigger={triggerDropDown}>
+          {action.options.map((option, index) =>
             option.portalModal ? (
-                <Dropdown.Item
-                  key={index}
-                  label={option.label}
-                  icon={option.icon}
-                  danger={option.danger}
-                  render={option.render}
-                  portalModal
-                />
-              ) : (
-                <Dropdown.Item
-                  key={index}
-                  label={option.label}
-                  icon={option.icon}
-                  danger={option.danger}
-                  onClick={option.onClick}
-                />
-              ),
+              <Dropdown.Item
+                key={index}
+                label={option.label}
+                icon={option.icon}
+                danger={option.danger}
+                render={option.render}
+                portalModal
+              />
+            ) : (
+              <Dropdown.Item
+                key={index}
+                label={option.label}
+                icon={option.icon}
+                danger={option.danger}
+                onClick={option.onClick}
+              />
+            ),
           )}
         </Dropdown>
       );
+    }
 
     case "children":
       return <>{action.children}</>;

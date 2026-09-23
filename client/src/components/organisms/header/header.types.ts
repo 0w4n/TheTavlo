@@ -1,5 +1,6 @@
 import type { DropdownItemProps } from "#components/molecules/dropdown";
 import type { HTMLAttributes, ReactNode } from "react";
+import { Header } from "./header";
 
 /* =====================
    ACTION TYPES
@@ -26,13 +27,22 @@ export interface HeaderDialogAction {
   dialog: (onClose: () => void) => ReactNode;
   className?: string;
 }
-
 /* ---------- DROPDOWN ---------- */
-export interface HeaderDropDownAction {
+export type HeaderDropDownIconAction = {
   type: "dropdown";
-  iconTrigger?: string;
   options: DropdownItemProps[];
-}
+  iconTrigger: string;
+};
+
+export type HeaderDropDownChildrenAction = {
+  type: "dropdown";
+  options: DropdownItemProps[];
+  childrenTrigger: ReactNode;
+};
+
+export type HeaderDropDownAction =
+  | HeaderDropDownIconAction
+  | HeaderDropDownChildrenAction;
 
 /* ---------- CHILDREN ---------- */
 export interface HeaderChildrenAction {
@@ -51,4 +61,16 @@ export interface HeaderProps extends HTMLAttributes<HTMLElement> {
   actions?: HeaderAction[];
   rightContent?: ReactNode;
   dateTimeItem?: ReactNode;
+}
+
+export function isIconTrigger(
+  header: HeaderDropDownAction,
+): header is HeaderDropDownIconAction {
+  return "iconTrigger" in header;
+}
+
+export function isChildrenTrigger(
+  header: HeaderDropDownAction,
+): header is HeaderDropDownChildrenAction {
+  return "childrenTrigger" in header;
 }

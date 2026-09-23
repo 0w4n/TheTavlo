@@ -17,7 +17,7 @@ describe("widgetDiscovery", () => {
         "panels-list",
         "exam-timeline",
         "upcoming-deadlines",
-        "notes",
+        "dirty-note",
         "cooking-book",
       ]),
     );

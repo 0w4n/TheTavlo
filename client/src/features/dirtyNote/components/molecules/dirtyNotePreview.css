@@ -1,0 +1,134 @@
+.dirty-note-preview {
+  color: var(--color-textPrimary, inherit);
+  font-size: var(--font-size-base);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.dirty-note-preview > :first-child {
+  margin-top: 0;
+}
+
+.dirty-note-preview > :last-child {
+  margin-bottom: 0;
+}
+
+.dirty-note-preview h1,
+.dirty-note-preview h2,
+.dirty-note-preview h3,
+.dirty-note-preview h4,
+.dirty-note-preview h5,
+.dirty-note-preview h6 {
+  margin: 1.3em 0 0.5em;
+  line-height: 1.25;
+  font-weight: var(--font-weight-semibold);
+}
+
+.dirty-note-preview h1 {
+  font-size: var(--font-size-2xl);
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--color-border, rgba(128, 128, 128, 0.35));
+}
+.dirty-note-preview h2 {
+  font-size: var(--font-size-xl);
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid var(--color-border, rgba(128, 128, 128, 0.35));
+}
+.dirty-note-preview h3 {
+  font-size: var(--font-size-lg);
+}
+.dirty-note-preview h4,
+.dirty-note-preview h5,
+.dirty-note-preview h6 {
+  font-size: var(--font-size-base);
+}
+
+.dirty-note-preview p,
+.dirty-note-preview ul,
+.dirty-note-preview ol,
+.dirty-note-preview blockquote,
+.dirty-note-preview pre,
+.dirty-note-preview table {
+  margin: 0 0 0.9em;
+}
+
+.dirty-note-preview ul,
+.dirty-note-preview ol {
+  padding-left: 1.6em;
+}
+
+.dirty-note-preview li + li {
+  margin-top: 0.2em;
+}
+
+.dirty-note-preview a {
+  color: var(--color-primary, #6b7df6);
+  text-decoration: underline;
+}
+
+.dirty-note-preview blockquote {
+  padding: 0.1em 1em;
+  border-left: 4px solid var(--color-border, rgba(128, 128, 128, 0.5));
+  color: var(--color-textSecondary, inherit);
+}
+
+.dirty-note-preview code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+  background: var(--color-backgroundSecondary, rgba(128, 128, 128, 0.18));
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.dirty-note-preview pre {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-md);
+  background: var(--color-backgroundSecondary, rgba(128, 128, 128, 0.18));
+  overflow-x: auto;
+}
+
+.dirty-note-preview pre code {
+  padding: 0;
+  background: none;
+  font-size: var(--font-size-sm);
+}
+
+/* La tabla desborda dentro de su propio scroll, no del modal. */
+.dirty-note-preview table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.dirty-note-preview th,
+.dirty-note-preview td {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border, rgba(128, 128, 128, 0.4));
+  text-align: left;
+}
+
+.dirty-note-preview th {
+  background: var(--color-backgroundSecondary, rgba(128, 128, 128, 0.18));
+}
+
+.dirty-note-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+.dirty-note-preview hr {
+  border: 0;
+  border-top: 1px solid var(--color-border, rgba(128, 128, 128, 0.4));
+  margin: 1.4em 0;
+}
+
+.dirty-note-preview .dirty-note-checkbox {
+  font-size: 1.1em;
+}
+
+.dirty-note-preview__empty {
+  margin: 0;
+  color: var(--color-textSecondary, inherit);
+  font-size: var(--font-size-sm);
+}

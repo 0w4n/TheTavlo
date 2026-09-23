@@ -24,7 +24,8 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) return { user: null, db: adminDb };
 
-  const idToken = authHeader.slice("Bearer ".length);
+  const idToken = authHeader.slice("Bearer ".length).trim();
+  if (!idToken) return { user: null, db: adminDb };
   try {
     const decoded = await adminAuth.verifyIdToken(idToken);
     return {

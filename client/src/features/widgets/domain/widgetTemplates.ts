@@ -124,15 +124,13 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     },
   },
   {
-    type: "notes",
-    title: "Notas Rápidas",
-    description: "Bloc de notas del panel",
-    icon: "📝",
+    type: "dirty-note",
+    title: "DirtyNote",
+    description: "Editor Markdown del panel, con estado y descarga en .md/.pdf",
+    icon: "IconMarkdown",
     category: "other",
-    commingSoon: true,
-    defaultConfig: {
-      content: "",
-    },
+    commingSoon: false,
+    defaultConfig: {},
   },
   {
     type: "panels-list",

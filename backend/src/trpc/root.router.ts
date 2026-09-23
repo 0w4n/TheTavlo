@@ -6,7 +6,7 @@ import { widgetsRouter } from "../features/widgets/widgets.router.ts";
 import { eventsRouter } from "../features/events/events.router.ts";
 import { tasksRouter } from "../features/task/tasks.router.ts";
 import { migrationRouter } from "../features/invitations/migration.router.ts";
-import { notesRouter } from "../features/note/notes.router.ts";
+import { dirtyNoteRouter } from "../features/dirtyNote/dirtyNote.router.ts";
 import { scheduleRouter } from "../features/schedule/schedule.router.ts";
 import { cookingBookRouter } from "../features/cookingBook/cookingBook.router.ts";
 
@@ -18,7 +18,7 @@ export const appRouter = router({
   events: eventsRouter,
   tasks: tasksRouter,
   migration: migrationRouter,
-  notes: notesRouter,
+  dirtyNote: dirtyNoteRouter,
   schedule: scheduleRouter,
   cookingBook: cookingBookRouter
 });

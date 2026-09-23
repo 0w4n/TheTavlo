@@ -31,6 +31,9 @@ import { TasksProvider } from "#features/task/presentation/context/TasksContext"
 import { EventsProvider } from "#features/events/presentation/context/eventContext";
 import { FirebaseEventRepository } from "#features/events/infraestructure/eventRepository.firebase";
 import { EventsService } from "#features/events/app/events.service";
+import { FirebaseDirtyNoteRepository } from "#features/dirtyNote/infraestructure/dirtyNoteRepository.firebase";
+import { DirtyNoteService } from "#features/dirtyNote/app/DirtyNote.service";
+import { DirtyNoteProvider } from "#features/dirtyNote/presentation/context/DirtyNoteContext";
 import type { User } from "#core/auth/domain/user.entity";
 import { AnnouncerProvider } from "#core/a11y/AnnouncerProvider";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -198,6 +201,14 @@ function ProviderApp() {
     return new TasksService(taskRepository);
   }, [globalContext]);
 
+  const dirtyNoteService = useMemo(() => {
+    const dirtyNoteRepository = new FirebaseDirtyNoteRepository(
+      firebaseService.firestore,
+      () => globalContext,
+    );
+    return new DirtyNoteService(dirtyNoteRepository);
+  }, [globalContext]);
+
   if (
     globalContext.state.status === "loading" ||
     !globalContext.state.state.panel.panelId
@@ -212,7 +223,9 @@ function ProviderApp() {
         <EventsProvider eventsService={eventService}>
           <InvitationProvider invitationService={invitationService}>
             <TasksProvider tasksService={taskService}>
-              <Outlet />
+              <DirtyNoteProvider dirtyNoteService={dirtyNoteService}>
+                <Outlet />
+              </DirtyNoteProvider>
             </TasksProvider>
           </InvitationProvider>
         </EventsProvider>
