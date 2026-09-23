@@ -30,13 +30,5 @@
     "resend": "^6.24.0",
     "serverless-http": "^4.0.0",
     "tsx": "^4.23.13"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@firebase/util",
-      "@google/genai",
-      "esbuild",
-      "protobufjs"
-    ]
   }
 }

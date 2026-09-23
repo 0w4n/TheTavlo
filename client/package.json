@@ -73,5 +73,13 @@
     "esbuild@0.25.12": true,
     "protobufjs@7.6.5": true,
     "@firebase/util@1.12.1": true
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "@google/genai",
+      "esbuild",
+      "protobufjs"
+    ]
   }
 }
