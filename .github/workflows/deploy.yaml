@@ -48,6 +48,10 @@ jobs:
       - name: Compilar Frontend y Backend
         run: pnpm build
 
+      - name: Autenticar gsutil
+        run: |
+          gcloud auth activate-service-account --key-file=${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+
       - name: Desplegar Frontend a Google Cloud Storage
         run: |
           gsutil rsync -R client/dist ${{ steps.env-config.outputs.BUCKET }}
