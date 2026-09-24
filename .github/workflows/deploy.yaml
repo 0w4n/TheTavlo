@@ -1,0 +1,62 @@
+name: CI/CD Pipeline - Thetavlo
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v4
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Instalar Dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Determinar Entorno y Proyecto GCP
+        id: env-config
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "PROJECT_ID=thetavlo-prod" >> $GITHUB_OUTPUT
+            echo "ENV=production" >> $GITHUB_OUTPUT
+            echo "BUCKET=gs://thetavlo.com" >> $GITHUB_OUTPUT
+          else
+            echo "PROJECT_ID=thetavlo-dev" >> $GITHUB_OUTPUT
+            echo "ENV=development" >> $GITHUB_OUTPUT
+            echo "BUCKET=gs://dev.thetavlo.com" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Autenticar en Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Compilar Frontend y Backend
+        run: pnpm build
+
+      - name: Desplegar Frontend a Google Cloud Storage
+        run: |
+          gsutil rsync -R client/dist ${{ steps.env-config.outputs.BUCKET }}
+          gsutil setmeta -h "Cache-Control:public, max-age=3600" ${{ steps.env-config.outputs.BUCKET }}/**
+
+      - name: Desplegar Backend a Cloud Run
+        uses: google-github-actions/deploy-cloud-run@v2
+        with:
+          service: thetavlo-backend
+          image: gcr.io/${{ steps.env-config.outputs.PROJECT_ID }}/thetavlo-backend:${{ github.sha }}
+          region: europe-west1
+          flags: '--min-instances=0 --max-instances=10'
