@@ -35,7 +35,7 @@ RUN pnpm install --prod --frozen-lockfile
 COPY --from=builder /app/dist ./dist
 
 # Exponer el puerto del backend (ej. 3030)
-EXPOSE 3030
+EXPOSE 8080
 
 # Comando para ejecutar la aplicación
 CMD ["pnpm", "run", "start"]

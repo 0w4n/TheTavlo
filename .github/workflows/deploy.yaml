@@ -57,6 +57,15 @@ jobs:
           gsutil rsync -R client/dist ${{ steps.env-config.outputs.BUCKET }}
           gsutil setmeta -h "Cache-Control:public, max-age=3600" ${{ steps.env-config.outputs.BUCKET }}/**
 
+      - name: Autenticar Docker con Google Cloud Registry
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Construir y Subir Imagen Docker del Backend
+        working-directory: ./backend
+        run: |
+          docker build -t gcr.io/${{ steps.env-config.outputs.PROJECT_ID }}/thetavlo-backend:${{ github.sha }} .
+          docker push gcr.io/${{ steps.env-config.outputs.PROJECT_ID }}/thetavlo-backend:${{ github.sha }}
+
       - name: Desplegar Backend a Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
