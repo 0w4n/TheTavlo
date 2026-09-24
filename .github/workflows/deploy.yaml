@@ -55,8 +55,9 @@ jobs:
       - name: Desplegar Frontend a Google Cloud Storage
         run: |
           gsutil rsync -R client/dist ${{ steps.env-config.outputs.BUCKET }}
-          gsutil setmeta -h "Cache-Control:public, max-age=3600" ${{ steps.env-config.outputs.BUCKET }}/**
-
+          # AQUÍ AÑADIMOS EL -m
+          gsutil -m setmeta -h "Cache-Control:public, max-age=3600" ${{ steps.env-config.outputs.BUCKET }}/**
+          
       - name: Autenticar Docker con Google Cloud Registry
         run: gcloud auth configure-docker gcr.io --quiet
 

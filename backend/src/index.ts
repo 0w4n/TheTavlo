@@ -50,7 +50,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  res.send("Hello world!");
+  res.sendFile("index.html")
 });
 
 // export default serverless(app);
