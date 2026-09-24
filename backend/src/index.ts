@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import serverless from "serverless-http";
 import cors from "cors";
 import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -9,7 +8,7 @@ import { appRouter } from "./trpc/root.router.js";
 import { createContext } from "./trpc/context.js";
 
 const app = express();
-const PORT = process.env.EXPRESS_PORT|| 3000;
+const PORT = process.env.EXPRESS_PORT|| 8080;
 const allowedOrigins = (
   process.env.CLIENT_ORIGIN ??
   "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com"
