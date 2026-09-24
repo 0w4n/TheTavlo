@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import type { Firestore } from "firebase-admin/firestore";
+import type { Firestore, QuerySnapshot } from "firebase-admin/firestore";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asOneOf, asString } from "../../trpc/validate.js";
 
@@ -26,7 +26,7 @@ export const migrationRouter = router({
   checkExistingData: protectedProcedure.input((raw) => ({ userId: asString(asObject(raw).userId, "userId") })).query(async ({ ctx, input }) => {
     if (input.userId !== ctx.user.uid) throw new TRPCError({ code: "FORBIDDEN", message: "No puedes consultar los datos de otro usuario." });
     const collections = await Promise.all(COLLECTIONS.map((name) => ctx.db.collection(`users/${input.userId}/${name}`).limit(1).get()));
-    return collections.some((snapshot) => !snapshot.empty);
+    return collections.some((snapshot: QuerySnapshot) => !snapshot.empty);
   }),
 
   migrate: protectedProcedure.input(parseMigrationInput).mutation(async ({ ctx, input }) => {

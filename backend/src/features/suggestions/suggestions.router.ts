@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asString } from "../../trpc/validate.js";
 import { fetchEmojisFromGemini } from "./emojis/getEmoji.js";
@@ -37,7 +38,7 @@ export const suggestionsRouter = router({
   schedule: protectedProcedure.query(async ({ ctx }) => {
     const schedule = await ctx.db.collection("schedule").get();
 
-    return schedule.docs.map((doc) => ({
+    return schedule.docs.map((doc: QueryDocumentSnapshot) => ({
       id: doc.id,
       ...doc.data(),
     }));

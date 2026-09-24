@@ -1,6 +1,11 @@
 import { randomBytes } from "node:crypto";
 import { TRPCError } from "@trpc/server";
-import { FieldValue, type DocumentData, type DocumentReference } from "firebase-admin/firestore";
+import {
+  FieldValue,
+  type DocumentData,
+  type DocumentReference,
+  type QueryDocumentSnapshot,
+} from "firebase-admin/firestore";
 import { protectedProcedure, publicProcedure, router } from "../../trpc/trpc.js";
 import { adminAuth, adminDb } from "../../firebase/config.js";
 import { sendInvitationEmail } from "../../services/resend.js";
@@ -196,7 +201,7 @@ export const invitationsRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Solo el dueño puede listar invitados." });
       }
       const snapshot = await invitation.ref.collection("invitedUsers").get();
-      return snapshot.docs.map((document) => serializeSharedUser(document.data()));
+      return snapshot.docs.map((document: QueryDocumentSnapshot) => serializeSharedUser(document.data()));
     }),
 
   /**

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import type { Firestore } from "firebase-admin/firestore";
+import type { Firestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asString } from "../../trpc/validate.js";
 
@@ -95,7 +95,7 @@ const ownerPanelInput = (raw: unknown) => {
 export const panelsRouter = router({
   all: protectedProcedure.query(async ({ ctx }) => {
     const snapshot = await panelsCollection(ctx).get();
-    return snapshot.docs.map((document) => serializeValue({ id: document.id, ...document.data() }));
+    return snapshot.docs.map((document: QueryDocumentSnapshot) => serializeValue({ id: document.id, ...document.data() }));
   }),
 
   byId: protectedProcedure.input((raw) => ({ id: asString(asObject(raw).id, "id") })).query(async ({ ctx, input }) => {
