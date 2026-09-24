@@ -1,4 +1,5 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
+import type { Firestore } from "firebase-admin/firestore";
 import { adminAuth, adminDb, firebaseApp } from "../firebase/config.js";
 
 export interface AuthedUser {
@@ -10,7 +11,7 @@ export interface AuthedUser {
 
 export interface Context {
   user: AuthedUser | null;
-  db: FirebaseFirestore.Firestore;
+  db: Firestore;
 }
 
 /**

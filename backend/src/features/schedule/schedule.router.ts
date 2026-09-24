@@ -1,4 +1,4 @@
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, type Transaction } from "firebase-admin/firestore";
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asString } from "../../trpc/validate.js";
@@ -134,7 +134,7 @@ export const scheduleRouter = router({
       return { createdVersionIds: [document.id] };
     }
     const previous = ctx.db.doc(`${input.ownerAccountType}/${input.ownerId}/panels/${input.panelId}/schedule/${input.scheduleId}/slotVersions/${String(plan.closePrevious.versionId)}`);
-    const createdIds = await ctx.db.runTransaction(async (transaction: FirebaseFirestore.Transaction) => {
+    const createdIds = await ctx.db.runTransaction(async (transaction: Transaction) => {
       const snapshot = await transaction.get(previous);
       if (!snapshot.exists || snapshot.data()?.status !== "active") throw new Error("La versión ya fue modificada en otro dispositivo.");
       transaction.update(previous, { status: "superseded", validToWeek: plan.closePrevious.validToWeek });

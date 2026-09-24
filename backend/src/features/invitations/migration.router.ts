@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import type { Firestore } from "firebase-admin/firestore";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asOneOf, asString } from "../../trpc/validate.js";
 
@@ -14,7 +15,7 @@ function parseMigrationInput(raw: unknown) {
   };
 }
 
-async function readGuestCollections(db: FirebaseFirestore.Firestore, guestId: string) {
+async function readGuestCollections(db: Firestore, guestId: string) {
   return Promise.all(COLLECTIONS.map(async (name) => ({
     name,
     snapshot: await db.collection(`guests/${guestId}/${name}`).get(),

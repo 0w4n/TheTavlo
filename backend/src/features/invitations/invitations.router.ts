@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { TRPCError } from "@trpc/server";
-import { FieldValue, type DocumentReference } from "firebase-admin/firestore";
+import { FieldValue, type DocumentData, type DocumentReference } from "firebase-admin/firestore";
 import { protectedProcedure, publicProcedure, router } from "../../trpc/trpc.js";
 import { adminAuth, adminDb } from "../../firebase/config.js";
 import { sendInvitationEmail } from "../../services/resend.js";
@@ -113,8 +113,8 @@ function invitationUrl(invitationId: string, token: string): string {
  */
 function serializeInvitation(
   id: string,
-  data: FirebaseFirestore.DocumentData,
-): FirebaseFirestore.DocumentData {
+  data: DocumentData,
+): DocumentData {
   const targetRef = data.targetRef as DocumentReference | undefined;
   return {
     ...data,
@@ -127,8 +127,8 @@ function serializeInvitation(
 }
 
 function serializeSharedUser(
-  data: FirebaseFirestore.DocumentData,
-): FirebaseFirestore.DocumentData {
+  data: DocumentData,
+): DocumentData {
   return {
     ...data,
     createdAt: data.createdAt?.toMillis?.() ?? null,

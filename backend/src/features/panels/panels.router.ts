@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import type { Firestore } from "firebase-admin/firestore";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asString } from "../../trpc/validate.js";
 
@@ -66,14 +67,14 @@ function serializeValue(value: unknown): unknown {
 
 function parseReference(
   value: string | null | undefined,
-  ctx: { user: { uid: string; isAnonymous: boolean }; db: FirebaseFirestore.Firestore },
+  ctx: { user: { uid: string; isAnonymous: boolean }; db: Firestore },
 ) {
   if (!value) return null;
   const accountType = ctx.user.isAnonymous ? "guests" : "users";
   return ctx.db.doc(value.includes("/") ? value : `${accountType}/${ctx.user.uid}/panels/${value}`);
 }
 
-function panelsCollection(ctx: { user: { uid: string; isAnonymous: boolean }; db: FirebaseFirestore.Firestore }) {
+function panelsCollection(ctx: { user: { uid: string; isAnonymous: boolean }; db: Firestore }) {
   const accountType = ctx.user.isAnonymous ? "guests" : "users";
   return ctx.db.collection(`${accountType}/${ctx.user.uid}/panels`);
 }

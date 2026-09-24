@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { router, protectedProcedure } from "../../trpc/trpc.js";
 import { asObject, asString } from "../../trpc/validate.js";
 
@@ -61,7 +62,7 @@ export const widgetsRouter = router({
   all: protectedProcedure.input(parseScope).query(async ({ ctx, input }) => {
     await assertReadable(ctx, input);
     const snapshot = await widgetsCollection(ctx, input).get();
-    return snapshot.docs.map((document: FirebaseFirestore.QueryDocumentSnapshot) => serialize({ id: document.id, ...document.data() }));
+    return snapshot.docs.map((document: QueryDocumentSnapshot) => serialize({ id: document.id, ...document.data() }));
   }),
 
   byId: protectedProcedure.input((raw) => {
