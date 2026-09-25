@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     # Esto selecciona automáticamente el entorno según la rama
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'Dev' }}
     
     steps:
       - name: Checkout Código
