@@ -9,6 +9,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Esto selecciona automáticamente el entorno según la rama
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    
     steps:
       - name: Checkout Código
         uses: actions/checkout@v4
@@ -34,19 +37,24 @@ jobs:
             echo "PROJECT_ID=thetavlo-prod" >> $GITHUB_OUTPUT
             echo "ENV=production" >> $GITHUB_OUTPUT
             echo "BUCKET=gs://thetavlo.com" >> $GITHUB_OUTPUT
+            echo "CIENT_API_URL=https://www.thetavlo.com/api" >> $GITHUB_ENV
           else
             echo "PROJECT_ID=thetavlo-dev" >> $GITHUB_OUTPUT
             echo "ENV=development" >> $GITHUB_OUTPUT
             echo "BUCKET=gs://dev.thetavlo.com" >> $GITHUB_OUTPUT
+            echo "CLIENT_API_URL=https://dev.thetavlo.com/api" >> $GITHUB_ENV
           fi
 
       - name: Autenticar en Google Cloud
         uses: google-github-actions/auth@v2
         with:
+          # Tomará automáticamente la key del Environment correspondiente (development o production)
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Compilar Frontend y Backend
         run: pnpm build
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
 
       - name: Autenticar gsutil
         run: |
@@ -55,9 +63,8 @@ jobs:
       - name: Desplegar Frontend a Google Cloud Storage
         run: |
           gsutil rsync -R client/dist ${{ steps.env-config.outputs.BUCKET }}
-          # AQUÍ AÑADIMOS EL -m
           gsutil -m setmeta -h "Cache-Control:public, max-age=3600" ${{ steps.env-config.outputs.BUCKET }}/**
-          
+
       - name: Autenticar Docker con Google Cloud Registry
         run: gcloud auth configure-docker gcr.io --quiet
 
