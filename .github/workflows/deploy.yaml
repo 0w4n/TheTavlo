@@ -37,12 +37,10 @@ jobs:
             echo "PROJECT_ID=thetavlo-prod" >> $GITHUB_OUTPUT
             echo "ENV=production" >> $GITHUB_OUTPUT
             echo "BUCKET=gs://thetavlo.com" >> $GITHUB_OUTPUT
-            echo "CIENT_API_URL=https://www.thetavlo.com/api" >> $GITHUB_ENV
           else
             echo "PROJECT_ID=thetavlo-dev" >> $GITHUB_OUTPUT
             echo "ENV=development" >> $GITHUB_OUTPUT
             echo "BUCKET=gs://dev.thetavlo.com" >> $GITHUB_OUTPUT
-            echo "CLIENT_API_URL=https://dev.thetavlo.com/api" >> $GITHUB_ENV
           fi
 
       - name: Autenticar en Google Cloud
@@ -54,7 +52,13 @@ jobs:
       - name: Compilar Frontend y Backend
         run: pnpm build
         env:
-          VITE_API_URL: ${{ env.VITE_API_URL }}
+          CLIENT_FIREBASE_API_KEY: ${{ secrets.CLIENT_FIREBASE_API_KEY }}
+          CLIENT_FIREBASE_PROJECT_ID: ${{ secrets.CLIENT_FIREBASE_PROJECT_ID }}
+          CLIENT_FIREBASE_AUTH_DOMAIN: ${{ secrets.CLIENT_FIREBASE_AUTH_DOMAIN }}
+          CLIENT_FIREBASE_STORAGE_BUCKET: ${{ secrets.CLIENT_FIREBASE_STORAGE_BUCKET }}
+          CLIENT_FIREBASE_APP_ID: ${{ secrets.CLIENT_FIREBASE_APP_ID }}
+          CLIENT_FIREBASE_DATABASE_URL: ${{ secrets.CLIENT_FIREBASE_DATABASE_URL }}
+          CLIENT_BACKEND_URI: ${{ secrets.CLIENT_BACKEND_URI }}
 
       - name: Autenticar gsutil
         run: |
@@ -80,4 +84,4 @@ jobs:
           service: thetavlo-backend
           image: gcr.io/${{ steps.env-config.outputs.PROJECT_ID }}/thetavlo-backend:${{ github.sha }}
           region: europe-west1
-          flags: '--min-instances=0 --max-instances=10'
+          flags: '--min-instances=0 --max-instances=3'
