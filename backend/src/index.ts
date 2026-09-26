@@ -55,7 +55,7 @@ app.get("/", (req, res) => {
 
 // export default serverless(app);
 
-app.listen(Number(PORT), "0.0.0.0", (error) => {
+app.listen(Number(PORT), (error) => {
   console.log(`Server is running on port ${PORT}`);
   console.error(error);
 });

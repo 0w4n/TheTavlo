@@ -64,6 +64,8 @@ export function AuthProvider({
   const signInWithGoogle = useCallback(async () => {
     const result = await authService.signInWithGoogle();
 
+    console.log("Auth", result);
+
     if (result.error) {
       dispatch({
         type: "AUTH_ERROR",

@@ -9,9 +9,8 @@ const STORAGE_KEY = "tavlo:onboarding:pending";
  * ni `useWidgets()` directamente para aplicar lo que la persona eligió.
  *
  * localStorage es el puente más simple entre ambos mundos: la página de
- * onboarding guarda acá el plan a medida que se completa cada paso, y
- * `useOnBoardingBootstrap` (que sí corre dentro del árbol autenticado, desde
- * `HomePage`) lo lee una vez que el panel real existe, lo aplica, y lo borra.
+ * onboarding guarda acá el panel elegido, y `useOnBoardingBootstrap` (que sí
+ * corre dentro del árbol autenticado, desde `HomePage`) lo crea y lo borra.
  *
  * Nota: esto es una app real corriendo en el navegador de la persona (no un
  * artifact de Claude.ai) — localStorage es la herramienta correcta acá.
@@ -28,8 +27,8 @@ export function savePendingOnboarding(
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch {
     // Modo privado, cuota llena, etc. No es crítico: en el peor caso el
-    // usuario no ve su espacio personalizado al llegar a /home, pero el
-    // resto del onboarding (y el login) funciona igual.
+    // usuario no ve el panel preparado al llegar a /home, pero el resto del
+    // onboarding (y el login) funciona igual.
   }
 }
 

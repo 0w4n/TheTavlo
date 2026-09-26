@@ -19,8 +19,6 @@
     "@firebase/auth": "^1.13.6",
     "@gsap/react": "^2.1.2",
     "@types/react-resizable": "^3.0.8",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
     "blobatar": "^2.7.0",
     "canvas-confetti": "^1.9.4",
     "d3": "^7.9.0",

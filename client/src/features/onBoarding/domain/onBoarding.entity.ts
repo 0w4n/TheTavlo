@@ -151,12 +151,9 @@ export const FIRST_TASK_TITLE_MAX_LENGTH = 100;
 // ─── Plan completo ──────────────────────────────────────────────────────────
 
 export interface OnboardingPlan {
-  goals: OnboardingGoal[];
-  spaceName: string;
-  spaceColor: number;
-  spaceIcon: string;
-  starterWidget: StarterWidget;
-  firstTask: OnboardingFirstTask | null;
+  panelName: string;
+  panelIcon: string;
+  panelColor: number;
   savedAt: string;
 }
 

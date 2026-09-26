@@ -23,9 +23,10 @@ export default function LoginPage() {
     isSigningInRef.current = true;
     try {
       const isNewUser = await signInWithGoogle();
+      console.log("newUser: ", isNewUser)
       navigate(
         isNewUser
-          ? withReturnTo("/register", returnTo)
+          ? withReturnTo("/login?onBoarding", returnTo)
           : (returnTo ?? "/home"),
         { replace: true },
       );

@@ -150,6 +150,27 @@
   margin-bottom: var(--spacing-6);
 }
 
+.onboarding__panel-preview {
+  width: min(100%, 320px);
+  align-self: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.onboarding__emoji-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-6);
+}
+
+.onboarding__emoji-count {
+  min-width: 5ch;
+  text-align: center;
+  color: var(--color-textSecondary);
+  font-size: var(--font-size-sm);
+}
+
 /* ── Grillas de elección ────────────────────────────────────────────────── */
 
 .onboarding__grid {
@@ -362,7 +383,7 @@
     color-mix(in srgb, var(--color-primary, #0d8f5f) 45%, transparent);
 }
 
-/* ── Paso 5: auth ───────────────────────────────────────────────────────── */
+/* ── Paso 4: auth ───────────────────────────────────────────────────────── */
 
 .onboarding__auth-actions {
   display: flex;

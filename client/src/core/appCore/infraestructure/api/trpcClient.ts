@@ -100,6 +100,18 @@ export async function trpcQuery<T>(path: string, input: unknown): Promise<T> {
   throw new TRPCRequestError("No se pudo autenticar la sesión.", 401, "UNAUTHORIZED");
 }
 
+/** Llama a un procedure público que no necesita sesión de Firebase. */
+export async function trpcPublicQuery<T>(path: string, input: unknown): Promise<T> {
+  const url = `${API_BASE_URL}/api/trpc/${path}?input=${encodeURIComponent(JSON.stringify(input))}`;
+  let res: Response;
+  try {
+    res = await fetch(url);
+  } catch {
+    throw new TRPCRequestError("No se pudo contactar al servidor.", 0);
+  }
+  return handle<T>(res);
+}
+
 /** Llama a un procedure tRPC tipo `mutation` (POST, body JSON). */
 export async function trpcMutation<T>(path: string, input: unknown): Promise<T> {
   const url = `${API_BASE_URL}/api/trpc/${path}`;

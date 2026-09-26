@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
-import { router, protectedProcedure } from "../../trpc/trpc.js";
+import { router, protectedProcedure, publicProcedure } from "../../trpc/trpc.js";
 import { asObject, asString } from "../../trpc/validate.js";
 import { fetchEmojisFromGemini } from "./emojis/getEmoji.js";
 
@@ -14,10 +14,23 @@ export function parseEmojiInput(raw: unknown): EmojiInput {
 
   console.log("Value parsed:", value);
 
-  return {
-    word: value.word === undefined ? "" : asString(value.word, "word"),
-    lang: value.lang === undefined ? "es_es" : asString(value.lang, "lang"),
-  };
+  const word = asString(value.word, "word").trim();
+  const lang =
+    value.lang === undefined ? "es_es" : asString(value.lang, "lang").trim();
+  if (word.length > 80) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: '"word" no puede superar los 80 caracteres.',
+    });
+  }
+  if (lang.length > 20) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: '"lang" no puede superar los 20 caracteres.',
+    });
+  }
+
+  return { word, lang };
 }
 
 export async function getEmojiSuggestions(input: EmojiInput): Promise<Record<string, number>> {
@@ -30,7 +43,7 @@ export async function getEmojiSuggestions(input: EmojiInput): Promise<Record<str
 }
 
 export const suggestionsRouter = router({
-  emoji: protectedProcedure.input(parseEmojiInput).query(async ({ input }) => {
+  emoji: publicProcedure.input(parseEmojiInput).query(async ({ input }) => {
     console.log("Input:", input);
     return getEmojiSuggestions(input);
   }),

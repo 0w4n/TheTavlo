@@ -36,8 +36,7 @@ import { DirtyNoteService } from "#features/dirtyNote/app/DirtyNote.service";
 import { DirtyNoteProvider } from "#features/dirtyNote/presentation/context/DirtyNoteContext";
 import type { User } from "#core/auth/domain/user.entity";
 import { AnnouncerProvider } from "#core/a11y/AnnouncerProvider";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { Analytics } from "@vercel/analytics/react";
+
 // import ComposeProviders from "#core/providers/composeProviders";
 
 // thetavlo.com/ es la landing pública; toda la app vive bajo /app/*
@@ -81,8 +80,6 @@ export default function App() {
   return (
     <>
       <AuthenticatedApp />
-      <SpeedInsights />
-      <Analytics />
     </>
   );
 }
