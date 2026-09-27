@@ -6,6 +6,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import apiRouter from "./router/api.js";
 import { appRouter } from "./trpc/root.router.js";
 import { createContext } from "./trpc/context.js";
+import path from "node:path";
 
 const app = express();
 const PORT = process.env.EXPRESS_PORT|| 8080;
@@ -49,8 +50,8 @@ app.use(
   }),
 );
 
-app.get("/", (req, res) => {
-  res.sendFile("index.html")
+app.use((req, res, next) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.get("/robots.txt", (req, res) => {
