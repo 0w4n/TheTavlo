@@ -87,7 +87,7 @@ export default function App() {
 function AuthenticatedApp() {
   const authRepository = useMemo(() => {
     return new FirebaseAuthRepository(firebaseService.auth);
-  }, [firebaseService.auth]);
+  }, []);
   const migrationRepository = useMemo(() => new TrpcMigrationRepository(), []);
   const authService = useMemo(() => {
     return new AuthService(authRepository, migrationRepository);
@@ -126,13 +126,7 @@ export function ProtectedLayout() {
 
 function AuthenticatedLayout({ user }: { user: User }) {
   console.log("User:", user);
-  // Deps intencionalmente angostas: cacheKey solo debe cambiar si cambian
-  // accountType/id, no en cada nueva referencia de `user`.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const cacheKey = useMemo(
-    () => getPanelsCacheKey(user),
-    [user.accountType, user.id],
-  );
+  const cacheKey = getPanelsCacheKey(user);
 
   const panelsService = useMemo(() => {
     const repository = new FirebasePanelsRepository(

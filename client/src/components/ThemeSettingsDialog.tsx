@@ -69,6 +69,7 @@ export function ThemeSettingsDialog({ onClose }: ThemeSettingsDialogProps) {
           <em>Los cambios todavía no se han guardado</em>
           <button
             onClick={onClose}
+            aria-label="Cerrar ajustes de tema"
             style={{
               background: "transparent",
               border: "none",

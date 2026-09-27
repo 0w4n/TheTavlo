@@ -30,7 +30,7 @@ export function EventsProvider({
     async (eventData: AnyEvent) => {
       dispatch({ type: "CREATE_EVENTS_SUCCESS", payload: eventData });
     },
-    [eventsService]
+    []
   );
 
   useEffect(() => {

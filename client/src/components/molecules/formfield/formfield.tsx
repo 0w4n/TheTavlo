@@ -73,7 +73,7 @@ export const FormField = forwardRef<
         textarea.removeEventListener("input", adjustHeight);
       };
     }
-  }, [props.type, props.type === "textarea" ? props.autoResize : false]);
+  }, [props.type, props.autoResize]);
 
   // Build wrapper classes
   const wrapperClasses = [

@@ -16,13 +16,24 @@ const RiseItem: React.FC<RiseItemProps> = ({
   onClick,
   onStatusChange,
 }) => {
-  const handleCheckboxClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleStatus = () => {
     if (onStatusChange) {
       const newStatus: RiseStatus =
         item.status === "completed" ? "pending" : "completed";
       onStatusChange(item.id, newStatus);
     }
+  };
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleStatus();
+  };
+
+  const handleCheckboxKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== " ") return;
+    e.preventDefault();
+    e.stopPropagation();
+    toggleStatus();
   };
 
   const handleClick = () => {
@@ -46,8 +57,11 @@ const RiseItem: React.FC<RiseItemProps> = ({
           <div
             className="rise-item__checkbox"
             onClick={handleCheckboxClick}
+            onKeyDown={handleCheckboxKeyDown}
             role="checkbox"
             aria-checked={item.status === "completed"}
+            aria-label={`${item.status === "completed" ? "Marcar como pendiente" : "Marcar como completada"}: ${item.title}`}
+            tabIndex={0}
           />
         )}
 

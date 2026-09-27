@@ -34,7 +34,7 @@ export default function PanelRoute() {
   useEffect(() => {
     console.log(data.panel, "seleccionando panel en PanelRoute");
     selectPanel(data.panel);
-  }, [data.panel.id]);
+  }, [data.panel, selectPanel]);
 
   switch (data.kind) {
     case "dashboard":

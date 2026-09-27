@@ -131,7 +131,7 @@ export function Dashboard({ widgetState }: Props) {
     requestAnimationFrame(() => {
       isApplyingEditModeRef.current = false;
     });
-  }, [editMode]);
+  }, [editMode, updateLayout]);
 
   useEffect(() => {
     if (prevEditModeRef.current && !editMode && hasChangesRef.current) {

@@ -55,10 +55,27 @@ export function ThemeProvider({
 
   const [loading, setLoading] = useState(true);
 
-  // Cargar tema guardado
   useEffect(() => {
-    loadTheme();
-  }, []);
+    const loadTheme = async () => {
+      try {
+        const saved = await themeRepository.getThemeConfig();
+        if (saved) {
+          setConfig(saved);
+        } else {
+          const newConfig = await themeRepository.saveThemeConfig(
+            DEFAULT_THEME_CONFIG
+          );
+          setConfig(newConfig);
+        }
+      } catch (error) {
+        console.error("Error loading theme:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadTheme();
+  }, [themeRepository]);
 
   // Escuchar cambios de sistema (para modo auto)
   useEffect(() => {
@@ -72,25 +89,6 @@ export function ThemeProvider({
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, [config.mode]);
-
-  const loadTheme = async () => {
-    try {
-      const saved = await themeRepository.getThemeConfig();
-      if (saved) {
-        setConfig(saved);
-      } else {
-        // Guardar tema por defecto
-        const newConfig = await themeRepository.saveThemeConfig(
-          DEFAULT_THEME_CONFIG
-        );
-        setConfig(newConfig);
-      }
-    } catch (error) {
-      console.error("Error loading theme:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const colors = useMemo(() => ThemeRules.getColors(config), [config]);
   const isDark = useMemo(
