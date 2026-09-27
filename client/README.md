@@ -517,3 +517,14 @@ export const THEME_PRESETS: Record<
 };
 
 ```
+
+## Añadir
+1. User case
+2. Help
+3. About
+4. Security
+5. Templates
+6. Products
+7. Explore
+8. Trust/privacy-policy
+9. 

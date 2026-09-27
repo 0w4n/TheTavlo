@@ -7,4 +7,14 @@
        <lastmod>2026-09-27T15:35:20+00:00</lastmod>
        <priority>1.0000</priority>
   </url>
+  <url>
+       <loc>https://dev.thetavlo.com/sitemap.xml</loc>
+       <lastmod>2026-09-27T15:35:20+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://dev.thetavlo.com/robots.txt</loc>
+       <lastmod>2026-09-27T15:35:20+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
 </urlset>
