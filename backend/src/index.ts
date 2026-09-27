@@ -51,15 +51,15 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get("/robots.txt", (req, res) => {
-  res.sendFile("robots.txt")
+  res.sendFile(path.join(__dirname, 'robots.txt'));
 })
 
 app.get("/sitemap.xml", (req, res) => {
-  res.sendFile("sitemap.xml")
+  res.sendFile(path.join(__dirname, 'sitemap.xml'));
 })
 
 // export default serverless(app);
