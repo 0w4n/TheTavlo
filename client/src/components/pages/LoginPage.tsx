@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import useAuth from "../../core/auth/presentation/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "#components/atoms/button";
@@ -8,7 +8,7 @@ import OnboardingPage from "#features/onBoarding/components/pages/OnboardingPage
 
 import "./LoginPage.css";
 
-export default function LoginPage() {
+export default function LoginPage(): ReactElement {
   useDocumentTitle("Iniciar sesión");
 
   const { signInWithGoogle, state } = useAuth();
