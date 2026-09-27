@@ -2,8 +2,6 @@ packages:
   - "client"
   - "backend"
 
-minimumReleaseAge: 10080
-trustPolicy: no-downgrade
 allowBuilds:
   "@firebase/util": true
   "@google/genai": true
