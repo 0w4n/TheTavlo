@@ -53,6 +53,14 @@ app.get("/", (req, res) => {
   res.sendFile("index.html")
 });
 
+app.get("/robots.txt", (req, res) => {
+  res.sendFile("robots.txt")
+})
+
+app.get("/sitemap.xml", (req, res) => {
+  res.sendFile("sitemap.xml")
+})
+
 // export default serverless(app);
 
 app.listen(Number(PORT), (error) => {

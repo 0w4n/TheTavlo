@@ -78,4 +78,5 @@ export default defineConfig({
     esbuild: {
         drop: ["console", "debugger"],
     },
+    assetsInclude: ["robots.txt", "sitemap.xml"],
 });
