@@ -12,6 +12,7 @@ export interface ButtonProps
   size?: "sm" | "md" | "lg";
   icon?: string;
   iconPosition?: "left" | "right";
+  iconClassName?: string;
   label?: string;
   iconSize?: number;
   iconColor?: string;
@@ -25,6 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = "md",
   icon,
   iconPosition = "left",
+  iconClassName,
   label,
   iconSize,
   iconColor,
@@ -49,19 +51,23 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button className={classes} disabled={disabled || isLoading} {...props}>
       {isLoading ? (
-        <span className="button__icon">Cargando...</span>
+        <>
+          <span className="button__spinner" aria-hidden="true" />
+          <span className="button__sr-only">Cargando…</span>
+          {label && <span aria-hidden="true">{label}</span>}
+        </>
       ) : icon && label ? (
         <>
           {iconPosition === "left" && (
-            <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
+            <Icon name={icon} className={iconClassName} color={iconColor} size={iconSize ?? 24} />
           )}
           <span>{label}</span>
           {iconPosition === "right" && (
-            <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
+            <Icon name={icon} className={iconClassName} color={iconColor} size={iconSize ?? 24} />
           )}
         </>
       ) : icon != undefined ? (
-        <Icon name={icon} color={iconColor} size={iconSize ?? 24} />
+        <Icon name={icon} className={iconClassName} color={iconColor} size={iconSize ?? 24} />
       ) : label ? (
         <span>{label}</span>
       ) : href ? (

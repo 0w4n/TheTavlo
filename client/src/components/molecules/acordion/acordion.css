@@ -99,9 +99,15 @@
     color var(--duration-normal) var(--ease-standard);
 }
 
-/* data-open="true" lo pone el componente React */
+/* data-open="true" lo pone el componente React.
+   Antes el componente intercambiaba IconChevronRight ↔ IconChevronDown (un
+   salto instantáneo, sin transición posible entre dos iconos distintos).
+   Ahora el icono es siempre IconChevronRight y es esta regla la que lo
+   gira de "→" a "↓" (90deg) de forma animada — la transición de `transform`
+   ya estaba declarada arriba en `.chevron`, solo faltaba que algún
+   elemento real tuviera la clase `chevron` para activarla. */
 .acordion__item-trigger[data-open="true"] .chevron {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
   color: var(--color-accent);
 }
 

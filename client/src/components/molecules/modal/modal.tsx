@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ModalProps } from "./modal.types";
 import { ModalHeader, ModalBody, ModalFooter } from "./components";
+import { ModalCloseContext } from "./modal.context";
 
 import "./modal.css";
 
@@ -19,17 +20,24 @@ export function Modal({
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
+  // Antes `onClose(false)` se llamaba de inmediato y el modal desaparecía
+  // en seco; la animación de salida (fadeOut/scaleOut) ya existía en el CSS
+  // pero no la disparaba nadie. Ahora se marca "cerrando" y es el propio
+  // fin de esa animación (onAnimationEnd más abajo) quien llama a onClose.
+  const [isClosing, setIsClosing] = useState(false);
+  const requestClose = () => setIsClosing(true);
+
   // ESC
   useEffect(() => {
     if (!closeOnEscape) return;
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose(false);
+        requestClose();
       }
     };
     document.addEventListener("keydown", onEsc);
     return () => document.removeEventListener("keydown", onEsc);
-  }, [closeOnEscape, onClose]);
+  }, [closeOnEscape]);
 
   // Scroll lock + restore focus
   useEffect(() => {
@@ -74,7 +82,7 @@ export function Modal({
 
   return (
     <div
-      className="modal-overlay"
+      className={`modal-overlay${isClosing ? " modal-overlay--closing" : ""}`}
       role="dialog"
       data-modal-portal
       aria-modal="true"
@@ -84,6 +92,14 @@ export function Modal({
         if (!closeOnBackdropClick) return;
 
         if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+          requestClose();
+        }
+      }}
+      onAnimationEnd={(e) => {
+        // Solo nos interesa el fin de la animación de cierre del propio
+        // overlay (fadeOut), no la del contenedor interior (scaleOut) ni la
+        // de entrada (fadeIn), aunque ambas hagan bubbling hasta aquí.
+        if (isClosing && e.animationName === "fadeOut") {
           onClose(false);
         }
       }}
@@ -94,7 +110,9 @@ export function Modal({
         onClick={(e) => e.stopPropagation()}
         {...props}
       >
-        {children}
+        <ModalCloseContext.Provider value={requestClose}>
+          {children}
+        </ModalCloseContext.Provider>
       </div>
     </div>
   );

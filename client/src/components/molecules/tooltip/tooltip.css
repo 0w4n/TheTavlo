@@ -42,17 +42,36 @@
   word-wrap: break-word;
   
   pointer-events: none;
-  
-  animation: fadeIn var(--duration-fast) var(--easing-out);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Antes solo había fadeIn (opacidad). Cada posición anima también un
+   pequeño desplazamiento hacia el trigger, para que se sienta como que el
+   tooltip "se acerca" en vez de aparecer plano. Se separa de `transform`
+   porque cada posición ya usa `transform` para su propio centrado
+   (translateX/Y -50%) — la animación solo añade la entrada sin pisarlo. */
+.tooltip__content--top { animation: tooltip-in-top var(--duration-fast) var(--easing-out); }
+.tooltip__content--bottom { animation: tooltip-in-bottom var(--duration-fast) var(--easing-out); }
+.tooltip__content--left { animation: tooltip-in-left var(--duration-fast) var(--easing-out); }
+.tooltip__content--right { animation: tooltip-in-right var(--duration-fast) var(--easing-out); }
+
+@keyframes tooltip-in-top {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes tooltip-in-bottom {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes tooltip-in-left {
+  from { opacity: 0; transform: translateY(-50%) translateX(4px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+@keyframes tooltip-in-right {
+  from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
 /* ============================================

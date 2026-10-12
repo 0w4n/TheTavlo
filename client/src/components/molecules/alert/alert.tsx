@@ -40,14 +40,18 @@ export const Alert: React.FC<AlertProps> = ({
 
   const handleDismiss = () => {
     setIsDismissing(true);
+  };
 
-    // Esperar a que termine la animación
-    setTimeout(() => {
+  // Antes: `setTimeout(..., 300)` fijo. Con `prefers-reduced-motion`
+  // activado, la animación real dura ~0ms (ver base/reset.css) pero el
+  // desmontaje igual esperaba los 300ms completos. Esperar al evento real
+  // mantiene ambos casos sincronizados sin tener que leer el media query
+  // aquí también.
+  const handleAnimationEnd = (e: React.AnimationEvent<HTMLDivElement>) => {
+    if (isDismissing && e.animationName === "alert-dismiss-out") {
       setIsVisible(false);
-      if (onDismiss) {
-        onDismiss();
-      }
-    }, 300); // Duración de la animación
+      onDismiss?.();
+    }
   };
 
   if (!isVisible) {
@@ -71,6 +75,7 @@ export const Alert: React.FC<AlertProps> = ({
       role="alert"
       aria-live="polite"
       aria-atomic="true"
+      onAnimationEnd={handleAnimationEnd}
       {...props}
     >
       {/* Icon */}

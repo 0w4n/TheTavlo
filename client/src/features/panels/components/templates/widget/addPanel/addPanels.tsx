@@ -1,14 +1,14 @@
-import { Modal } from "#components/molecules/modal";
-import type { CreatePanelDTO } from "#features/panels/domain/panel.entity";
-import { useState, type SyntheticEvent } from "react";
-import usePanels from "#features/panels/presentation/hooks/usePanels";
-import { Timestamp } from "firebase/firestore";
-import { ReturnType } from "#features/panels/presentation/context/panelsContext.types";
-import { Button } from "#components/atoms/button";
-import { trpcQuery } from "#core/appCore/infraestructure/api/trpcClient";
-import { PanelPreview } from "../panelsWidget";
+import { Modal } from '#components/molecules/modal';
+import type { CreatePanelDTO } from '#features/panels/domain/panel.entity';
+import { useState, type SyntheticEvent } from 'react';
+import usePanels from '#features/panels/presentation/hooks/usePanels';
+import { Timestamp } from 'firebase/firestore';
+import { ReturnType } from '#features/panels/presentation/context/panelsContext.types';
+import { Button } from '#components/atoms/button';
+import { trpcQuery } from '#core/appCore/infraestructure/api/trpcClient';
+import { PanelPreview } from '../panelsWidget';
 
-import "./addPanels.css";
+import './addPanels.css';
 
 interface AddPanelsForm {
   onClose: () => void;
@@ -20,12 +20,12 @@ interface EmojiWithHue {
 }
 
 function normalizeEmojiSuggestions(response: unknown): EmojiWithHue[] {
-  console.log("Pre-Normalize respone: ", response);
+  console.log('Pre-Normalize respone: ', response);
   if (Array.isArray(response)) {
     return response as EmojiWithHue[];
   }
 
-  if (!response || typeof response !== "object") {
+  if (!response || typeof response !== 'object') {
     return [];
   }
 
@@ -36,12 +36,12 @@ function normalizeEmojiSuggestions(response: unknown): EmojiWithHue[] {
   }
 
   // Formato esperado: { "😀": 210, "🧁": 42 }
-  if (entries.every(([, value]) => typeof value === "number")) {
+  if (entries.every(([, value]) => typeof value === 'number')) {
     return entries.map(([emoji, hue]) => ({ emoji, hue: Number(hue) }));
   }
 
   // Compatibilidad con payloads antiguos o invertidos: { "0": "😀", "1": "🌮" }
-  if (entries.every(([, value]) => typeof value === "string")) {
+  if (entries.every(([, value]) => typeof value === 'string')) {
     return entries.map(([index, emoji]) => ({
       emoji: String(emoji),
       hue: Number(index),
@@ -50,34 +50,41 @@ function normalizeEmojiSuggestions(response: unknown): EmojiWithHue[] {
 
   // Compatibilidad con objetos anidados: { "0": { emoji: "😀", hue: 210 } }
   return entries.flatMap(([, value]) => {
-    if (!value || typeof value !== "object" || !("emoji" in value) || !("hue" in value)) {
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      !('emoji' in value) ||
+      !('hue' in value)
+    ) {
       return [];
     }
 
-    return [{
-      emoji: String((value as { emoji: string }).emoji),
-      hue: Number((value as { hue: number }).hue),
-    }];
+    return [
+      {
+        emoji: String((value as { emoji: string }).emoji),
+        hue: Number((value as { hue: number }).hue),
+      },
+    ];
   });
 }
 
-type Step = "name" | "icon" | "review";
+type Step = 'name' | 'icon' | 'review';
 
 export default function AddPanels({ onClose }: AddPanelsForm) {
   const now = Timestamp.now();
 
   const initPanel: CreatePanelDTO = {
     parentId: null,
-    name: "",
+    name: '',
     color: 0,
-    icon: "",
+    icon: '',
     sharedWith: null,
     createdAt: now,
     updatedAt: now,
   };
 
   const [panel, setPanel] = useState<CreatePanelDTO>(initPanel);
-  const [step, setStep] = useState<Step>("name");
+  const [step, setStep] = useState<Step>('name');
   const [suggestedIcons, setSuggestedIcons] = useState<EmojiWithHue[]>([]);
   const [selectedIconIndex, setSelectedIconIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -88,33 +95,35 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
   async function handleNext(e: SyntheticEvent) {
     e.preventDefault();
 
-    if (step === "name") {
+    if (step === 'name') {
       const name = panel.name.trim();
       if (!name) {
-        setError("Escribe un nombre para el panel.");
+        setError('Escribe un nombre para el panel.');
         return;
       }
 
       setError(undefined);
       setIsLoading(true);
       try {
-        const response = await trpcQuery<Record<string, number> | EmojiWithHue[]>("suggestions.emoji", {
+        const response = await trpcQuery<
+          Record<string, number> | EmojiWithHue[]
+        >('suggestions.emoji', {
           word: name,
-          lang: "es_ES",
+          lang: 'es_ES',
         });
 
         const suggestions = normalizeEmojiSuggestions(response);
 
         if (!suggestions || suggestions.length === 0) {
-          setError("No se encontraron emojis para este nombre.");
+          setError('No se encontraron emojis para este nombre.');
           return;
         }
 
         setSuggestedIcons(suggestions);
         setSelectedIconIndex(0);
 
-        console.log("Sugerencias de emojis:", suggestions);
-        
+        console.log('Sugerencias de emojis:', suggestions);
+
         // Aplica automáticamente el primer emoji y su hue correspondiente al panel
         const firstSuggestion = suggestions[0];
         setPanel((current) => ({
@@ -124,19 +133,19 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
           color: firstSuggestion.hue,
         }));
 
-        console.log("Panel sugerido:", panel);
-        
-        setStep("icon");
+        console.log('Panel sugerido:', panel);
+
+        setStep('icon');
       } catch {
-        setError("No se pudieron obtener sugerencias de emojis.");
+        setError('No se pudieron obtener sugerencias de emojis.');
       } finally {
         setIsLoading(false);
       }
       return;
     }
 
-    if (step === "icon") {
-      setStep("review");
+    if (step === 'icon') {
+      setStep('review');
     }
   }
 
@@ -150,7 +159,7 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
       });
       onClose();
     } catch {
-      setError("No se pudo crear el panel.");
+      setError('No se pudo crear el panel.');
     } finally {
       setIsLoading(false);
     }
@@ -158,12 +167,11 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
 
   function selectIcon(index: number) {
     const item = suggestedIcons[index];
-    console.log("IconItem:", item)
+    console.log('IconItem:', item);
     if (!item) return;
 
     setSelectedIconIndex(index);
     console.log(selectedIconIndex);
-    
 
     // Actualiza tanto el icono como el color/hue en el estado para la previsualización
     setPanel((current) => ({
@@ -172,12 +180,12 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
       color: item.hue,
     }));
     console.log(panel);
-    
   }
 
   function previousIcon() {
     if (suggestedIcons.length === 0) return;
-    const prevIndex = (selectedIconIndex - 1 + suggestedIcons.length) % suggestedIcons.length;
+    const prevIndex =
+      (selectedIconIndex - 1 + suggestedIcons.length) % suggestedIcons.length;
     selectIcon(prevIndex);
   }
 
@@ -191,9 +199,11 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
     <>
       <Modal.Header onClose={onClose} title="Nuevo panel"></Modal.Header>
       <Modal.Body className="add-panel__body">
-        {step !== "name" && <PanelPreview panel={panel} />}
-        <form onSubmit={step === "review" ? handleCreatePanels : handleNext} method="post">
-          {step === "name" && (
+        <form
+          onSubmit={step === 'review' ? handleCreatePanels : handleNext}
+          method="post"
+        >
+          {step === 'name' && (
             <Field label="Nombre" required error={error}>
               <input
                 type="text"
@@ -207,11 +217,22 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
             </Field>
           )}
 
-          {step === "icon" && (
+          {step === 'icon' && (
             <Field label="Elige un emoji" required error={error}>
               <div className="emoji-carousel" aria-label="Emojis sugeridos">
-                <Button type="button" variant="ghost" label="Anterior" onClick={previousIcon} />
-                <Button type="button" variant="ghost" label="Siguiente" onClick={nextIcon} />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  label="Anterior"
+                  onClick={previousIcon}
+                />
+                <PanelPreview panel={panel} />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  label="Siguiente"
+                  onClick={nextIcon}
+                />
               </div>
               <span className="emoji-carousel__position">
                 {selectedIconIndex + 1} de {suggestedIcons.length}
@@ -219,11 +240,10 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
             </Field>
           )}
 
-          {step === "review" && (
+          {step === 'review' && (
             <Field label="Opciones del panel" required error={error}>
               <div className="add-panel__summary">
-                <span>{panel.name}</span>
-                <span className="add-panel__summary-icon">{panel.icon}</span>
+                <PanelPreview panel={panel} />
               </div>
             </Field>
           )}
@@ -244,9 +264,15 @@ export default function AddPanels({ onClose }: AddPanelsForm) {
           <Button
             type="button"
             className="add-panel__btn-primary"
-            label={isLoading ? "Cargando..." : step === "review" ? "Añadir panel" : "Continuar"}
+            label={
+              isLoading
+                ? 'Cargando...'
+                : step === 'review'
+                  ? 'Añadir panel'
+                  : 'Continuar'
+            }
             disabled={isLoading}
-            onClick={step === "review" ? handleCreatePanels : handleNext}
+            onClick={step === 'review' ? handleCreatePanels : handleNext}
           />
         </div>
       </Modal.Footer>
@@ -272,7 +298,7 @@ function Field({
   return (
     <div className="field">
       <label className="field__label">
-        {label + "   "}
+        {label + '   '}
 
         {required && (
           <span className="field__required" aria-hidden="true">

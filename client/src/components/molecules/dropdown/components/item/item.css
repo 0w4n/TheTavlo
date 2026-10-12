@@ -24,6 +24,7 @@
 
 .dropdown__item:hover:not(:disabled) {
   background-color: var(--color-surface-hover);
+  transform: translateX(2px);
 }
 
 .dropdown__item:active:not(:disabled) {

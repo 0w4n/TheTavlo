@@ -36,6 +36,23 @@
   background: var(--color-surface, #ffffff);
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  /* Se monta/desmonta entero con `editMode && createPortal(...)` en
+     toolBar.tsx, así que esta animación se reproduce cada vez que entra
+     al modo edición. */
+  animation: dashboard-edit-panel-in var(--duration-normal) var(--easing-spring);
+  transform-origin: bottom right;
+}
+
+@keyframes dashboard-edit-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .DashboardEditPanel button {
@@ -45,8 +62,14 @@
 
   border-radius: 999px;
   background: transparent;
+  transition: background-color var(--duration-fast) var(--easing-out),
+    transform var(--duration-instant) var(--easing-out);
 }
 
 .DashboardEditPanel button:hover {
   background: rgba(0, 0, 0, 0.06);
+}
+
+.DashboardEditPanel button:active {
+  transform: scale(0.9);
 }

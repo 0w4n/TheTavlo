@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helpers ─────────────────────────────────────
+    
+    function isOwner(userId) {
+      return request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    function getShareDoc(sharedId) {
+      return get(
+        /databases/$(database)/documents/shared/$(sharedId)/shareDoc/data
+      );
+    }
+
+    function isSharedUser(sharedId) {
+      let share = getShareDoc(sharedId);
+
+      return share != null
+        && share.data.sharedUser != null
+        && request.auth.uid in share.data.sharedUser
+        && share.data.sharedUser[request.auth.uid].status == "accepted";
+    }
+
+    function getSharedRole(sharedId) {
+      return getShareDoc(sharedId)
+        .data.sharedUser[request.auth.uid].role;
+    }
+
+    function isEditor(sharedId) {
+      return isSharedUser(sharedId)
+        && getSharedRole(sharedId) == "editor";
+    }
+
+    function isViewer(sharedId) {
+      return isSharedUser(sharedId)
+        && getSharedRole(sharedId) == "viewer";
+    }
+
+    // Para documentos panel
+    function canReadPanel(userId) {
+      return isOwner(userId)
+        || (
+          resource.data.sharedWith != null
+          && isSharedUser(resource.data.sharedWith)
+        );
+    }
+
+    function canWritePanel(userId) {
+      return isOwner(userId)
+        || (
+          resource.data.sharedWith != null
+          && isEditor(resource.data.sharedWith)
+        );
+    }
+
+    // Para subcolecciones (widgets, task, event, dirtyNote)
+    function canReadPanelChild(userId, panelId) {
+      let panel = get(
+        /databases/$(database)/documents/users/$(userId)/panels/$(panelId)
+      );
+
+      return isOwner(userId)
+        || (
+          panel.data.sharedWith != null
+          && isSharedUser(panel.data.sharedWith)
+        );
+    }
+
+    function canWritePanelChild(userId, panelId) {
+      let panel = get(
+        /databases/$(database)/documents/users/$(userId)/panels/$(panelId)
+      );
+
+      return isOwner(userId)
+        || (
+          panel.data.sharedWith != null
+          && isEditor(panel.data.sharedWith)
+        );
+    }
+
+    // ─── Shared ────────────────────────────────────
+
+    match /shared/{sharedId} {
+      allow read, create: if request.auth != null;
+
+      match /shareDoc/{docId} {
+        allow read: if request.auth != null;
+
+        // Owner
+        allow create, delete: if request.auth != null
+          && request.auth.uid == request.resource.data.ownerId;
+
+        allow update: if request.auth != null
+          && (
+            request.auth.uid == resource.data.ownerId
+            || request.auth.uid in resource.data.sharedUser
+          );
+      }
+    }
+
+    // ─── User root ─────────────────────────────────
+    
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ─── Panels ─────────────────────────────────────
+
+    match /users/{userId}/panels/{panelId} {
+      // Permitimos la lectura si el usuario es el dueño o si tiene acceso compartido
+      allow read: if isOwner(userId) || (resource.data.sharedWith != null && isSharedUser(resource.data.sharedWith));
+      allow create, update, delete: if canWritePanel(userId);
+    }
+
+    // ─── Widgets ────────────────────────────────────
+
+    match /users/{userId}/panels/{panelId}/widgets/{widgetId} {
+      allow read: if canReadPanelChild(userId, panelId);
+      allow create, update, delete: if canWritePanelChild(userId, panelId);
+    }
+
+    // ─── Tasks ──────────────────────────────────────
+
+    match /users/{userId}/panels/{panelId}/tasks/{taskId} {
+      allow read: if canReadPanelChild(userId, panelId);
+      allow create, update, delete: if canWritePanelChild(userId, panelId);
+    }
+
+    // ─── Events ─────────────────────────────────────
+
+    match /users/{userId}/panels/{panelId}/event/{eventId} {
+      allow read: if canReadPanelChild(userId, panelId);
+      allow create, update, delete: if canWritePanelChild(userId, panelId);
+    }
+
+    // ─── DirtyNote ──────────────────────────────────
+
+    match /users/{userId}/panels/{panelId}/dirtyNote/{dirtyNoteId} {
+      allow read: if canReadPanelChild(userId, panelId);
+      allow create, update, delete: if canWritePanelChild(userId, panelId);
+    }
+
+    // ─── Guest ──────────────────────────────────────
+
+    match /guests/{guestsId}/panels/{panelId} {
+      allow read, write, update, delete: if isOwner(guestsId);
+    }
+
+    match /guests/{guestsId}/panels/{panelId}/widgets/{widgetId} {
+      allow read, write, update, delete: if isOwner(guestsId);
+    }
+    
+    match /guests/{guestsId}/panels/{panelId}/tasks/{taskId} {
+      allow read, write, update, delete: if isOwner(guestsId);
+    }
+
+    match /guests/{guestsId}/panels/{panelId}/dirtyNote/{dirtyNoteId} {
+      allow read, write, update, delete: if isOwner(guestsId);
+    }
+  }
+}

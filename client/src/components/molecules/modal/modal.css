@@ -128,11 +128,11 @@
    CLOSING ANIMATION
    ============================================ */
 
-.modal-backdrop--closing {
+.modal-overlay--closing {
   animation: fadeOut var(--duration-normal) var(--easing-in) forwards;
 }
 
-.modal-backdrop--closing .modal-container {
+.modal-overlay--closing .modal__container {
   animation: scaleOut var(--duration-normal) var(--easing-in) forwards;
 }
 

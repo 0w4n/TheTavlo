@@ -156,10 +156,16 @@
    ============================================ */
 
 .alert--dismissing {
-  animation: slideUp var(--duration-normal) var(--easing-in) forwards;
+  /* Antes: "slideUp" — nombre compartido (con cuerpos DISTINTOS, incluso de
+     sentido opuesto: entrada vs. salida) con rise.css, modal/put.css y
+     addEvent.css. Al no haber CSS Modules, @keyframes es un espacio de
+     nombres global: según el orden de carga del bundle, esta alerta podía
+     terminar reproduciendo una animación de ENTRADA al cerrarse, sin
+     colapsar su alto. Nombre único para sacarlo de esa colisión. */
+  animation: alert-dismiss-out var(--duration-normal) var(--easing-in) forwards;
 }
 
-@keyframes slideUp {
+@keyframes alert-dismiss-out {
   to {
     opacity: 0;
     transform: translateY(-8px);

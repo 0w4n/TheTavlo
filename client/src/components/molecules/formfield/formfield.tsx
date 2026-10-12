@@ -110,8 +110,8 @@ export const FormField = forwardRef<
           role="alert"
           aria-live="polite"
         >
-          <Icon name="IconExclamationCircle" />
-          <span className="form-field__error-icon">{errorMessage}</span>
+          <Icon name="IconExclamationCircle" className="form-field__error-icon" />
+          <span>{errorMessage}</span>
         </span>
       );
     }

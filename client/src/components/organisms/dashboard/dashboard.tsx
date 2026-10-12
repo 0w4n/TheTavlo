@@ -18,9 +18,6 @@ import {
   absoluteStrategy,
   //calcGridCellDimensions,
 } from "react-grid-layout/core";
-import "./dashboard.css";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
 import { useEffect, useRef, useState } from "react";
 import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
 import type { WidgetsState } from "#features/widgets/presentation/context/widgetReducer";
@@ -28,6 +25,10 @@ import LoadingPage from "#components/pages/LoadingPage";
 import ModalPortal from "#components/molecules/modal/portal";
 import AddWidget from "#features/widgets/components/templates/modWidget/addWidget";
 import WidgetErrorBoundary from "#features/widgets/components/templates/base/errorBoundary/WidgetErrorBoundary";
+
+import "./dashboard.css";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 
 function buildInitialLayouts(
   widgets: Widget[]
@@ -174,7 +175,7 @@ export function Dashboard({ widgetState }: Props) {
             {widgetList.map((widget) => (
               <div
                 key={widget.id}
-                style={{ display: "flex", width: "100%", height: "100%", minWidth: 0, minHeight: 0 }}
+                style={{ display: "flex", width: "100%", height: "100%", minWidth: 0, minHeight: "310px" }}
               >
                   <WidgetErrorBoundary>
                     <WidgetContainer type={widget.type} widget={widget} editMode={editMode} />

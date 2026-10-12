@@ -7,6 +7,7 @@ import apiRouter from "./router/api.js";
 import { appRouter } from "./trpc/root.router.js";
 import { createContext } from "./trpc/context.js";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const app = express();
 const PORT = process.env.EXPRESS_PORT|| 8080;
@@ -17,6 +18,7 @@ const allowedOrigins = (
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const __dirname = fileURLToPath(import.meta.url);
 
 app.use(helmet());
 app.use(
@@ -50,7 +52,7 @@ app.use(
   }),
 );
 
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

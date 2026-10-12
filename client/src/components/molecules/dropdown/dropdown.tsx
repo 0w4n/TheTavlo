@@ -20,17 +20,27 @@ export function Dropdown({
   ...props
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  // El menú sigue montado mientras isClosing es true: es lo que permite que
+  // la animación de salida llegue a reproducirse antes de desaparecer del
+  // DOM (antes, `setIsOpen(false)` lo desmontaba en el mismo tick).
+  const [isClosing, setIsClosing] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
   function handleToggle(e: Event | React.SyntheticEvent) {
-    if (!disabled) setIsOpen(!isOpen);
+    if (disabled) return;
+    if (isOpen) {
+      handleClose(e);
+    } else {
+      setIsOpen(true);
+      setIsClosing(false);
+    }
     e.stopPropagation();
   }
 
   function handleClose(e: Event | React.SyntheticEvent) {
     e.stopPropagation();
-    setIsOpen(false);
+    setIsClosing(true);
   }
 
   useEffect(() => {
@@ -104,7 +114,7 @@ export function Dropdown({
         onClick={(e) => handleToggle(e)}
         role="button"
         aria-haspopup="true"
-        aria-expanded={isOpen}
+        aria-expanded={isOpen && !isClosing}
         tabIndex={disabled ? -1 : 0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -119,11 +129,20 @@ export function Dropdown({
 
       {isOpen && (
         <>
-          <div className="dropdown__backdrop" onClick={handleClose} />
           <div
-            className={`dropdown__menu dropdown__menu--${position}`}
+            className={`dropdown__backdrop${isClosing ? " dropdown__backdrop--closing" : ""}`}
+            onClick={handleClose}
+          />
+          <div
+            className={`dropdown__menu dropdown__menu--${position}${isClosing ? " dropdown__menu--closing" : ""}`}
             role="menu"
             aria-orientation="vertical"
+            onAnimationEnd={(e) => {
+              if (isClosing && e.animationName === "dropdown-menu-out") {
+                setIsOpen(false);
+                setIsClosing(false);
+              }
+            }}
           >
             {React.Children.map(children, (child) => {
               if (React.isValidElement(child)) {

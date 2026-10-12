@@ -25,7 +25,8 @@ function AccordionItemComponent({
       <Button
         variant="ghost"
         label={item.title}
-        icon={isOpen ? "IconChevronDown" : "IconChevronRight"}
+        icon="IconChevronRight"
+        iconClassName="chevron"
         id={triggerId}
         aria-expanded={isOpen}
         aria-controls={panelId}

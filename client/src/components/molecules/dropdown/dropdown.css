@@ -37,17 +37,42 @@
 
   padding: var(--spacing-2);
 
-  animation: slideDown var(--duration-fast) var(--easing-out);
+  transform-origin: top center;
+  animation: dropdown-menu-in var(--duration-fast) var(--easing-out);
 }
 
-@keyframes slideDown {
+/* Antes el menú se desmontaba en el mismo tick que `isOpen` pasaba a
+   false — nunca había animación de salida posible, solo de entrada. Ahora
+   dropdown.tsx mantiene el menú montado mientras dure esta animación
+   (ver onAnimationEnd en dropdown.tsx). Nombre de keyframe prefijado con
+   "dropdown-" a propósito: varios componentes de este proyecto reutilizan
+   nombres genéricos como "slideDown"/"fadeIn" en distintos .css — al no
+   haber CSS Modules, @keyframes vive en un único espacio de nombres global
+   y la última definición cargada gana sobre las anteriores con el mismo
+   nombre. */
+.dropdown__menu--closing {
+  animation: dropdown-menu-out var(--duration-fast) var(--easing-in) forwards;
+}
+
+@keyframes dropdown-menu-in {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-8px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-menu-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
   }
 }
 
@@ -103,6 +128,11 @@
   z-index: calc(var(--z-dropdown) - 1);
   background: transparent;
 }
+
+/* Nota: el backdrop del Dropdown es siempre transparente (a diferencia del
+   de Modal), así que no hay nada visible que hacer fade aquí todavía — se
+   deja el gancho de clase puesto por si en el futuro se le da algo de
+   scrim, para que no haya que volver a tocar dropdown.tsx. */
 
 /* ============================================
    RESPONSIVE

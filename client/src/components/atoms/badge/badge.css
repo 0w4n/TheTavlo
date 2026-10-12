@@ -18,6 +18,22 @@
   border-radius: var(--radius-full);
   
   transition: all var(--duration-fast) var(--easing-out);
+
+  /* Pop de entrada: se reproduce cada vez que el badge se monta (p. ej. al
+     crear una tarea o al cambiar de badge de estado, si el consumidor usa
+     `key` para forzar el remount entre variantes). */
+  animation: badge-pop var(--duration-normal) var(--easing-spring);
+}
+
+@keyframes badge-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .badge__collapsed {

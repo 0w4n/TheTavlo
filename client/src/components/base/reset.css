@@ -23,3 +23,20 @@ img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
+
+/* ============================================
+   MOVIMIENTO REDUCIDO
+   El propio design system (thetavlo_design_system.json →
+   accessibility.requirements.motion) exige respetar esta preferencia; no
+   había ningún punto global que lo hiciera. Esto cubre TODAS las
+   transiciones/animaciones de la app (button, modal, accordion, badge...)
+   sin tener que repetir el media query en cada componente.
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

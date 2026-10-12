@@ -1,20 +1,239 @@
+/* ============================================
+   CHECKBOX
+   Reconstruido junto con checkbox.tsx: antes no había caja visual ni
+   checkmark, solo color de fondo en un <input> sin estilizar. El check se
+   dibuja con stroke-dasharray/dashoffset (como si se trazara a mano) en
+   vez de aparecer de golpe.
+   ============================================ */
+
+.input-checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Input nativo: oculto visualmente, no de los lectores de pantalla ni del
+   foco por teclado (mismo patrón que .button__sr-only). */
+.input-checkbox__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Caja visual */
 .input-checkbox {
-    background-color: var(--color-backgroundSecondary) ;
-    color: var(--color-onPrimary);
-}
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
-.input-checkbox:hover {
-    background-color: var(--color-backgroundSecondary);
-}
+  width: 1.25rem;
+  height: 1.25rem;
 
-.input-checkbox:active {
-    background-color: var(--color-primary-darker);
+  background-color: transparent;
+  border: 2px solid var(--color-border, var(--color-border-subtle));
+
+  transition:
+    background-color var(--duration-fast) var(--easing-out),
+    border-color var(--duration-fast) var(--easing-out),
+    transform var(--duration-instant) var(--easing-out);
 }
 
 .input-checkbox__square {
-    border-radius: var(--radius-0);
+  border-radius: var(--radius-sm, 0.25rem);
 }
 
 .input-checkbox__rounded {
-    border-radius: var(--radius-lg);
+  border-radius: var(--radius-full);
+}
+
+/* Check: oculto por defecto, se "dibuja" al marcar */
+.input-checkbox__check {
+  width: 0.85rem;
+  height: 0.85rem;
+  stroke: var(--color-onPrimary, #fff);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transform: scale(0.5);
+  opacity: 0;
+  transition:
+    stroke-dashoffset var(--duration-normal) var(--easing-out),
+    transform var(--duration-normal) var(--easing-spring),
+    opacity var(--duration-fast) var(--easing-out);
+}
+
+/* Estado marcado — selector de hermano adyacente, el input va antes que
+   la caja en el DOM (ver checkbox.tsx). */
+.input-checkbox__native:checked + .input-checkbox {
+  background-color: var(--color-primary, var(--color-accent-500));
+  border-color: var(--color-primary, var(--color-accent-500));
+}
+
+.input-checkbox__native:checked + .input-checkbox .input-checkbox__check {
+  stroke-dashoffset: 0;
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Hover / press — feedback táctil aunque el input esté oculto */
+.input-checkbox__native:hover:not(:disabled) + .input-checkbox {
+  border-color: var(--color-accent-400, var(--color-primary));
+}
+
+.input-checkbox__native:active:not(:disabled) + .input-checkbox {
+  transform: scale(0.9);
+}
+
+/* Foco — visible solo con teclado, sobre la caja (el input real está oculto) */
+.input-checkbox__native:focus-visible + .input-checkbox {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.input-checkbox__native:disabled + .input-checkbox {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Progressive enhancement: en navegadores sin soporte de :has() el único
+   efecto perdido es el cursor del wrapper completo; la caja (regla de
+   arriba) ya queda inequívocamente deshabilitada en todos los casos. */
+.input-checkbox-wrapper:has(.input-checkbox__native:disabled) {
+  cursor: not-allowed;
+}
+
+.input-checkbox__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary, var(--color-textPrimary));
+}/* ============================================
+   CHECKBOX
+   Reconstruido junto con checkbox.tsx: antes no había caja visual ni
+   checkmark, solo color de fondo en un <input> sin estilizar. El check se
+   dibuja con stroke-dasharray/dashoffset (como si se trazara a mano) en
+   vez de aparecer de golpe.
+   ============================================ */
+
+.input-checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Input nativo: oculto visualmente, no de los lectores de pantalla ni del
+   foco por teclado (mismo patrón que .button__sr-only). */
+.input-checkbox__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Caja visual */
+.input-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 1.25rem;
+  height: 1.25rem;
+
+  background-color: transparent;
+  border: 2px solid var(--color-border, var(--color-border-subtle));
+
+  transition:
+    background-color var(--duration-fast) var(--easing-out),
+    border-color var(--duration-fast) var(--easing-out),
+    transform var(--duration-instant) var(--easing-out);
+}
+
+.input-checkbox__square {
+  border-radius: var(--radius-sm, 0.25rem);
+}
+
+.input-checkbox__rounded {
+  border-radius: var(--radius-full);
+}
+
+/* Check: oculto por defecto, se "dibuja" al marcar */
+.input-checkbox__check {
+  width: 0.85rem;
+  height: 0.85rem;
+  stroke: var(--color-onPrimary, #fff);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transform: scale(0.5);
+  opacity: 0;
+  transition:
+    stroke-dashoffset var(--duration-normal) var(--easing-out),
+    transform var(--duration-normal) var(--easing-spring),
+    opacity var(--duration-fast) var(--easing-out);
+}
+
+/* Estado marcado — selector de hermano adyacente, el input va antes que
+   la caja en el DOM (ver checkbox.tsx). */
+.input-checkbox__native:checked + .input-checkbox {
+  background-color: var(--color-primary, var(--color-accent-500));
+  border-color: var(--color-primary, var(--color-accent-500));
+}
+
+.input-checkbox__native:checked + .input-checkbox .input-checkbox__check {
+  stroke-dashoffset: 0;
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Hover / press — feedback táctil aunque el input esté oculto */
+.input-checkbox__native:hover:not(:disabled) + .input-checkbox {
+  border-color: var(--color-accent-400, var(--color-primary));
+}
+
+.input-checkbox__native:active:not(:disabled) + .input-checkbox {
+  transform: scale(0.9);
+}
+
+/* Foco — visible solo con teclado, sobre la caja (el input real está oculto) */
+.input-checkbox__native:focus-visible + .input-checkbox {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.input-checkbox__native:disabled + .input-checkbox {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Progressive enhancement: en navegadores sin soporte de :has() el único
+   efecto perdido es el cursor del wrapper completo; la caja (regla de
+   arriba) ya queda inequívocamente deshabilitada en todos los casos. */
+.input-checkbox-wrapper:has(.input-checkbox__native:disabled) {
+  cursor: not-allowed;
+}
+
+.input-checkbox__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary, var(--color-textPrimary));
 }
