@@ -12,6 +12,7 @@ export interface AuthedUser {
 export interface Context {
   user: AuthedUser | null;
   db: Firestore;
+  appCheckToken: string | null;
 }
 
 /**
@@ -23,10 +24,10 @@ export interface Context {
  */
 export async function createContext({ req }: CreateExpressContextOptions): Promise<Context> {
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) return { user: null, db: adminDb };
+  if (!authHeader?.startsWith("Bearer ")) return { user: null, db: adminDb, appCheckToken: null };
 
   const idToken = authHeader.slice("Bearer ".length).trim();
-  if (!idToken) return { user: null, db: adminDb };
+  if (!idToken) return { user: null, db: adminDb, appCheckToken: null };
   try {
     const decoded = await adminAuth.verifyIdToken(idToken);
     return {
@@ -36,6 +37,7 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
         isAnonymous: decoded.firebase.sign_in_provider === "anonymous",
       },
       db: adminDb,
+      appCheckToken: req.headers["x-firebase-appcheck"] as string | null,
     };
   } catch (error) {
     const verificationError = error as { code?: string; message?: string };
@@ -44,6 +46,6 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
       message: verificationError.message ?? "unknown",
       projectId: firebaseApp.options.projectId ?? "unknown",
     });
-    return { user: null, db: adminDb };
+    return { user: null, db: adminDb, appCheckToken: req.headers["x-firebase-appcheck"] as string | null };
   }
 }

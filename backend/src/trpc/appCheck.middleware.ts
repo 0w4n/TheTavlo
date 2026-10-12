@@ -3,7 +3,7 @@ import { getAppCheck } from "firebase-admin/app-check";
 import { middleware, publicProcedure } from "./trpc.js";
 
 export const requireAppCheckMiddleware = middleware(async ({ ctx, next }) => {
-  const token = ctx.appCheckToken; // leído de header X-Firebase-AppCheck en createContext
+  const token = ctx.appCheckToken;
   if (!token) throw new TRPCError({ code: "UNAUTHORIZED", message: "Falta verificación de app." });
   try {
     await getAppCheck().verifyToken(token);
