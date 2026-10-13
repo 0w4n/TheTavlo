@@ -17,18 +17,18 @@ console.log(firebaseConfig);
 
 class FirebaseService {
   private app: FirebaseApp;
-  private _auth: Auth;
+  private _auth?: Auth;
   private _firestore: Firestore;
   private _analytics: Analytics;
 
   constructor() {
     this.app = initializeApp(firebaseConfig);
-    this._auth = getAuth(this.app);
     this._firestore = getFirestore(this.app);
     this._analytics = getAnalytics(this.app);
   }
 
   get auth(): Auth {
+    this._auth ??= getAuth(this.app);
     return this._auth;
   }
 

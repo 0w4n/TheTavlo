@@ -1,7 +1,6 @@
 import { ProtectedLayout } from "../../App";
 import panelLoader from "./loaders/panel.loader";
 import sharedPanelLoader from "./loaders/sharedPanel.loader";
-import { Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import LoadingPage from "#components/pages/LoadingPage";
 
@@ -15,6 +14,7 @@ const NotFoundPage = lazy(() => import("#components/pages/NotFoundPage"));
 const InvitationGate = lazy(
   () => import("#features/invitations/presentation/pages/InvitationGate"),
 );
+const LandingPage = lazy(() => import("#components/pages/LandingPage"));
 
 export const routes = [
   {
@@ -117,7 +117,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <Navigate to="/home" replace />,
+    element: <LandingPage/>,
   },
   {
     // Única pantalla pública además de /login — ver InvitationGate.tsx:
