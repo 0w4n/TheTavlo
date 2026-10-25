@@ -26,7 +26,8 @@ export function buildInitialLayouts(widgets: Widget[]): ResponsiveLayouts {
         widgetDefaults?.lg ??
         WidgetRules.FALLBACK_LAYOUT.lg;
       const layout = storedLayout ?? fallbackLayout;
-      const columns = DEFAULT_COLS[breakpoint];
+      const breakpointKey = breakpoint as keyof typeof DEFAULT_COLS;
+      const columns = DEFAULT_COLS[breakpointKey];
       const fallbackWidth = isPositiveFinite(fallbackLayout.w)
         ? fallbackLayout.w
         : Math.min(WidgetRules.FALLBACK_LAYOUT.lg.w, columns);
