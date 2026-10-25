@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { statisticRegistry } from "../../infraestructure/statisticDiscovery";
+import { statisticRegistry } from "../../infrastructure/statisticDiscovery";
 import {
   resolveStatistics,
 } from "../../app/statistic.service";

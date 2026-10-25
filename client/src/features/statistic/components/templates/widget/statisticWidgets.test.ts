@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { discoverWidgetDefinitions } from "#features/widgets/infraestructure/widgetDiscovery";
-import { statisticRegistry } from "../../../infraestructure/statisticDiscovery";
+import { discoverWidgetDefinitions } from "#features/widgets/infrastructure/widgetDiscovery";
+import { statisticRegistry } from "../../../infrastructure/statisticDiscovery";
 import { readStatisticIds } from "../../../app/statistic.service";
 
 // Prueba de INTEGRIDAD entre los dos sistemas de plugins: cada widget de
