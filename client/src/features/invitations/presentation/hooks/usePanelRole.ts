@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
-import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
+import { firebaseService } from "#core/appCore/infrastructure/firebase/firebaseConfig";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 
 export type PanelRole = "owner" | "editor" | "viewer" | "unknown" | "loading";

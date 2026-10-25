@@ -4,7 +4,7 @@ import { PanelsService } from "#features/panels/app/panels.service";
 import {
   createFakePanelRepository,
   refTo,
-} from "#features/panels/infraestructure/__fixtures__/fakePanelRepository";
+} from "#features/panels/infrastructure/__fixtures__/fakePanelRepository";
 import type { Panel } from "#features/panels/domain/panel.entity";
 import type { User } from "#core/auth/domain/user.entity";
 import type { LoaderFunctionArgs } from "react-router-dom";
@@ -158,10 +158,10 @@ describe("panelLoader", () => {
   it("una cadena de 3 niveles resuelve con la caché real en 1 sola lectura por lote, y 0 en la segunda visita", async () => {
     const fixture = createFakePanelRepository(panels);
     const { CachedPanelsRepository } = await import(
-      "#features/panels/infraestructure/panelRepository.cached"
+      "#features/panels/infrastructure/panelRepository.cached"
     );
     const { getPanelsCacheKey, __resetAllPanelsCacheForTests } = await import(
-      "#features/panels/infraestructure/panelsCache"
+      "#features/panels/infrastructure/panelsCache"
     );
     __resetAllPanelsCacheForTests();
 

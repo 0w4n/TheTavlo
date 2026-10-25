@@ -19,7 +19,7 @@
 
 /* Micro-feedback: el label se tiñe de acento mientras su input tiene foco */
 .input-wrapper:focus-within .input__label {
-  color: var(--color-accent-500);
+  color: var(--color-ac);
 }
 
 .input__label--required::after {
@@ -143,7 +143,7 @@
 
 /* States */
 .input:hover:not(:disabled) {
-  border-color: var(--color-accent-400);
+  border-color: var(--color-ac4);
 }
 
 .input:hover:not(:disabled) ~ .input__icon {
@@ -151,12 +151,12 @@
 }
 
 .input:focus {
-  border-color: var(--color-accent-500);
-  box-shadow: 0 0 0 3px rgba(107, 125, 246, 0.1);
+  border-color: var(--color-ac);
+  box-shadow: 0 0 0 3px hsl(160.1 84.1% 39.4% / 0.25);
 }
 
 .input:focus ~ .input__icon {
-  color: var(--color-accent-500);
+  color: var(--color-ac);
 }
 
 /* Variant: Error */

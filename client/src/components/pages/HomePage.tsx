@@ -15,6 +15,8 @@ import usePanels from "#features/panels/presentation/hooks/usePanels";
 import LoadingPage from "./LoadingPage";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
 
+import "./HomePage.css";
+
 export default function HomePage() {
   useDocumentTitle("Inicio");
   const { fetchHomePanel } = usePanels();
@@ -161,6 +163,7 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
           {
             type: "dropdown",
             childrenTrigger: <UserAvatar name={state.state.user.userId} />,
+            className: "header__user-dropdown",
             options: [
               {
                 icon: "IconUser",

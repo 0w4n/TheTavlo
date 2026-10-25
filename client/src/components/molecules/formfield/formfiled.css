@@ -60,15 +60,15 @@
 .form-field__input:hover:not(:disabled),
 .form-field__textarea:hover:not(:disabled),
 .form-field__select:hover:not(:disabled) {
-  border-color: var(--color-accent-400);
+  border-color: var(--color-ac4);
 }
 
 /* Focus State */
 .form-field__input:focus,
 .form-field__textarea:focus,
 .form-field__select:focus {
-  border-color: var(--color-accent-500);
-  box-shadow: 0 0 0 3px rgba(107, 125, 246, 0.1);
+  border-color: var(--color-ac);
+  box-shadow: 0 0 0 3px hsl(160.1 84.1% 39.4% / 0.25);
 }
 
 /* Error State */

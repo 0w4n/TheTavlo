@@ -8,7 +8,7 @@ import {
   InvitationApiClient,
   parsePanelDocPath,
   type InvitationAccessResponse,
-} from "../../infraestructure/invitationApiClient";
+} from "../../infrastructure/invitationApiClient";
 
 import "./invitationGate.css";
 

@@ -1,0 +1,16 @@
+/* Las tarjetas se reparten solas según el ancho que le dé el widget. */
+.stat-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--spacing-3, 0.75rem);
+  align-content: start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.stat-view__message {
+  margin: 0;
+  padding: var(--spacing-4, 1rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+}

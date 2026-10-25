@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Timestamp } from "firebase/firestore";
 import { ScheduleService } from "./schedule.service";
-import { createFakeScheduleRepository } from "../infraestructure/__fixtures__/fakeScheduleRepository";
+import { createFakeScheduleRepository } from "../infrastructure/__fixtures__/fakeScheduleRepository";
 import type { Schedule } from "../domain/schedule.entity";
 import type { Subject } from "../domain/subject.entity";
 import type { ClassSlot } from "../domain/classSlot.entity";

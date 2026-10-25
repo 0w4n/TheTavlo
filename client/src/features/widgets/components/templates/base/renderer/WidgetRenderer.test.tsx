@@ -8,7 +8,7 @@ import type { WidgetComponentProps } from "#features/widgets/domain/widgetDefini
 // en las Features.
 const testRegistry = new WidgetRegistry();
 
-vi.mock("#core/widgets/infraestructure/widgetDiscovery", () => ({
+vi.mock("#core/widgets/infrastructure/widgetDiscovery", () => ({
   widgetRegistry: testRegistry,
 }));
 

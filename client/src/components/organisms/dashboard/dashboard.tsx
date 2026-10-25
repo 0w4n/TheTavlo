@@ -145,6 +145,8 @@ export function Dashboard({ widgetState }: Props) {
   const hasLayouts =
     widgetList.length === 0 || layouts.lg?.length === widgetList.length;
 
+    // TODO: Si no hay layouts, es porque el usuario borró todos los widgets y luego recargó la página. En ese caso, hay que reconstruir los layouts a partir de los widgets, porque el backend no guarda layouts vacíos.
+
   if (isLoading) {
     return <LoadingPage />;
   }
@@ -153,8 +155,8 @@ export function Dashboard({ widgetState }: Props) {
   
   return (
     <div className="dashboard" data-edit-mode={editMode} ref={containerRef}>
-      {widgetList.length > 0 ? (
-        mounted && hasLayouts && (
+      {hasLayouts ? (
+        mounted && (
           <ResponsiveGridLayout
             breakpoints={DEFAULT_BREAKPOINTS}
             cols={DEFAULT_COLS}

@@ -7,13 +7,17 @@
   color-scheme: light dark;
 
   --color-textPrimary: hsl(0, 0%, 88%);
-  --color-textSecondary: hsl(0, 0%, 60%);
-  --color-iconColor: hsl(0, 0%, 54%);
+  --color-textSecondary: hsl(0, 0%, 77%);
+  --color-iconColor: hsl(0, 0%, 66%);
   --color-surface: hsl(0, 0%, 8%);
   --color-background: hsl(0, 0%, 14%);
   --color-backgroundSecondary: hsl(0, 0%, 28%);
   --color-surface-hover: hsl(0, 0%, 16%);
   --color-border: hsl(0, 0%, 34%);
+  --color-ac: hsl(160, 76%, 46%); 
+  --color-ac4: hsl(158, 64.5%, 18%);
+  --color-focus: var(--color-ac);
+  --color-focus-ring: hsl(160 84% 40% / 0.25);
 }
 
 :root::selection {

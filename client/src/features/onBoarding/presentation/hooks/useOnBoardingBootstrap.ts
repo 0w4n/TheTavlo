@@ -6,7 +6,7 @@ import { ReturnType } from "#features/panels/presentation/context/panelsContext.
 import {
   clearPendingOnboarding,
   readPendingOnboarding,
-} from "../../infraestructure/onBoardingStorage";
+} from "../../infrastructure/onBoardingStorage";
 /** Crea el panel hijo del onboarding cuando ya existe una sesión autenticada. */
 export function useOnBoardingBootstrap(): void {
   const { state: panelsState, createPanel } = usePanels();

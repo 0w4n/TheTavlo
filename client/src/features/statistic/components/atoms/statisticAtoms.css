@@ -1,0 +1,283 @@
+/* ============================================
+   STATISTIC ATOMS
+   Renderers de los resultados normalizados (kpi, progress, distribution,
+   series, list). Colores vía tokens del tema (con fallback al design system).
+   ============================================ */
+
+/* ── Tonos: cada renderer lee --stat-tone ── */
+.stat-tone--neutral  { --stat-tone: var(--color-textSecondary, hsl(0, 0%, 60%)); }
+.stat-tone--positive { --stat-tone: var(--color-success, #10b981); }
+.stat-tone--warning  { --stat-tone: var(--color-warning, #f59e0b); }
+.stat-tone--danger   { --stat-tone: var(--color-error, #ef4444); }
+.stat-tone--info     { --stat-tone: var(--color-info, #6b7df6); }
+
+.stat-caption {
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  line-height: 1.4;
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+}
+
+/* ── KPI ── */
+.stat-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 0.25rem);
+}
+
+.stat-kpi__main {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--spacing-2, 0.5rem);
+  margin: 0;
+}
+
+.stat-kpi__value {
+  font-size: var(--font-size-3xl, 1.875rem);
+  font-weight: var(--font-weight-bold, 700);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--stat-tone);
+}
+
+.stat-kpi__unit {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+}
+
+.stat-kpi__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1, 0.25rem);
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--stat-tone);
+}
+
+/* ── Progress ring ── */
+.stat-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+  text-align: center;
+}
+
+.stat-ring__svg {
+  width: min(100%, 8.5rem);
+  height: auto;
+}
+
+.stat-ring__track,
+.stat-ring__value {
+  fill: none;
+  stroke-width: 10;
+}
+
+.stat-ring__track {
+  stroke: var(--color-backgroundSecondary, hsl(0, 0%, 28%));
+}
+
+.stat-ring__value {
+  stroke: var(--stat-tone);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--duration-slower, 500ms) var(--easing-out, ease-out);
+}
+
+.stat-ring__label {
+  fill: var(--color-textPrimary, hsl(0, 0%, 88%));
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Distribution ── */
+.stat-dist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 0.75rem);
+}
+
+.stat-dist__bar {
+  display: flex;
+  gap: 2px;
+  height: 0.75rem;
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+  background: var(--color-backgroundSecondary, hsl(0, 0%, 28%));
+}
+
+.stat-dist__segment {
+  min-width: 4px;
+  background: var(--stat-tone);
+  transition: flex-grow var(--duration-slow, 350ms) var(--easing-out, ease-out);
+}
+
+.stat-dist__legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 0.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat-dist__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.stat-dist__swatch {
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius-sm, 0.25rem);
+  background: var(--stat-tone);
+}
+
+.stat-dist__label {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-textPrimary, hsl(0, 0%, 88%));
+}
+
+.stat-dist__count {
+  font-weight: var(--font-weight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-dist__percent {
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+}
+
+/* ── Series (barras) ── */
+.stat-series {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 0.5rem);
+}
+
+.stat-series__bars {
+  display: flex;
+  align-items: stretch;
+  gap: var(--spacing-2, 0.5rem);
+  height: 8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat-series__col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-1, 0.25rem);
+}
+
+.stat-series__value {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+}
+
+.stat-series__track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.stat-series__bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: var(--radius-sm, 0.25rem) var(--radius-sm, 0.25rem) 0 0;
+  background: var(--stat-tone, var(--color-info, #6b7df6));
+  opacity: 0.55;
+  transition: height var(--duration-slow, 350ms) var(--easing-out, ease-out);
+}
+
+.stat-series__col--highlight .stat-series__bar {
+  opacity: 1;
+}
+
+.stat-series__col--highlight .stat-series__value,
+.stat-series__col--highlight .stat-series__label {
+  color: var(--color-textPrimary, hsl(0, 0%, 88%));
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.stat-series__label {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+  white-space: nowrap;
+}
+
+/* ── List ── */
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 0.5rem);
+}
+
+.stat-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 0.25rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3, 0.75rem);
+  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+  border-left: 3px solid var(--stat-tone);
+  border-radius: var(--radius-base, 0.5rem);
+  background: var(--color-backgroundSecondary, hsl(0, 0%, 20%));
+}
+
+.stat-list__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stat-list__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-textPrimary, hsl(0, 0%, 88%));
+}
+
+.stat-list__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-textSecondary, hsl(0, 0%, 60%));
+}
+
+.stat-list__value {
+  flex: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+  color: var(--stat-tone);
+}
+
+/* ── Movimiento reducido (design system: respetar prefers-reduced-motion) ── */
+@media (prefers-reduced-motion: reduce) {
+  .stat-ring__value,
+  .stat-dist__segment,
+  .stat-series__bar {
+    transition: none;
+  }
+}

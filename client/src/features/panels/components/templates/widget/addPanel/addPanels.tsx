@@ -5,7 +5,7 @@ import usePanels from '#features/panels/presentation/hooks/usePanels';
 import { Timestamp } from 'firebase/firestore';
 import { ReturnType } from '#features/panels/presentation/context/panelsContext.types';
 import { Button } from '#components/atoms/button';
-import { trpcQuery } from '#core/appCore/infraestructure/api/trpcClient';
+import { trpcQuery } from '#core/appCore/infrastructure/api/trpcClient';
 import { PanelPreview } from '../panelsWidget';
 
 import './addPanels.css';

@@ -31,12 +31,14 @@ export type HeaderDropDownIconAction = {
   type: "dropdown";
   options: DropdownItemProps[];
   iconTrigger: string;
+  className?: string;
 };
 
 export type HeaderDropDownChildrenAction = {
   type: "dropdown";
   options: DropdownItemProps[];
   childrenTrigger: ReactNode;
+  className?: string;
 };
 
 export type HeaderDropDownAction =

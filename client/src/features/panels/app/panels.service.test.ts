@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { PanelsService } from "./panels.service";
-// import { CachedPanelsRepository } from "../infraestructure/panelRepository.cached";
-import { __resetAllPanelsCacheForTests } from "../infraestructure/panelsCache";
+// import { CachedPanelsRepository } from "../infrastructure/panelRepository.cached";
+import { __resetAllPanelsCacheForTests } from "../infrastructure/panelsCache";
 import {
   createFakePanelRepository,
   refTo,
-} from "../infraestructure/__fixtures__/fakePanelRepository";
+} from "../infrastructure/__fixtures__/fakePanelRepository";
 import type { Panel } from "../domain/panel.entity";
 import { isErr, isOk } from "#core/appCore/domain/AppCore.type";
 import type { Timestamp } from "firebase/firestore";

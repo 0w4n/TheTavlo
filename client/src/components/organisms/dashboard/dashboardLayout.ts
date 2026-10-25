@@ -6,7 +6,7 @@ import {
 } from 'react-grid-layout';
 import type { Widget } from '#features/widgets/domain/widget.entity';
 import { WidgetRules } from '#features/widgets/domain/widget.rules';
-import { widgetRegistry } from '#features/widgets/infraestructure/widgetDiscovery';
+import { widgetRegistry } from '#features/widgets/infrastructure/widgetDiscovery';
 
 function isPositiveFinite(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0;

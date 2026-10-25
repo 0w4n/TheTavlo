@@ -1,4 +1,4 @@
-import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
+import { firebaseService } from "#core/appCore/infrastructure/firebase/firebaseConfig";
 import { onAuthStateChanged, type Auth, type User } from "@firebase/auth";
 
 function getCurrentUser(auth: Auth) {

@@ -1,5 +1,5 @@
 import { ThemeRules } from "#shared/themes/domain/theme.rules";
-import type { FirebaseThemeRepository } from "../../infraestructure/themeRepository.firebase.ts";
+import type { FirebaseThemeRepository } from "../../infrastructure/themeRepository.firebase.ts";
 import type {
   ThemeColors,
   ThemeConfig,

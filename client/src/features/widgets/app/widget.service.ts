@@ -1,7 +1,7 @@
 import type { Unsubscribe } from "firebase/firestore";
 import type { Widget, WidgetType } from "../domain/widget.entity";
 import { WidgetRules } from "../domain/widget.rules";
-import { widgetRegistry } from "../infraestructure/widgetDiscovery";
+import { widgetRegistry } from "../infrastructure/widgetDiscovery";
 import type { WidgetRepository } from "./widgetRepository.interface";
 import { Timestamp } from "firebase/firestore";
 import type { ResponsiveLayouts } from "react-grid-layout";

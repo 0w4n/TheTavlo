@@ -85,7 +85,9 @@ function HeaderActionRenderer({ action }: { action: HeaderAction }) {
       const triggerDropDown = isIconTrigger(action) ? (
         <Button icon={action.iconTrigger} />
       ) : (
-        <Button variant="ghost">{action.childrenTrigger}</Button>
+        <Button variant="ghost" className={action.className}>
+          {action.childrenTrigger}
+        </Button>
       );
 
       return (

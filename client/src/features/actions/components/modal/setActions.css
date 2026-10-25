@@ -1,0 +1,88 @@
+/* ============================================
+   ACTION AGENT MODAL
+   Chat con el asistente (instrucciones + log)
+   ============================================ */
+
+.actionChat {
+  display: flex;
+  flex-direction: column;
+  height: 44dvh;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  color: var(--color-textPrimary);
+  box-sizing: border-box;
+}
+
+.actionChat :focus-visible {
+  outline: 3px solid var(--color-ac);
+  outline-offset: 2px;
+}
+
+/* Log */
+.actionChat__log {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.actionChat__message {
+  max-width: 85%;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+}
+
+.actionChat__message--system {
+  align-self: center;
+  color: var(--color-textSecondary);
+  font-size: 0.85rem;
+}
+
+.actionChat__message--user {
+  align-self: flex-end;
+  background: var(--color-backgroundSecondary);
+}
+
+/* Formulario */
+.actionChat__form {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.875rem;
+}
+
+.actionChat__input {
+  flex: 1;
+  height: 2.75rem;
+  padding: 0 1rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.625rem;
+  color: var(--color-textPrimary);
+  font: inherit;
+}
+
+.actionChat__input:hover {
+  border-color: var(--color-ac4);
+}
+
+.actionChat__submit {
+  height: 2.75rem;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 0.625rem;
+  background: var(--color-ac);
+  color: var(--color-surface);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.actionChat__submit:hover {
+  background: var(--color-ac4);
+}

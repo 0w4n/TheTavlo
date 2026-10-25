@@ -65,10 +65,10 @@ button {
 /* 2.1. Primary */
 .button__primary {
   /* Definición de roles de color para la variante */
-  --button-bg: var(--color-backgroundSecondary);
-  --button-color: var(--color-onPrimary);
-  --button-hover-bg: var(--color-backgroundSecondary);
-  --button-active-bg: var(--color-primary-darker);
+  --button-bg: var(--color-ac);
+  --button-color: hsl(160, 56%, 12%);
+  --button-hover-bg: var(--color-ac4);
+  --button-active-bg: color-mix(in srgb, var(--color-ac) 85%, black);
 
   background-color: var(--button-bg);
   color: var(--button-color);
@@ -85,7 +85,7 @@ button {
 /* 2.2. Secondary (Outline) */
 .button__secondary {
   --button-border: var(--color-border);
-  --button-hover-border: var(--color-primary);
+  --button-hover-border: var(--color-ac);
 
   background-color: transparent;
   color: var(--color-textPrimary);
@@ -113,7 +113,7 @@ button {
 }
 
 .button__ghost:active:not(:disabled) {
-  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  background-color: color-mix(in srgb, var(--color-ac) 15%, transparent);
 }
 
 .button__ghost.button__icon {
@@ -209,7 +209,15 @@ button {
   font-size: 1em; /* Mantiene la proporción 1:1 con la altura de la letra */
   line-height: 1; /* Para centrado vertical perfecto */
   padding: var(--spacing-3);
+}
+
+.button__icon i {
   color: var(--color-iconColor);
+
+}
+
+.button__primary.button__icon i {
+  color: var(--button-color);
 }
 
 /* Las clases de tamaño ya controlan la escala:

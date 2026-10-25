@@ -1,10 +1,10 @@
 import { redirect, type LoaderFunctionArgs } from "react-router-dom";
 import type { Auth } from "firebase/auth";
-import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
+import { firebaseService } from "#core/appCore/infrastructure/firebase/firebaseConfig";
 import { PanelsService } from "#features/panels/app/panels.service";
-import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
-import { CachedPanelsRepository } from "#features/panels/infraestructure/panelRepository.cached";
-import { getPanelsCacheKey } from "#features/panels/infraestructure/panelsCache";
+import { FirebasePanelsRepository } from "#features/panels/infrastructure/panelRepository.firebase";
+import { CachedPanelsRepository } from "#features/panels/infrastructure/panelRepository.cached";
+import { getPanelsCacheKey } from "#features/panels/infrastructure/panelsCache";
 import { isErr } from "#core/appCore/domain/AppCore.type";
 import type { Panel } from "#features/panels/domain/panel.entity";
 import type { User } from "#core/auth/domain/user.entity";

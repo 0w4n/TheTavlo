@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { widgetRegistry } from "#features/widgets/infraestructure/widgetDiscovery";
+import { widgetRegistry } from "#features/widgets/infrastructure/widgetDiscovery";
 import { getLazyWidgetComponent } from "../component/widgetComponentCache";
 import UnknownWidget from "../unknown/UnknownWidget";
 import WidgetSkeleton from "../skeleton/WidgetSkeleton";

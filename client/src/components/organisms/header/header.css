@@ -39,7 +39,7 @@
 }
 
 .header__logo:hover {
-  color: var(--color-accent-400);
+  color: var(--color-ac4);
 }
 
 .header__logo:focus-visible {
@@ -82,7 +82,7 @@
   border: none;
   border-radius: var(--radius-full);
 
-  color: var(--color-primary-500);
+  color: var(--color-ac);
   cursor: pointer;
 
   transition: all var(--duration-fast) var(--easing-out);

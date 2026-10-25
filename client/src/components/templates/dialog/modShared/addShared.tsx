@@ -9,7 +9,7 @@ import usePanels from "#features/panels/presentation/hooks/usePanels";
 import {
   InvitationApiClient,
   UserRole,
-} from "#features/invitations/infraestructure/invitationApiClient";
+} from "#features/invitations/infrastructure/invitationApiClient";
 
 import "./addShared.css";
 

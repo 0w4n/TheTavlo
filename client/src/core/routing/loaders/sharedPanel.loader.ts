@@ -1,7 +1,7 @@
 import { redirect, type LoaderFunctionArgs } from "react-router-dom";
 import { doc } from "firebase/firestore";
-import { firebaseService } from "#core/appCore/infraestructure/firebase/firebaseConfig";
-import { FirebasePanelsRepository } from "#features/panels/infraestructure/panelRepository.firebase";
+import { firebaseService } from "#core/appCore/infrastructure/firebase/firebaseConfig";
+import { FirebasePanelsRepository } from "#features/panels/infrastructure/panelRepository.firebase";
 import { isErr } from "#core/appCore/domain/AppCore.type";
 import type { PanelLoaderData } from "./panel.loader";
 import { getCurrentUser } from "./getCurrentUser";

@@ -2,7 +2,7 @@ import type {
   Widget,
   WidgetType,
 } from "#features/widgets/domain/widget.entity";
-import { widgetRegistry } from "../../../infraestructure/widgetDiscovery";
+import { widgetRegistry } from "../../../infrastructure/widgetDiscovery";
 import { useState } from "react";
 import { Button } from "../../../../../components/atoms/button";
 import { Modal } from "#components/molecules/modal";

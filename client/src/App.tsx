@@ -1,20 +1,20 @@
 import MigrationDialog from '#components/MigrationDialog';
 import AuthService from '#core/auth/app/auth.service';
-import { FirebaseAuthRepository } from '#core/auth/infraestructure/authRepository.firebase';
-import { TrpcMigrationRepository } from '#core/auth/infraestructure/migrationRepository.trpc';
+import { FirebaseAuthRepository } from '#core/auth/infrastructure/authRepository.firebase';
+import { TrpcMigrationRepository } from '#core/auth/infrastructure/migrationRepository.trpc';
 import { AuthProvider } from '#core/auth/presentation/context/authContext';
 import useAuth from '#core/auth/presentation/hooks/useAuth';
 import LoadingPage from '#components/pages/LoadingPage';
 import { useEffect, useMemo } from 'react';
-import { firebaseService } from '#core/appCore/infraestructure/firebase/firebaseConfig';
+import { firebaseService } from '#core/appCore/infrastructure/firebase/firebaseConfig';
 import { PanelsProvider } from '#features/panels/presentation/context/panelsContext';
 import { WidgetsProvider } from '#features/widgets/presentation/context/widgetsContext';
-import { FirebasePanelsRepository } from '#features/panels/infraestructure/panelRepository.firebase';
+import { FirebasePanelsRepository } from '#features/panels/infrastructure/panelRepository.firebase';
 import {
   clearPanelsCache,
   getPanelsCacheKey,
-} from '#features/panels/infraestructure/panelsCache';
-import { FirebaseWidgetRepository } from '#features/widgets/infraestructure/widgetRepository.firebase';
+} from '#features/panels/infrastructure/panelsCache';
+import { FirebaseWidgetRepository } from '#features/widgets/infrastructure/widgetRepository.firebase';
 import { PanelsService } from '#features/panels/app/panels.service';
 import { WidgetService } from '#features/widgets/app/widget.service';
 import { RouterProvider, Navigate, Outlet } from 'react-router-dom';
@@ -23,15 +23,15 @@ import LandingPage from '#components/pages/LandingPage';
 import useGlobalContext from '#core/globalContext/hooks/useGlobalContext';
 import { GlobalContextProvider } from '#core/globalContext/context/globalContext';
 import { InvitationService } from '#features/invitations/app/invitation.service';
-import { FirebaseInvitationRepository } from '#features/invitations/infraestructure/invitationRepository.firebase';
+import { FirebaseInvitationRepository } from '#features/invitations/infrastructure/invitationRepository.firebase';
 import { InvitationProvider } from '#features/invitations/presentation/context/invitationContext';
-import { FirebaseTaskRepository } from '#features/task/infraestructure/taskRepository.firebase';
+import { FirebaseTaskRepository } from '#features/task/infrastructure/taskRepository.firebase';
 import { TasksService } from '#features/task/app/task.service';
 import { TasksProvider } from '#features/task/presentation/context/TasksContext';
 import { EventsProvider } from '#features/events/presentation/context/eventContext';
-import { FirebaseEventRepository } from '#features/events/infraestructure/eventRepository.firebase';
+import { FirebaseEventRepository } from '#features/events/infrastructure/eventRepository.firebase';
 import { EventsService } from '#features/events/app/events.service';
-import { FirebaseDirtyNoteRepository } from '#features/dirtyNote/infraestructure/dirtyNoteRepository.firebase';
+import { FirebaseDirtyNoteRepository } from '#features/dirtyNote/infrastructure/dirtyNoteRepository.firebase';
 import { DirtyNoteService } from '#features/dirtyNote/app/DirtyNote.service';
 import { DirtyNoteProvider } from '#features/dirtyNote/presentation/context/DirtyNoteContext';
 import type { User } from '#core/auth/domain/user.entity';

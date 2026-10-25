@@ -6,7 +6,7 @@ import type {
 } from "#features/widgets/domain/widget.entity";
 import Icon from "#shared/ui/atoms/icons";
 import WidgetRenderer from "../renderer/WidgetRenderer";
-import { widgetRegistry } from "#features/widgets/infraestructure/widgetDiscovery";
+import { widgetRegistry } from "#features/widgets/infrastructure/widgetDiscovery";
 import { getLazyQuickAdd } from "../component/widgetComponentCache";
 import { Dropdown } from "#components/molecules/dropdown";
 

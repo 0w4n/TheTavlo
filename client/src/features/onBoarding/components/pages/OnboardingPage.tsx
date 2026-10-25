@@ -7,10 +7,10 @@ import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 import { Button } from "#components/atoms/button";
 import { Input } from "#components/atoms/input";
 import { Timestamp } from "firebase/firestore";
-import { trpcPublicQuery } from "#core/appCore/infraestructure/api/trpcClient";
+import { trpcPublicQuery } from "#core/appCore/infrastructure/api/trpcClient";
 import type { CreatePanelDTO } from "#features/panels/domain/panel.entity";
 import { PanelPreview } from "#features/panels/components/templates/widget/panelsWidget";
-import { savePendingOnboarding } from "../../infraestructure/onBoardingStorage";
+import { savePendingOnboarding } from "../../infrastructure/onBoardingStorage";
 import { safeReturnTo } from "#core/routing/returnTo";
 
 import StepAuth from "./onBoardingStep/auth.step";

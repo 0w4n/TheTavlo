@@ -222,7 +222,7 @@
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── AppCore.mapper.ts
 │   │   │   │   │   └── AppCore.type.ts
-│   │   │   │   └── infraestructure
+│   │   │   │   └── infrastructure
 │   │   │   │       ├── api
 │   │   │   │       │   └── trpcClient.ts
 │   │   │   │       └── firebase
@@ -235,7 +235,7 @@
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── migration.entity.ts
 │   │   │   │   │   └── user.entity.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── authRepository.firebase.ts
 │   │   │   │   │   └── migrationRepository.firebase.ts
 │   │   │   │   └── presentation
@@ -281,7 +281,7 @@
 │   │   │   │   │   ├── CookingBook.entity.ts
 │   │   │   │   │   ├── CookingRecipe.entity.ts
 │   │   │   │   │   └── CookingRecipe.rules.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── CookingBookRepository.firebase.ts
 │   │   │   │   │   └── cookingBook.converter.ts
 │   │   │   │   └── presentation
@@ -326,7 +326,7 @@
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── calendarEvent.entity.ts
 │   │   │   │   │   └── events.entity.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── event.converter.ts
 │   │   │   │   │   └── eventRepository.firebase.ts
 │   │   │   │   ├── presentation
@@ -345,7 +345,7 @@
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── invitation.entity.ts
 │   │   │   │   │   └── invitation.mapper.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── invitation.converter.ts
 │   │   │   │   │   ├── invitationApiClient.ts
 │   │   │   │   │   └── invitationRepository.firebase.ts
@@ -362,7 +362,7 @@
 │   │   │   ├── marketplace
 │   │   │   │   ├── app
 │   │   │   │   ├── domain
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   └── presentation
 │   │   │   │       ├── context
 │   │   │   │       └── hooks
@@ -381,7 +381,7 @@
 │   │   │   │   │           └── Note.widget.tsx
 │   │   │   │   ├── domain
 │   │   │   │   │   └── note.entity.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── note.converter.ts
 │   │   │   │   │   └── noteRepository.firebase.ts
 │   │   │   │   └── presentation
@@ -409,7 +409,7 @@
 │   │   │   │   │       └── WelcomeForm.tsx
 │   │   │   │   ├── domain
 │   │   │   │   │   └── onBoarding.entity.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   └── onBoardingStorage.ts
 │   │   │   │   └── presentation
 │   │   │   │       └── hooks
@@ -435,7 +435,7 @@
 │   │   │   │   │   ├── panelChain.validator.test.ts
 │   │   │   │   │   ├── panelChain.validator.ts
 │   │   │   │   │   └── panelContext.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── __fixtures__
 │   │   │   │   │   │   └── fakePanelRepository.ts
 │   │   │   │   │   ├── panel.converter.ts
@@ -473,7 +473,7 @@
 │   │   │   │   │   ├── subject.entity.ts
 │   │   │   │   │   ├── weekMath.test.ts
 │   │   │   │   │   └── weekMath.ts
-│   │   │   │   └── infraestructure
+│   │   │   │   └── infrastructure
 │   │   │   │       ├── __fixtures__
 │   │   │   │       │   └── fakeScheduleRepository.ts
 │   │   │   │       ├── schedule.converters.ts
@@ -489,7 +489,7 @@
 │   │   │   │   │   ├── task.entity.ts
 │   │   │   │   │   ├── task.mapper.ts
 │   │   │   │   │   └── task.rule.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── task.converter.ts
 │   │   │   │   │   └── taskRepository.firebase.ts
 │   │   │   │   └── presentation
@@ -534,7 +534,7 @@
 │   │   │       │   ├── widget.entity.ts
 │   │   │       │   ├── widget.rules.ts
 │   │   │       │   └── widgetTemplates.ts
-│   │   │       ├── infraestructure
+│   │   │       ├── infrastructure
 │   │   │       │   ├── widget.converter.ts
 │   │   │       │   └── widgetRepository.firebase.ts
 │   │   │       └── presentation
@@ -544,7 +544,7 @@
 │   │   │           └── hooks
 │   │   │               └── useWidgets.ts
 │   │   ├── shared
-│   │   │   ├── infraestructure
+│   │   │   ├── infrastructure
 │   │   │   │   ├── api
 │   │   │   │   │   └── trpcClient.ts
 │   │   │   │   └── firebase
@@ -556,7 +556,7 @@
 │   │   │   │   │   ├── theme.entity.ts
 │   │   │   │   │   ├── theme.preset.ts
 │   │   │   │   │   └── theme.rules.ts
-│   │   │   │   ├── infraestructure
+│   │   │   │   ├── infrastructure
 │   │   │   │   │   └── themeRepository.firebase.ts
 │   │   │   │   └── presentation
 │   │   │   │       ├── context
