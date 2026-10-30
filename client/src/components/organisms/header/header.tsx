@@ -4,12 +4,9 @@ import "./header.css";
 import { Button } from "#components/atoms/button";
 import ModalPortal from "#components/molecules/modal/portal";
 import { Dropdown } from "#components/molecules/dropdown";
-import { Link } from "react-router-dom";
 
 export const Header: React.FC<HeaderProps> = ({
-  logo,
-  logoText = "TheTavlo",
-  logoHref = "/home",
+  leftContent,
   actions = [],
   rightContent,
   dateTimeItem,
@@ -19,11 +16,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="header" {...props}>
-      {/* Logo */}
-      <Link to={logoHref} className="header__logo">
-        {logo && <span className="header__logo-icon">{logo}</span>}
-        <span>{logoText}</span>
-      </Link>
+      {/* Left: p. ej. el breadcrumb del panel */}
+      {leftContent && <div className="header__left">{leftContent}</div>}
 
       {/* Right Side */}
       <div className="header__right">

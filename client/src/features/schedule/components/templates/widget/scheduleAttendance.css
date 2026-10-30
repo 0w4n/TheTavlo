@@ -1,0 +1,118 @@
+/* Widget "Asistencia" — reparto honesto: presentes / retrasos / faltas / sin marcar */
+
+.sch-bar {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full, 999px);
+}
+.sch-bar[data-large="true"] {
+  height: 10px;
+}
+.sch-bar > span {
+  flex-basis: 0;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.sch-bar > span {
+  min-width: 3px; /* una sola falta entre 40 clases sigue siendo visible */
+}
+
+[data-seg="present"] {
+  --seg: var(--sch-ok);
+}
+[data-seg="late"] {
+  --seg: var(--sch-warn);
+}
+[data-seg="absent"] {
+  --seg: var(--sch-bad);
+}
+.sch-bar > [data-seg="present"],
+.sch-bar > [data-seg="late"],
+.sch-bar > [data-seg="absent"] {
+  background: var(--seg);
+}
+/* Sin marcar: rayado, para distinguirlo sin depender del color */
+.sch-bar > [data-seg="unmarked"] {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--sch-tint-strong) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+.sch-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--spacing-3);
+  margin: var(--spacing-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--sch-muted);
+}
+.sch-legend li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.sch-legend li::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--seg, transparent);
+}
+.sch-legend li[data-seg="unmarked"]::before {
+  background: repeating-linear-gradient(135deg, var(--sch-muted) 0 1.5px, transparent 1.5px 3px);
+}
+
+.sch-subjects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sch-subject {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--spacing-2);
+  row-gap: 6px;
+}
+.sch-subject > .sch-bar {
+  grid-column: 1 / -1;
+}
+.sch-subject__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--c);
+}
+.sch-subject__name {
+  overflow: hidden;
+  font-size: var(--font-size-sm, 0.875rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sch-subject__rate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+}
+.sch-subject[data-below="true"] .sch-subject__rate {
+  color: var(--sch-warn-text);
+}
+
+@container sch (max-width: 280px) {
+  .sch-legend li:nth-child(n + 3) {
+    display: none;
+  }
+}

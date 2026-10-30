@@ -48,7 +48,7 @@ app.use(
   createExpressMiddleware({
     router: appRouter,
     createContext,
-    onError: ({error, path, type}) => { console.log(`ERRO: ${error} on ${path}, with type ${type}`)}
+    onError: ({error, path, type}) => { console.log(`ERROR: ${error} on ${path}, with type ${type}`)}
   }),
 );
 
@@ -62,6 +62,14 @@ app.get("/robots.txt", (req, res) => {
 
 app.get("/sitemap.xml", (req, res) => {
   res.sendFile(path.join(__dirname, 'sitemap.xml'));
+})
+
+app.get("/privacidad", (req, res) => {
+  res.sendFile(path.join(__dirname,'legal/privacidad.html'));
+})
+
+app.get("/terminos", (req, res) => {
+  res.sendFile(path.join(__dirname,'legal/terminos.html'));
 })
 
 // export default serverless(app);

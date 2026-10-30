@@ -5,6 +5,12 @@ import { MemoryRouter } from "react-router-dom";
 // ─── Mocks — el foco de este test es CUÁNDO se abren los modales según los
 // query params de la URL, no el contenido visual de Header/Dashboard/Rise. ─
 
+vi.mock("#core/globalContext/hooks/useGlobalContext", () => ({
+  default: () => ({
+    state: { status: "ready", state: { user: { userId: "user-1" } } },
+  }),
+}));
+
 vi.mock("#core/auth/presentation/hooks/useAuth", () => ({
   default: () => ({ signOut: vi.fn() }),
 }));

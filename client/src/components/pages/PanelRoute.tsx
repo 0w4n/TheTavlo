@@ -1,23 +1,26 @@
-import { useEffect, useRef } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
-import type { Panel } from "#features/panels/domain/panel.entity";
-import type { PanelLoaderData } from "#core/routing/loaders/panel.loader";
-import useAuth from "#core/auth/presentation/hooks/useAuth";
-import usePanels from "#features/panels/presentation/hooks/usePanels";
-import useWidgets from "#features/widgets/presentation/hooks/useWidgets";
-import useTasks from "#features/task/presentation/hooks/useTask";
-import { useEvents } from "#features/events/presentation/hooks/useEvents";
-import { Dashboard } from "#components/organisms/dashboard/dashboard";
-import { Header } from "#components/organisms/header";
-import PanelLocationBar from "#components/organisms/panelLocationBar/panelLocationBar";
-import { EditModeButton } from "#components/molecules/toolbar/toolBar";
-import { DateTimeBadge } from "#components/atoms/datetimebadge";
-import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
-import TaskListPage from "./TaskListPage";
-import CalendarListPage from "#features/events/components/pages/CalendarListPage";
-import LoadingPage from "./LoadingPage";
-import AddShared from "#components/templates/dialog/modShared/addShared";
-import { usePanelRole } from "#features/invitations/presentation/hooks/usePanelRole";
+import { useEffect, useRef } from 'react';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import type { Panel } from '#features/panels/domain/panel.entity';
+import type { PanelLoaderData } from '#core/routing/loaders/panel.loader';
+import useAuth from '#core/auth/presentation/hooks/useAuth';
+import usePanels from '#features/panels/presentation/hooks/usePanels';
+import useWidgets from '#features/widgets/presentation/hooks/useWidgets';
+import useTasks from '#features/task/presentation/hooks/useTask';
+import { useEvents } from '#features/events/presentation/hooks/useEvents';
+import { Dashboard } from '#components/organisms/dashboard/dashboard';
+import { Header } from '#components/organisms/header';
+import PanelLocationBar from '#components/organisms/panelLocationBar/panelLocationBar';
+import { EditModeButton } from '#components/molecules/toolbar/toolBar';
+import { DateTimeBadge } from '#components/atoms/datetimebadge';
+import { Modal, ModalHeader, ModalBody } from '#components/molecules/modal';
+import TaskListPage from './TaskListPage';
+import CalendarListPage from '#features/events/components/pages/CalendarListPage';
+import LoadingPage from './LoadingPage';
+import AddShared from '#components/templates/dialog/modShared/addShared';
+import Breadcrumb from '#components/molecules/breadcrumb/breadcrumb';
+import { buildUserMenuAction } from '#components/organisms/header/userMenuAction';
+import useGlobalContext from '#core/globalContext/hooks/useGlobalContext';
+import { usePanelRole } from '#features/invitations/presentation/hooks/usePanelRole';
 
 /**
  * Único componente para toda la cadena `home/:pid[/:pid...]`. Antes había
@@ -32,14 +35,14 @@ export default function PanelRoute() {
   // cadena — nunca uno intermedio. Esto reemplaza el `selectPanel(panelData)`
   // que antes vivía en PanelsPage.tsx con el mismo comportamiento.
   useEffect(() => {
-    console.log(data.panel, "seleccionando panel en PanelRoute");
+    console.log(data.panel, 'seleccionando panel en PanelRoute');
     selectPanel(data.panel);
   }, [data.panel, selectPanel]);
 
   switch (data.kind) {
-    case "dashboard":
+    case 'dashboard':
       return <PanelDashboard panel={data.panel} panels={data.panels} />;
-    case "task-list":
+    case 'task-list':
       return (
         <PanelChrome
           panel={data.panel}
@@ -50,7 +53,7 @@ export default function PanelRoute() {
           <TaskListPage panel={data.panel} />
         </PanelChrome>
       );
-    case "task-detail":
+    case 'task-detail':
       return (
         <PanelChrome
           panel={data.panel}
@@ -62,7 +65,7 @@ export default function PanelRoute() {
           <TaskDetailModal taskId={data.taskId} />
         </PanelChrome>
       );
-    case "calendar":
+    case 'calendar':
       return (
         <PanelChrome
           panel={data.panel}
@@ -73,7 +76,7 @@ export default function PanelRoute() {
           <CalendarListPage panel={data.panel} />
         </PanelChrome>
       );
-    case "event-detail":
+    case 'event-detail':
       return (
         <PanelChrome
           panel={data.panel}
@@ -97,6 +100,7 @@ function PanelDashboard({ panel, panels }: { panel: Panel; panels: Panel[] }) {
     <>
       <PanelHeader
         panel={panel}
+        panels={panels}
         onSignOut={signOut}
         leftAction={
           <EditModeButton
@@ -128,12 +132,14 @@ function PanelChrome({
   const { signOut } = useAuth();
   return (
     <>
-      <PanelHeader panel={panel} onSignOut={signOut} />
-      <PanelLocationBar
+      <PanelHeader
+        panel={panel}
         panels={panels}
         viewLabel={viewLabel}
         viewIcon={viewIcon}
+        onSignOut={signOut}
       />
+      <PanelLocationBar panels={panels} viewLabel={viewLabel} />
       {children}
     </>
   );
@@ -141,85 +147,83 @@ function PanelChrome({
 
 function PanelHeader({
   panel,
+  panels,
+  viewLabel,
+  viewIcon,
   onSignOut,
   leftAction,
 }: {
   panel: Panel;
+  /** Cadena [home, ..., panel actual] — alimenta el breadcrumb del header. */
+  panels: Panel[];
+  viewLabel?: string;
+  viewIcon?: string;
   onSignOut: () => void;
   /** Ej. el botón de modo edición — solo tiene sentido en el dashboard de widgets. */
   leftAction?: React.ReactNode;
 }) {
   const headerRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
+  const { state: globalState } = useGlobalContext();
   // Solo dueño/editor pueden compartir (Q3 + assertCanManageSharing en el
   // backend) — un VIEWER ni siquiera debería ver la opción.
   const panelRole = usePanelRole();
-  const canShare = panelRole === "owner" || panelRole === "editor";
+  const canShare = panelRole === 'owner' || panelRole === 'editor';
+  const userId =
+    globalState.status === 'ready' ? globalState.state.user.userId : '';
 
   useEffect(() => {
-    if (panelRole === "unknown") navigate("/home", { replace: true });
+    if (panelRole === 'unknown') navigate('/home', { replace: true });
   }, [navigate, panelRole]);
 
   useEffect(() => {
     headerRef.current?.style.setProperty(
-      "background-color",
-      `hsl(${panel.color}, 100%, 20%)`,
+      'background-color',
+      `hsl(${panel.color}, 100%, 20%)`
     );
   }, [panel.color]);
 
+  // Mismo header que Home: modo edición + avatar con dropdown. Las opciones
+  // de compartir viven dentro de ese dropdown, antes de Ajustes.
   const actions = [
     ...(leftAction
-      ? [{ type: "children" as const, children: leftAction }]
+      ? [{ type: 'children' as const, children: leftAction }]
       : []),
-    ...(canShare
-      ? [
-          {
-            type: "dropdown" as const,
-            iconTrigger: "IconUserPlus",
-            options: [
-              {
-                icon: "IconMail",
-                label: "Invitar por correo",
-                portalModal: true as const,
-                render: (onClose: () => void) => (
-                  <AddShared type="private" onClose={onClose} />
-                ),
-              },
-              {
-                icon: "IconLink",
-                label: "Copiar enlace público",
-                portalModal: true as const,
-                render: (onClose: () => void) => (
-                  <AddShared type="public" onClose={onClose} />
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
-    {
-      type: "dropdown" as const,
-      iconTrigger: "IconUser",
-      options: [
-        {
-          icon: "IconSettings",
-          label: "Ajustes",
-          onClick: () => {
-            window.location.href = "/app/settings";
-          },
-        },
-        {
-          icon: "IconLogout",
-          label: "Cerrar Sesión",
-          danger: true,
-          onClick: onSignOut,
-        },
-      ],
-    },
+    buildUserMenuAction({
+      userId,
+      onSignOut,
+      extraOptions: canShare
+        ? [
+            {
+              icon: 'IconMail',
+              label: 'Invitar por correo',
+              portalModal: true as const,
+              render: (onClose: () => void) => (
+                <AddShared type="private" onClose={onClose} />
+              ),
+            },
+            {
+              icon: 'IconLink',
+              label: 'Copiar enlace público',
+              portalModal: true as const,
+              render: (onClose: () => void) => (
+                <AddShared type="public" onClose={onClose} />
+              ),
+            },
+          ]
+        : [],
+    }),
   ];
 
   return (
     <Header
+      leftContent={
+        <Breadcrumb
+          panels={panels}
+          currentLabel={viewLabel}
+          currentIcon={viewIcon}
+        />
+      }
       actions={actions}
       dateTimeItem={<DateTimeBadge onClick={() => {}} />}
     />
@@ -238,7 +242,7 @@ function TaskDetailModal({ taskId }: { taskId: string }) {
 
   const { state } = useTasks();
 
-  if (state.status !== "task") {
+  if (state.status !== 'task') {
     return <LoadingPage />;
   }
 
@@ -246,7 +250,7 @@ function TaskDetailModal({ taskId }: { taskId: string }) {
 
   return (
     <Modal onClose={close}>
-      <ModalHeader title={task ? task.title : "Tarea"} onClose={close} />
+      <ModalHeader title={task ? task.title : 'Tarea'} onClose={close} />
       <ModalBody>
         {task ? <p>{task.title}</p> : <p>No se encontró la tarea.</p>}
       </ModalBody>
@@ -262,14 +266,14 @@ function EventDetailModal({ eventId }: { eventId: string }) {
   const close = () => navigate(-1);
 
   const { state } = useEvents();
-  if (state.status !== "events") {
+  if (state.status !== 'events') {
     return <LoadingPage />;
   }
   const event = state.event.find((e) => e.id === eventId);
 
   return (
     <Modal onClose={close}>
-      <ModalHeader title={event ? event.name : "Evento"} onClose={close} />
+      <ModalHeader title={event ? event.name : 'Evento'} onClose={close} />
       <ModalBody>
         {event ? <p>{event.name}</p> : <p>No se encontró el evento.</p>}
       </ModalBody>

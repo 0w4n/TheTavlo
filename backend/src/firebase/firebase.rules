@@ -143,6 +143,11 @@ service cloud.firestore {
       allow create, update, delete: if canWritePanelChild(userId, panelId);
     }
 
+    match /pluginCatalog/{id}  { allow read, write: if false; }
+    match /pluginReleases/{id} { allow read, write: if false; }
+    match /{type}/{uid}/installedPlugins/{id} { allow read, write: if false; }
+    match /{type}/{uid}/panels/{p}/widgets/{w}/pluginData/{d} { allow read, write: if false; }
+
     // ─── Guest ──────────────────────────────────────
 
     match /guests/{guestsId}/panels/{panelId} {

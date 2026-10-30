@@ -54,6 +54,16 @@ vi.mock("#features/task/presentation/hooks/useTask", () => ({
   }),
 }));
 
+vi.mock("#core/globalContext/hooks/useGlobalContext", () => ({
+  default: () => ({
+    state: { status: "ready", state: { user: { userId: "user-1" } } },
+  }),
+}));
+
+vi.mock("#components/molecules/breadcrumb/breadcrumb", () => ({
+  default: () => <nav data-testid="breadcrumb" />,
+}));
+
 vi.mock("#features/invitations/presentation/hooks/usePanelRole", () => ({
   usePanelRole: () => "owner",
 }));

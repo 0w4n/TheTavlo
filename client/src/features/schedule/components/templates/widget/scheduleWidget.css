@@ -1,0 +1,259 @@
+/* ============================================================
+   SCHEDULE — base compartida de los widgets
+   Solo usa tokens del tema (--color-*, --spacing-*, --radius-*,
+   --font-size-*): cambian con ThemeProvider (claro/oscuro/presets).
+   El color propio de cada asignatura llega como --c por elemento.
+
+   Los widgets viven dentro de react-grid-layout: su tamaño cambia por
+   arrastre sin que cambie el viewport, así que se adaptan con CONTAINER
+   queries sobre .sch (container-type: inline-size) — no con media queries.
+   (inline-size y no size: el preview del picker los monta en un modal de
+   altura automática, donde un contenedor de tamaño colapsaría.)
+   ============================================================ */
+
+.sch {
+  --sch-accent: var(--color-primary, var(--color-ac, hsl(160 76% 46%)));
+  --sch-text: var(--color-textPrimary, hsl(0 0% 90%));
+  --sch-muted: var(--color-textSecondary, hsl(0 0% 70%));
+  --sch-line: var(--color-borderLight, var(--color-border, hsl(0 0% 30%)));
+  --sch-tint: color-mix(in srgb, var(--sch-text) 6%, transparent);
+  --sch-tint-strong: color-mix(in srgb, var(--sch-text) 13%, transparent);
+  --sch-ok: var(--color-success, hsl(140 60% 50%));
+  --sch-warn: var(--color-warning, hsl(45 100% 50%));
+  --sch-bad: var(--color-error, hsl(4 90% 62%));
+  /* El ámbar puro no llega a AA como TEXTO sobre fondo claro: se oscurece con el
+     color de texto del tema (en oscuro, el texto es claro y el resultado también). */
+  --sch-warn-text: color-mix(in srgb, var(--sch-warn) 40%, var(--sch-text));
+
+  container-type: inline-size;
+  container-name: sch;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  text-align: start; /* .widget__content centra el texto por defecto */
+  color: var(--sch-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sch *,
+.sch *::before,
+.sch *::after {
+  box-sizing: border-box;
+}
+
+.sch :focus-visible {
+  outline: 2px solid var(--sch-accent);
+  outline-offset: 2px;
+}
+
+.sch-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Cabecera ─────────────────────────────────────────────── */
+
+.sch-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.sch-head > div:first-child {
+  min-width: 0;
+}
+
+.sch-title {
+  margin: 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sch-sub {
+  margin: 2px 0 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.3;
+  color: var(--sch-muted);
+}
+
+.sch-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--sch-tint-strong);
+  color: var(--sch-text);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sch-chip[data-tone="warn"] {
+  background: color-mix(in srgb, var(--sch-warn) 22%, transparent);
+}
+
+/* ── Etiquetas de estado (texto + icono, nunca solo color) ── */
+
+.sch-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--sch-tint-strong);
+  color: var(--sch-text);
+  font-size: var(--font-size-xs, 0.75rem);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.sch-tag[data-tone="live"] {
+  background: color-mix(in srgb, var(--sch-accent) 24%, transparent);
+}
+.sch-tag[data-tone="warn"] {
+  background: color-mix(in srgb, var(--sch-warn) 24%, transparent);
+}
+.sch-tag[data-tone="bad"] {
+  background: color-mix(in srgb, var(--sch-bad) 24%, transparent);
+}
+
+/* ── Estados vacío / cargando / error ─────────────────────── */
+
+.sch-state {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  min-height: 7rem;
+  padding: var(--spacing-4);
+  text-align: center;
+  color: var(--sch-muted);
+}
+
+.sch-state > i {
+  font-size: 2rem;
+  color: var(--sch-muted);
+}
+
+.sch-state__title {
+  margin: 0;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--sch-text);
+}
+
+.sch-state__text {
+  margin: 0;
+  max-width: 28ch;
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.4;
+}
+
+.sch-skel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.sch-skel > span {
+  height: 3.25rem;
+  border-radius: var(--radius-md);
+  background: var(--sch-tint);
+  animation: sch-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes sch-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* ── Control de asistencia (3 botones) ────────────────────── */
+
+.sch-att {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--sch-tint);
+}
+
+.sch-att button {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sch-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background var(--duration-fast, 150ms), color var(--duration-fast, 150ms);
+}
+
+.sch-att button:hover:not(:disabled) {
+  background: var(--sch-tint-strong);
+  color: var(--sch-text);
+}
+
+.sch-att button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sch-att button[aria-pressed="true"] {
+  color: hsl(0 0% 8%);
+}
+.sch-att button[aria-pressed="true"][data-status="present"] {
+  background: var(--sch-ok);
+}
+.sch-att button[aria-pressed="true"][data-status="late"] {
+  background: var(--sch-warn);
+}
+.sch-att button[aria-pressed="true"][data-status="absent"] {
+  background: var(--sch-bad);
+}
+
+@media (pointer: coarse) {
+  .sch-att button {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.sch-att-error {
+  grid-column: 3 / -1;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--sch-bad);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sch *,
+  .sch *::before,
+  .sch *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

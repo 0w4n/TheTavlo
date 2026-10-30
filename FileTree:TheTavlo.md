@@ -1,28 +1,85 @@
 # File Tree: TheTavlo
 
+**Generated:** 10/29/2026, 12:27:17 PM
+**Root Path:** `/home/jorge/code/TheTavlo`
+
 ```
+├── .github
+│   └── workflows
+│       └── deploy.yaml
 ├── backend
 │   ├── src
+│   │   ├── assets
+│   │   │   └── fonts
+│   │   │       └── NotoColorEmoji.ttf
 │   │   ├── features
-│   │   │   └── invitations
-│   │   │       └── invitations.router.ts
+│   │   │   ├── cookingBook
+│   │   │   │   └── cookingBook.router.ts
+│   │   │   ├── dirtyNote
+│   │   │   │   └── dirtyNote.router.ts
+│   │   │   ├── events
+│   │   │   │   └── events.router.ts
+│   │   │   ├── invitations
+│   │   │   │   ├── invitations.router.ts
+│   │   │   │   └── migration.router.ts
+│   │   │   ├── note
+│   │   │   │   └── notes.router.ts
+│   │   │   ├── panels
+│   │   │   │   └── panels.router.ts
+│   │   │   ├── plugins
+│   │   │   │   ├── app
+│   │   │   │   │   └── sync.service.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── manifest.schema.ts
+│   │   │   │   │   ├── plugin.rules.ts
+│   │   │   │   │   └── plugin.types.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── buildDispatcher.ts
+│   │   │   │   │   ├── ciCallback.express.ts
+│   │   │   │   │   ├── github.client.ts
+│   │   │   │   │   └── pluginStore.firestore.ts
+│   │   │   │   ├── marketplace
+│   │   │   │   │   └── marketplace.router.ts
+│   │   │   │   ├── runtime
+│   │   │   │   │   └── runtime.router.ts
+│   │   │   │   └── plugins.router.ts
+│   │   │   ├── schedule
+│   │   │   │   └── schedule.router.ts
+│   │   │   ├── suggestions
+│   │   │   │   ├── actions
+│   │   │   │   │   ├── actions.types.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── emojis
+│   │   │   │   │   ├── getEmoji.test.ts
+│   │   │   │   │   ├── getEmoji.ts
+│   │   │   │   │   └── utils.ts
+│   │   │   │   ├── getSchedule.ts
+│   │   │   │   └── suggestions.router.ts
+│   │   │   ├── task
+│   │   │   │   └── tasks.router.ts
+│   │   │   └── widgets
+│   │   │       └── widgets.router.ts
 │   │   ├── firebase
-│   │   │   └── config.ts
+│   │   │   ├── config.ts
+│   │   │   └── firebase.rules
 │   │   ├── router
 │   │   │   ├── api.ts
 │   │   │   └── user.ts
 │   │   ├── services
 │   │   │   └── resend.ts
 │   │   ├── trpc
+│   │   │   ├── allowlist.middleware.ts
+│   │   │   ├── appCheck.middleware.ts
 │   │   │   ├── context.ts
 │   │   │   ├── root.router.ts
 │   │   │   ├── trpc.ts
 │   │   │   └── validate.ts
 │   │   ├── example.http
 │   │   └── index.ts
+│   ├── .dockerignore
+│   ├── Dockerfile
 │   ├── example.env
 │   ├── nodemon.json
-│   ├── package-lock.json
 │   ├── package.json
 │   ├── pnpm-lock.yaml
 │   ├── pnpm-workspace.yaml
@@ -34,10 +91,12 @@
 │   │       └── package.json
 │   ├── public
 │   │   ├── TheTavlo_logo_favicon_dark.ico
-│   │   └── TheTavlo_logo_favicon_light.ico
+│   │   ├── TheTavlo_logo_favicon_light.ico
+│   │   ├── robots.txt
+│   │   └── sitemap.xml
 │   ├── src
 │   │   ├── assets
-│   │   │   └── TheTavlo logo.svg
+│   │   │   └── TheTavlo_logo.svg
 │   │   ├── components
 │   │   │   ├── atoms
 │   │   │   │   ├── badge
@@ -55,6 +114,11 @@
 │   │   │   │   │   ├── chart.tsx
 │   │   │   │   │   ├── chart.types.ts
 │   │   │   │   │   └── index.ts
+│   │   │   │   ├── checkbox
+│   │   │   │   │   ├── checkbox.css
+│   │   │   │   │   ├── checkbox.tsx
+│   │   │   │   │   ├── checkbox.types.ts
+│   │   │   │   │   └── index.ts
 │   │   │   │   ├── datetimebadge
 │   │   │   │   │   ├── datetimebadge.css
 │   │   │   │   │   ├── datetimebadge.tsx
@@ -70,9 +134,12 @@
 │   │   │   │   │   ├── quote.css
 │   │   │   │   │   ├── quote.tsx
 │   │   │   │   │   └── quote.types.ts
-│   │   │   │   └── tags
-│   │   │   │       ├── Tag.tsx
-│   │   │   │       └── Tag.types.ts
+│   │   │   │   ├── tags
+│   │   │   │   │   ├── Tag.tsx
+│   │   │   │   │   └── Tag.types.ts
+│   │   │   │   └── userAvatar
+│   │   │   │       ├── UserAvatar.test.tsx
+│   │   │   │       └── UserAvatar.tsx
 │   │   │   ├── base
 │   │   │   │   ├── colors.css
 │   │   │   │   ├── reset.css
@@ -134,6 +201,7 @@
 │   │   │   │   │   │   ├── index.tsx
 │   │   │   │   │   │   └── modalPortal.types.ts
 │   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── modal.context.ts
 │   │   │   │   │   ├── modal.css
 │   │   │   │   │   ├── modal.tsx
 │   │   │   │   │   ├── modal.types.ts
@@ -162,6 +230,8 @@
 │   │   │   │   │   ├── dashboard.css
 │   │   │   │   │   ├── dashboard.tsx
 │   │   │   │   │   ├── dashboard.types.ts
+│   │   │   │   │   ├── dashboardLayout.test.ts
+│   │   │   │   │   ├── dashboardLayout.ts
 │   │   │   │   │   └── index.ts
 │   │   │   │   ├── emptyState
 │   │   │   │   │   ├── emptystate.css
@@ -174,7 +244,8 @@
 │   │   │   │   │   ├── header.css
 │   │   │   │   │   ├── header.tsx
 │   │   │   │   │   ├── header.types.ts
-│   │   │   │   │   └── index.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   └── userMenuAction.tsx
 │   │   │   │   └── panelLocationBar
 │   │   │   │       ├── panelLocationBar.css
 │   │   │   │       └── panelLocationBar.tsx
@@ -182,11 +253,20 @@
 │   │   │   │   ├── error
 │   │   │   │   │   ├── index.tsx
 │   │   │   │   │   └── style.css
+│   │   │   │   ├── onBoarding
+│   │   │   │   │   ├── SelectionTagForm.tsx
+│   │   │   │   │   ├── WelcomeForm.tsx
+│   │   │   │   │   └── onBoardingPage.tsx
+│   │   │   │   ├── CalendarPage.tsx
 │   │   │   │   ├── Comming.tsx
 │   │   │   │   ├── HomePage.test.tsx
 │   │   │   │   ├── HomePage.tsx
 │   │   │   │   ├── LandingPage.css
 │   │   │   │   ├── LandingPage.tsx
+│   │   │   │   ├── LandingPricing.css
+│   │   │   │   ├── LandingPricing.tsx
+│   │   │   │   ├── LandingShowcase.css
+│   │   │   │   ├── LandingShowcase.tsx
 │   │   │   │   ├── LoadingPage.css
 │   │   │   │   ├── LoadingPage.tsx
 │   │   │   │   ├── LoginPage.css
@@ -201,14 +281,10 @@
 │   │   │   │       ├── modEvent
 │   │   │   │       │   ├── addEvent.css
 │   │   │   │       │   └── addEvent.tsx
-│   │   │   │       ├── modShared
-│   │   │   │       │   ├── addShared.css
-│   │   │   │       │   ├── addShared.tsx
-│   │   │   │       │   └── addShared.type.ts
-│   │   │   │       └── modWidget
-│   │   │   │           ├── addWidget.css
-│   │   │   │           ├── addWidget.tsx
-│   │   │   │           └── delWidget.tsx
+│   │   │   │       └── modShared
+│   │   │   │           ├── addShared.css
+│   │   │   │           ├── addShared.tsx
+│   │   │   │           └── addShared.type.ts
 │   │   │   ├── MigrationDialog.tsx
 │   │   │   ├── ThemeSettingsDialog.tsx
 │   │   │   └── ThemeToggleButton.tsx
@@ -224,8 +300,10 @@
 │   │   │   │   │   └── AppCore.type.ts
 │   │   │   │   └── infrastructure
 │   │   │   │       ├── api
+│   │   │   │       │   ├── trpcClient.test.ts
 │   │   │   │       │   └── trpcClient.ts
 │   │   │   │       └── firebase
+│   │   │   │           ├── firebaseConfig.ts
 │   │   │   │           └── withoutId.ts
 │   │   │   ├── auth
 │   │   │   │   ├── app
@@ -237,7 +315,8 @@
 │   │   │   │   │   └── user.entity.ts
 │   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── authRepository.firebase.ts
-│   │   │   │   │   └── migrationRepository.firebase.ts
+│   │   │   │   │   ├── migrationRepository.firebase.ts
+│   │   │   │   │   └── migrationRepository.trpc.ts
 │   │   │   │   └── presentation
 │   │   │   │       ├── context
 │   │   │   │       │   ├── authContext.tsx
@@ -248,6 +327,7 @@
 │   │   │   │   ├── context
 │   │   │   │   │   ├── globalContex.type.ts
 │   │   │   │   │   ├── globalContext.tsx
+│   │   │   │   │   ├── globalContextReducer.test.ts
 │   │   │   │   │   └── globalContextReducer.ts
 │   │   │   │   ├── hooks
 │   │   │   │   │   └── useGlobalContext.ts
@@ -268,6 +348,15 @@
 │   │   │       ├── routes.tsx
 │   │   │       └── useDocumentTitle.ts
 │   │   ├── features
+│   │   │   ├── actions
+│   │   │   │   ├── app
+│   │   │   │   ├── components
+│   │   │   │   │   ├── modal
+│   │   │   │   │   │   ├── setActions.css
+│   │   │   │   │   │   └── setActions.tsx
+│   │   │   │   │   └── widget
+│   │   │   │   │       └── widget.tsx
+│   │   │   │   └── domain
 │   │   │   ├── cookingBook
 │   │   │   │   ├── app
 │   │   │   │   │   ├── CookingBook.interface.ts
@@ -276,20 +365,89 @@
 │   │   │   │   │   └── template
 │   │   │   │   │       └── widget
 │   │   │   │   │           ├── CookingBook.tsx
-│   │   │   │   │           └── CookingBook.type.ts
+│   │   │   │   │           ├── CookingBook.type.ts
+│   │   │   │   │           └── CookingBook.widget.meta.ts
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── CookingBook.entity.ts
 │   │   │   │   │   ├── CookingRecipe.entity.ts
 │   │   │   │   │   └── CookingRecipe.rules.ts
 │   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── CookingBookRepository.firebase.ts
-│   │   │   │   │   └── cookingBook.converter.ts
+│   │   │   │   │   ├── cookingBook.converter.ts
+│   │   │   │   │   └── cookingBookRepository.trpc.ts
 │   │   │   │   └── presentation
 │   │   │   │       ├── context
 │   │   │   │       │   ├── CookingBookReducer.ts
 │   │   │   │       │   └── CookingContext.tsx
 │   │   │   │       └── hooks
 │   │   │   │           └── useCookingBook.ts
+│   │   │   ├── dirtyNote
+│   │   │   │   ├── app
+│   │   │   │   │   ├── DirtyNote.service.ts
+│   │   │   │   │   └── DirtyNoteRepository.interface.ts
+│   │   │   │   ├── components
+│   │   │   │   │   ├── molecules
+│   │   │   │   │   │   ├── markdownEditor
+│   │   │   │   │   │   │   ├── __tests__
+│   │   │   │   │   │   │   │   ├── MarkdownTextarea.test.tsx
+│   │   │   │   │   │   │   │   └── markdownActions.test.ts
+│   │   │   │   │   │   │   ├── MarkdownTextarea.tsx
+│   │   │   │   │   │   │   ├── MarkdownToolbar.tsx
+│   │   │   │   │   │   │   ├── markdownActions.ts
+│   │   │   │   │   │   │   └── markdownEditor.css
+│   │   │   │   │   │   ├── DirtyNotePreview.tsx
+│   │   │   │   │   │   ├── DirtyNoteStatusBadge.tsx
+│   │   │   │   │   │   ├── DirtyNoteStatusPicker.tsx
+│   │   │   │   │   │   ├── dirtyNotePreview.css
+│   │   │   │   │   │   ├── dirtyNoteStatus.css
+│   │   │   │   │   │   └── dirtyNoteStatus.meta.ts
+│   │   │   │   │   └── templates
+│   │   │   │   │       ├── editor
+│   │   │   │   │       │   ├── DirtyNoteEditor.tsx
+│   │   │   │   │       │   └── dirtyNoteEditor.css
+│   │   │   │   │       ├── modal
+│   │   │   │   │       │   ├── addNote
+│   │   │   │   │       │   │   └── index.tsx
+│   │   │   │   │       │   └── delNote
+│   │   │   │   │       │       └── index.tsx
+│   │   │   │   │       └── widget
+│   │   │   │   │           ├── AddDirtyNote.tsx
+│   │   │   │   │           ├── DirtyNote.widget.meta.ts
+│   │   │   │   │           ├── DirtyNote.widget.tsx
+│   │   │   │   │           ├── Note.widget.meta.ts
+│   │   │   │   │           ├── addDirtyNote.css
+│   │   │   │   │           └── dirtyNoteWidget.css
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── __tests__
+│   │   │   │   │   │   └── DirtyNote.rules.test.ts
+│   │   │   │   │   ├── DirtyNote.entity.ts
+│   │   │   │   │   └── DirtyNote.rules.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── dirtyNote.converter.ts
+│   │   │   │   │   ├── dirtyNotePath.ts
+│   │   │   │   │   ├── dirtyNoteRepository.firebase.ts
+│   │   │   │   │   └── dirtyNoteRepository.trpc.ts
+│   │   │   │   ├── presentation
+│   │   │   │   │   ├── context
+│   │   │   │   │   │   ├── __tests__
+│   │   │   │   │   │   │   └── dirtyNoteReducer.test.ts
+│   │   │   │   │   │   ├── DirtyNoteContext.tsx
+│   │   │   │   │   │   └── dirtyNoteReducer.ts
+│   │   │   │   │   └── hooks
+│   │   │   │   │       ├── __tests__
+│   │   │   │   │       │   └── useDirtyNoteDraft.test.ts
+│   │   │   │   │       ├── useDirtyNote.ts
+│   │   │   │   │       └── useDirtyNoteDraft.ts
+│   │   │   │   └── utils
+│   │   │   │       ├── __tests__
+│   │   │   │       │   ├── downloadDirtyNote.test.ts
+│   │   │   │       │   ├── downloadFile.test.ts
+│   │   │   │       │   ├── excerpt.test.ts
+│   │   │   │       │   └── renderMarkdown.test.ts
+│   │   │   │       ├── downloadDirtyNote.ts
+│   │   │   │       ├── downloadFile.ts
+│   │   │   │       ├── excerpt.ts
+│   │   │   │       └── renderMarkdown.ts
 │   │   │   ├── events
 │   │   │   │   ├── app
 │   │   │   │   │   ├── eventRepository.interface.ts
@@ -318,17 +476,23 @@
 │   │   │   │   │       │   ├── EventCard.css
 │   │   │   │   │       │   ├── EventCard.tsx
 │   │   │   │   │       │   └── EventCard.types.ts
-│   │   │   │   │       └── dialog
-│   │   │   │   │           └── events
-│   │   │   │   │               └── add
-│   │   │   │   │                   ├── AddEvent.tsx
-│   │   │   │   │                   └── AddEvent.type.ts
+│   │   │   │   │       ├── dialog
+│   │   │   │   │       │   └── events
+│   │   │   │   │       │       └── add
+│   │   │   │   │       │           ├── AddEvent.tsx
+│   │   │   │   │       │           └── AddEvent.type.ts
+│   │   │   │   │       └── widget
+│   │   │   │   │           ├── ExamsTimelineWidget.tsx
+│   │   │   │   │           ├── ExamsTimelineWidget.widget.meta.ts
+│   │   │   │   │           ├── examsTimelineWidget.css
+│   │   │   │   │           └── examsTimelineWidget.types.ts
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── calendarEvent.entity.ts
 │   │   │   │   │   └── events.entity.ts
 │   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── event.converter.ts
-│   │   │   │   │   └── eventRepository.firebase.ts
+│   │   │   │   │   ├── eventRepository.firebase.ts
+│   │   │   │   │   └── eventRepository.trpc.ts
 │   │   │   │   ├── presentation
 │   │   │   │   │   ├── context
 │   │   │   │   │   │   ├── eventContext.tsx
@@ -348,7 +512,8 @@
 │   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── invitation.converter.ts
 │   │   │   │   │   ├── invitationApiClient.ts
-│   │   │   │   │   └── invitationRepository.firebase.ts
+│   │   │   │   │   ├── invitationRepository.firebase.ts
+│   │   │   │   │   └── invitationRepository.trpc.ts
 │   │   │   │   └── presentation
 │   │   │   │       ├── context
 │   │   │   │       │   ├── invitationContext.tsx
@@ -366,31 +531,6 @@
 │   │   │   │   └── presentation
 │   │   │   │       ├── context
 │   │   │   │       └── hooks
-│   │   │   ├── note
-│   │   │   │   ├── app
-│   │   │   │   │   ├── noteRepository.interface.ts
-│   │   │   │   │   └── notes.service.ts
-│   │   │   │   ├── components
-│   │   │   │   │   └── templates
-│   │   │   │   │       ├── modal
-│   │   │   │   │       │   ├── addNote
-│   │   │   │   │       │   │   └── index.tsx
-│   │   │   │   │       │   └── delNote
-│   │   │   │   │       │       └── index.tsx
-│   │   │   │   │       └── widget
-│   │   │   │   │           └── Note.widget.tsx
-│   │   │   │   ├── domain
-│   │   │   │   │   └── note.entity.ts
-│   │   │   │   ├── infrastructure
-│   │   │   │   │   ├── note.converter.ts
-│   │   │   │   │   └── noteRepository.firebase.ts
-│   │   │   │   └── presentation
-│   │   │   │       ├── context
-│   │   │   │       │   ├── noteContext.tsx
-│   │   │   │       │   ├── noteContext.type.ts
-│   │   │   │       │   └── noteReducer.ts
-│   │   │   │       └── hooks
-│   │   │   │           └── useNotes.tsx
 │   │   │   ├── onBoarding
 │   │   │   │   ├── components
 │   │   │   │   │   ├── molecule
@@ -425,6 +565,10 @@
 │   │   │   │   │           ├── addPanel
 │   │   │   │   │           │   ├── addPanels.css
 │   │   │   │   │           │   └── addPanels.tsx
+│   │   │   │   │           ├── PanelsListWidget.tsx
+│   │   │   │   │           ├── PanelsListWidget.widget.meta.ts
+│   │   │   │   │           ├── addPanels.css
+│   │   │   │   │           ├── addPanels.tsx
 │   │   │   │   │           ├── panelsWidget.css
 │   │   │   │   │           ├── panelsWidget.tsx
 │   │   │   │   │           └── panelsWidget.type.ts
@@ -442,6 +586,7 @@
 │   │   │   │   │   ├── panelRepository.cached.test.ts
 │   │   │   │   │   ├── panelRepository.cached.ts
 │   │   │   │   │   ├── panelRepository.firebase.ts
+│   │   │   │   │   ├── panelRepository.trpc.ts
 │   │   │   │   │   ├── panelsCache.test.ts
 │   │   │   │   │   └── panelsCache.ts
 │   │   │   │   └── presentation
@@ -452,11 +597,77 @@
 │   │   │   │       └── hooks
 │   │   │   │           ├── useOpenTaskList.ts
 │   │   │   │           └── usePanels.ts
+│   │   │   ├── plugins
+│   │   │   │   ├── components
+│   │   │   │   │   ├── PanelPluginHost.tsx
+│   │   │   │   │   ├── PluginInstanceView.tsx
+│   │   │   │   │   ├── SandboxedPluginFrame.tsx
+│   │   │   │   │   └── pluginFrame.css
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── hostProtocol.ts
+│   │   │   │   │   ├── plugin.rules.ts
+│   │   │   │   │   └── plugin.types.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── bundleLoader.ts
+│   │   │   │   │   └── pluginsRuntime.trpc.ts
+│   │   │   │   ├── marketplace
+│   │   │   │   │   ├── components
+│   │   │   │   │   │   ├── InstallDialog.tsx
+│   │   │   │   │   │   ├── MarketplacePage.tsx
+│   │   │   │   │   │   ├── PluginCard.tsx
+│   │   │   │   │   │   ├── PluginPicker.tsx
+│   │   │   │   │   │   └── marketplace.css
+│   │   │   │   │   ├── domain
+│   │   │   │   │   │   └── marketplace.types.ts
+│   │   │   │   │   ├── infrastructure
+│   │   │   │   │   │   └── marketplaceApi.trpc.ts
+│   │   │   │   │   ├── presentation
+│   │   │   │   │   │   └── hooks
+│   │   │   │   │   │       └── useMarketplace.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── presentation
+│   │   │   │   │   ├── context
+│   │   │   │   │   │   ├── PluginRuntimeProvider.tsx
+│   │   │   │   │   │   └── pluginRuntime.context.ts
+│   │   │   │   │   └── hooks
+│   │   │   │   │       └── usePluginRuntime.ts
+│   │   │   │   ├── runtime
+│   │   │   │   │   ├── buildSrcDoc.ts
+│   │   │   │   │   ├── capabilities.ts
+│   │   │   │   │   ├── hostBridge.ts
+│   │   │   │   │   ├── pluginWidgetDefinition.tsx
+│   │   │   │   │   └── syncWidgetRegistry.ts
+│   │   │   │   └── index.ts
 │   │   │   ├── schedule
 │   │   │   │   ├── app
 │   │   │   │   │   ├── schedule.service.test.ts
 │   │   │   │   │   ├── schedule.service.ts
 │   │   │   │   │   └── scheduleRepository.interface.ts
+│   │   │   │   ├── components
+│   │   │   │   │   ├── __fixtures__
+│   │   │   │   │   │   └── scheduleSeed.ts
+│   │   │   │   │   ├── molecules
+│   │   │   │   │   │   ├── AttendanceControl.tsx
+│   │   │   │   │   │   └── ScheduleGate.tsx
+│   │   │   │   │   ├── selectors
+│   │   │   │   │   │   ├── scheduleSelectors.test.ts
+│   │   │   │   │   │   └── scheduleSelectors.ts
+│   │   │   │   │   └── templates
+│   │   │   │   │       └── widget
+│   │   │   │   │           ├── ScheduleAttendance.tsx
+│   │   │   │   │           ├── ScheduleAttendance.widget.meta.ts
+│   │   │   │   │           ├── ScheduleNextClass.tsx
+│   │   │   │   │           ├── ScheduleNextClass.widget.meta.ts
+│   │   │   │   │           ├── ScheduleToday.tsx
+│   │   │   │   │           ├── ScheduleToday.widget.meta.ts
+│   │   │   │   │           ├── ScheduleWeek.tsx
+│   │   │   │   │           ├── ScheduleWeek.widget.meta.ts
+│   │   │   │   │           ├── scheduleAttendance.css
+│   │   │   │   │           ├── scheduleNextClass.css
+│   │   │   │   │           ├── scheduleToday.css
+│   │   │   │   │           ├── scheduleWeek.css
+│   │   │   │   │           ├── scheduleWidget.css
+│   │   │   │   │           └── scheduleWidgets.test.tsx
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── attendanceRecord.entity.ts
 │   │   │   │   │   ├── classSlot.entity.ts
@@ -473,31 +684,114 @@
 │   │   │   │   │   ├── subject.entity.ts
 │   │   │   │   │   ├── weekMath.test.ts
 │   │   │   │   │   └── weekMath.ts
-│   │   │   │   └── infrastructure
-│   │   │   │       ├── __fixtures__
-│   │   │   │       │   └── fakeScheduleRepository.ts
-│   │   │   │       ├── schedule.converters.ts
-│   │   │   │       ├── scheduleCache.ts
-│   │   │   │       ├── scheduleRepository.cached.test.ts
-│   │   │   │       ├── scheduleRepository.cached.ts
-│   │   │   │       └── scheduleRepository.firebase.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── __fixtures__
+│   │   │   │   │   │   └── fakeScheduleRepository.ts
+│   │   │   │   │   ├── schedule.converters.ts
+│   │   │   │   │   ├── scheduleCache.ts
+│   │   │   │   │   ├── scheduleRepository.cached.test.ts
+│   │   │   │   │   ├── scheduleRepository.cached.ts
+│   │   │   │   │   ├── scheduleRepository.firebase.ts
+│   │   │   │   │   └── scheduleRepository.trpc.ts
+│   │   │   │   └── presentation
+│   │   │   │       ├── context
+│   │   │   │       │   ├── context.tsx
+│   │   │   │       │   ├── scheduleContext.test.tsx
+│   │   │   │       │   ├── scheduleContext.tsx
+│   │   │   │       │   └── scheduleReducer.ts
+│   │   │   │       └── hooks
+│   │   │   │           ├── useElementSize.ts
+│   │   │   │           ├── useSchedule.ts
+│   │   │   │           └── useScheduleNow.ts
+│   │   │   ├── statistic
+│   │   │   │   ├── app
+│   │   │   │   │   ├── statistic.service.test.ts
+│   │   │   │   │   └── statistic.service.ts
+│   │   │   │   ├── components
+│   │   │   │   │   ├── atoms
+│   │   │   │   │   │   ├── StatisticDistribution.tsx
+│   │   │   │   │   │   ├── StatisticKpi.tsx
+│   │   │   │   │   │   ├── StatisticList.tsx
+│   │   │   │   │   │   ├── StatisticProgressRing.tsx
+│   │   │   │   │   │   ├── StatisticSeries.tsx
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── statisticAtoms.css
+│   │   │   │   │   │   └── statisticTone.ts
+│   │   │   │   │   ├── molecules
+│   │   │   │   │   │   ├── StatisticCard.tsx
+│   │   │   │   │   │   └── statisticCard.css
+│   │   │   │   │   ├── organisms
+│   │   │   │   │   │   ├── StatisticSourceView.tsx
+│   │   │   │   │   │   └── statisticSourceView.css
+│   │   │   │   │   └── templates
+│   │   │   │   │       └── widget
+│   │   │   │   │           ├── tasksActivity
+│   │   │   │   │           │   ├── TasksActivityWidget.tsx
+│   │   │   │   │           │   ├── TasksActivityWidget.widget.meta.ts
+│   │   │   │   │           │   └── tasksActivity.config.ts
+│   │   │   │   │           ├── tasksProgress
+│   │   │   │   │           │   ├── TasksProgressWidget.tsx
+│   │   │   │   │           │   ├── TasksProgressWidget.widget.meta.ts
+│   │   │   │   │           │   └── tasksProgress.config.ts
+│   │   │   │   │           ├── tasksPunctuality
+│   │   │   │   │           │   ├── TasksPunctualityWidget.tsx
+│   │   │   │   │           │   ├── TasksPunctualityWidget.widget.meta.ts
+│   │   │   │   │           │   └── tasksPunctuality.config.ts
+│   │   │   │   │           ├── tasksWorkload
+│   │   │   │   │           │   ├── TasksWorkloadWidget.tsx
+│   │   │   │   │           │   ├── TasksWorkloadWidget.widget.meta.ts
+│   │   │   │   │           │   └── tasksWorkload.config.ts
+│   │   │   │   │           └── statisticWidgets.test.ts
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── statistic.rules.test.ts
+│   │   │   │   │   ├── statistic.rules.ts
+│   │   │   │   │   ├── statistic.types.ts
+│   │   │   │   │   ├── statisticRegistry.test.ts
+│   │   │   │   │   └── statisticRegistry.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── statisticDiscovery.test.ts
+│   │   │   │   │   └── statisticDiscovery.ts
+│   │   │   │   └── presentation
+│   │   │   │       └── hooks
+│   │   │   │           └── useNow.ts
 │   │   │   ├── task
 │   │   │   │   ├── app
 │   │   │   │   │   ├── task.service.ts
 │   │   │   │   │   └── taskRepository.interface.ts
+│   │   │   │   ├── components
+│   │   │   │   │   └── templates
+│   │   │   │   │       └── widget
+│   │   │   │   │           ├── AddTask.tsx
+│   │   │   │   │           ├── TaskWidget.tsx
+│   │   │   │   │           ├── TaskWidget.widget.meta.ts
+│   │   │   │   │           ├── UpcomingDeadlinesWidget.tsx
+│   │   │   │   │           ├── UpcomingDeadlinesWidget.widget.meta.ts
+│   │   │   │   │           ├── addTask.css
+│   │   │   │   │           ├── taskWidget.css
+│   │   │   │   │           └── upcomingDeadLine.css
 │   │   │   │   ├── domain
 │   │   │   │   │   ├── task.entity.ts
 │   │   │   │   │   ├── task.mapper.ts
 │   │   │   │   │   └── task.rule.ts
 │   │   │   │   ├── infrastructure
 │   │   │   │   │   ├── task.converter.ts
-│   │   │   │   │   └── taskRepository.firebase.ts
-│   │   │   │   └── presentation
-│   │   │   │       ├── context
-│   │   │   │       │   ├── TasksContext.tsx
-│   │   │   │       │   └── taskReducer.ts
-│   │   │   │       └── hooks
-│   │   │   │           └── useTask.ts
+│   │   │   │   │   ├── taskRepository.firebase.ts
+│   │   │   │   │   └── taskRepository.trpc.ts
+│   │   │   │   ├── presentation
+│   │   │   │   │   ├── context
+│   │   │   │   │   │   ├── TasksContext.tsx
+│   │   │   │   │   │   └── taskReducer.ts
+│   │   │   │   │   └── hooks
+│   │   │   │   │       └── useTask.ts
+│   │   │   │   ├── statistic
+│   │   │   │   │   └── taskMetric.ts
+│   │   │   │   └── statistics
+│   │   │   │       ├── task.statistic.source.test.ts
+│   │   │   │       ├── task.statistic.source.ts
+│   │   │   │       ├── taskMetrics.test.ts
+│   │   │   │       ├── taskMetrics.ts
+│   │   │   │       ├── taskTestUtils.ts
+│   │   │   │       └── useTaskStatisticsInput.ts
 │   │   │   └── widgets
 │   │   │       ├── app
 │   │   │       │   ├── widget.service.ts
@@ -505,38 +799,55 @@
 │   │   │       ├── components
 │   │   │       │   └── templates
 │   │   │       │       ├── base
+│   │   │       │       │   ├── component
+│   │   │       │       │   │   └── widgetComponentCache.ts
 │   │   │       │       │   ├── container
 │   │   │       │       │   │   ├── WidgetContainer.tsx
+│   │   │       │       │   │   ├── WidgetErrorBoundary.tsx
 │   │   │       │       │   │   ├── utils.tsx
 │   │   │       │       │   │   └── widgetContainer.css
 │   │   │       │       │   ├── content
 │   │   │       │       │   │   └── WidgetContent.tsx
 │   │   │       │       │   ├── dragPreview
 │   │   │       │       │   │   └── dragPreview.tsx
-│   │   │       │       │   └── preview
-│   │   │       │       │       └── widgetPreview.tsx
+│   │   │       │       │   ├── errorBoundary
+│   │   │       │       │   │   └── WidgetErrorBoundary.tsx
+│   │   │       │       │   ├── preview
+│   │   │       │       │   │   └── widgetPreview.tsx
+│   │   │       │       │   ├── renderer
+│   │   │       │       │   │   ├── WidgetRenderer.test.tsx
+│   │   │       │       │   │   └── WidgetRenderer.tsx
+│   │   │       │       │   ├── skeleton
+│   │   │       │       │   │   ├── WidgetSkeleton.tsx
+│   │   │       │       │   │   └── widgetSkeleton.css
+│   │   │       │       │   └── unknown
+│   │   │       │       │       └── UnknownWidget.tsx
 │   │   │       │       ├── exam
 │   │   │       │       │   └── examList.tsx
 │   │   │       │       ├── examsTimeline
 │   │   │       │       │   ├── examsTimelineWidget.css
 │   │   │       │       │   ├── examsTimelineWidget.tsx
 │   │   │       │       │   └── examsTimelineWidget.types.ts
-│   │   │       │       ├── task
-│   │   │       │       │   ├── addTask.css
-│   │   │       │       │   ├── addTask.tsx
-│   │   │       │       │   ├── taskWidget.css
-│   │   │       │       │   └── taskWidget.tsx
-│   │   │       │       ├── upcomingDeadLine
-│   │   │       │       │   ├── upcomingDeadLine.css
-│   │   │       │       │   └── upcomingDeadLine.tsx
-│   │   │       │       └── index.ts
+│   │   │       │       ├── modWidget
+│   │   │       │       │   ├── addWidget.css
+│   │   │       │       │   ├── addWidget.tsx
+│   │   │       │       │   └── delWidget.tsx
+│   │   │       │       └── upcomingDeadLine
+│   │   │       │           ├── upcomingDeadLine.css
+│   │   │       │           └── upcomingDeadLine.tsx
 │   │   │       ├── domain
 │   │   │       │   ├── widget.entity.ts
 │   │   │       │   ├── widget.rules.ts
+│   │   │       │   ├── widgetDefinition.types.ts
+│   │   │       │   ├── widgetRegistry.test.ts
+│   │   │       │   ├── widgetRegistry.ts
 │   │   │       │   └── widgetTemplates.ts
 │   │   │       ├── infrastructure
 │   │   │       │   ├── widget.converter.ts
-│   │   │       │   └── widgetRepository.firebase.ts
+│   │   │       │   ├── widgetDiscovery.test.ts
+│   │   │       │   ├── widgetDiscovery.ts
+│   │   │       │   ├── widgetRepository.firebase.ts
+│   │   │       │   └── widgetRepository.trpc.ts
 │   │   │       └── presentation
 │   │   │           ├── context
 │   │   │           │   ├── widgetReducer.ts
@@ -546,9 +857,7 @@
 │   │   ├── shared
 │   │   │   ├── infrastructure
 │   │   │   │   ├── api
-│   │   │   │   │   └── trpcClient.ts
 │   │   │   │   └── firebase
-│   │   │   │       ├── firebaseConfig.ts
 │   │   │   │       └── withoutId.ts
 │   │   │   ├── notifications
 │   │   │   ├── themes
@@ -567,7 +876,6 @@
 │   │   │   ├── ui
 │   │   │   │   └── atoms
 │   │   │   │       ├── icons.tsx
-│   │   │   │       ├── iconsMap.ts
 │   │   │   │       └── utils.ts
 │   │   │   └── utils
 │   │   ├── test
@@ -575,24 +883,34 @@
 │   │   ├── App.tsx
 │   │   ├── index.css
 │   │   └── main.tsx
+│   ├── .dockerignore
+│   ├── .eslintrc.json
 │   ├── .hintrc
+│   ├── .prettierrc.json
 │   ├── CHANGELOG.md
+│   ├── Dockerfile
 │   ├── README.md
 │   ├── eslint.config.js
 │   ├── example.env
 │   ├── index.html
-│   ├── package-lock.json
 │   ├── package.json
 │   ├── pnpm-lock.yaml
 │   ├── pnpm-workspace.yaml
 │   ├── tsconfig.app.json
 │   ├── tsconfig.json
 │   ├── tsconfig.node.json
+│   ├── vite-env.d.ts
 │   ├── vite.config.ts
 │   └── vitest.config.ts
 ├── .gitignore
+├── CHANGELOG.md
+├── README.md
+├── cloudbuild.yaml
+├── docker-compose.yml
+├── package.json
+├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
-└── vercel.json
+└── service.json
 ```
 
 ---

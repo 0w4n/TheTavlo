@@ -6,7 +6,6 @@ import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 import useAnnounce from "#core/a11y/useAnnounce";
 import { Button } from "#components/atoms/button";
 import Icon from "#shared/ui/atoms/icons";
-import Breadcrumb from "#components/molecules/breadcrumb/breadcrumb";
 import "./panelLocationBar.css";
 
 export interface PanelLocationBarProps {
@@ -14,13 +13,11 @@ export interface PanelLocationBarProps {
   panels: Panel[];
   /** Nombre de la vista si es distinta del dashboard del panel (Tareas, Calendario). */
   viewLabel?: string;
-  viewIcon?: string;
 }
 
 export default function PanelLocationBar({
   panels,
   viewLabel,
-  viewIcon,
 }: PanelLocationBarProps) {
   const navigate = useNavigate();
   const announce = useAnnounce();
@@ -60,8 +57,8 @@ export default function PanelLocationBar({
 
   return (
     <div className="panel-location-bar" style={accentStyle}>
-      <div className="panel-location-bar__trail">
-        {parent && (
+      {parent && (
+        <div className="panel-location-bar__trail">
           <Button
             variant="ghost"
             size="sm"
@@ -72,13 +69,8 @@ export default function PanelLocationBar({
             className="panel-location-bar__up"
             aria-label={`Subir a ${parent.name}`}
           />
-        )}
-        <Breadcrumb
-          panels={panels}
-          currentLabel={viewLabel}
-          currentIcon={viewIcon}
-        />
-      </div>
+        </div>
+      )}
 
       <h1 className="panel-location-bar__title">
         <Icon

@@ -17,6 +17,7 @@ import {
   type Unsubscribe,
   addDoc,
   deleteField,
+  runTransaction
 } from "firebase/firestore";
 import type { PanelRepository } from "../app/panelsRepository.interface";
 import type {
@@ -34,6 +35,8 @@ import {
 } from "#core/appCore/domain/AppCore.type";
 import { withoutId } from "#shared/infrastructure/firebase/withoutId";
 import { panelConverter } from "./panel.converter";
+
+const HOME_PANEL_ID = "home";
 
 export class FirebasePanelsRepository implements PanelRepository {
   constructor(
@@ -90,35 +93,27 @@ export class FirebasePanelsRepository implements PanelRepository {
     onData: (panel: Panel) => void,
     onError: (err: AppErr) => void,
   ): Unsubscribe {
-    const q = query(
-      this.collectionRef(),
-      where("color", "==", -1),
-      where("parentId", "==", null),
-    );
-
-    // Bandera para evitar creaciones paralelas si el listener dispara varias veces
     let creating = false;
 
     return onSnapshot(
-      q,
+      this.docRef(HOME_PANEL_ID),
       (snap) => {
-        if (!snap.empty) {
-          creating = false;
-          onData(snap.docs[0].data());
+        if (snap.exists()) {
+          onData(snap.data());
           return;
         }
 
-        // Panel no existe — crear por primera vez (solo una vez)
-        if (!creating) {
-          creating = true;
-          this.create(this.setPanelDefault()).then((result) => {
-            if (!result.success) {
-              creating = false;
-              onError(result.err);
-            }
-            // Si tuvo éxito, el onSnapshot se dispara de nuevo con el nuevo doc
-          });
-        }
+        // Si el "no existe" viene de la caché local, aún no sabemos si
+        // existe en el servidor: esperamos al snapshot real.
+        if (snap.metadata.fromCache) return;
+        if (creating) return;
+
+        creating = true;
+        this.createHomePanel().then((result) => {
+          creating = false;
+          if (!result.success) onError(result.err);
+          // Si salió bien, el listener se dispara solo con el nuevo doc.
+        });
       },
       (error) => onError(firebaseErr(error.message, error.code, error.stack)),
     );
@@ -141,19 +136,9 @@ export class FirebasePanelsRepository implements PanelRepository {
   // ─── Queries puntuales ────────────────────────────────────────────────────
 
   async findHomePanel(): Promise<ResultApp<Panel, AppErr>> {
-    const q = query(
-      this.collectionRef(),
-      where("color", "==", -1),
-      where("icon", "==", ""),
-      where("name", "==", ""),
-      where("sharedWith", "==", null),
-    );
-
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      return this.create(this.setPanelDefault());
-    }
-    return ok(querySnapshot.docs[0].data());
+    const snap = await getDoc(this.docRef(HOME_PANEL_ID));
+    if (snap.exists()) return ok(snap.data());
+    return this.createHomePanel();
   }
 
   async findAll(): Promise<ResultApp<Panel[], AppErr>> {
@@ -254,6 +239,42 @@ export class FirebasePanelsRepository implements PanelRepository {
   }
 
   // ─── Mutaciones — sin getDoc extra post-escritura ─────────────────────────
+
+    /**
+   * Crea el panel home con ID fijo "home". Es idempotente: si ya existe,
+   * lo devuelve sin tocarlo. Al usar transacción, dos llamadas simultáneas
+   * (StrictMode, varias pestañas, etc.) no pueden crear duplicados.
+   */
+  async createHomePanel(): Promise<ResultApp<Panel, AppErr>> {
+    const { accountType, id: ownerId } = this.getUser();
+    const ref = this.docRef(HOME_PANEL_ID);
+
+    try {
+      const panel = await runTransaction(this.firestore, async (tx) => {
+        const snap = await tx.get(ref);
+        if (snap.exists()) return snap.data();
+
+        const panelData = this.setPanelDefault() as Panel;
+        tx.set(ref, panelData);
+        return {
+          ...panelData,
+          id: HOME_PANEL_ID,
+          ownerId,
+          ownerAccountType: accountType,
+        } as Panel;
+      });
+
+      return ok(panel);
+    } catch (error) {
+      return err(
+        firebaseErr(
+          error instanceof Error ? error.message : "Error al crear el panel home",
+          undefined,
+          error instanceof Error ? error.stack : undefined,
+        ),
+      );
+    }
+  }
 
   async create(
     data: CreatePanelDTO,

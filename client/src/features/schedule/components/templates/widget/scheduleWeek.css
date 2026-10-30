@@ -1,0 +1,372 @@
+/* Widget "Semana" — parrilla horaria. Los bloques se posicionan en % del
+   rango horario, así llenan el alto disponible sea cual sea el tamaño del
+   widget en el grid; con --row-h como suelo, si no caben se hace scroll. */
+
+.sch-week {
+  --row-h: 2.6rem;
+  --axis-w: 2.6rem;
+}
+
+.sch-week__wrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-height: 22rem; /* también en el modal de vista previa (altura automática) */
+}
+
+.sch-week__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+.sch-week__title {
+  min-width: 0;
+}
+
+.sch-week__nav {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--sch-tint);
+}
+.sch-week__nav button {
+  display: grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 var(--spacing-2);
+  border: 0;
+  border-radius: var(--radius-full, 999px);
+  background: transparent;
+  color: var(--sch-text);
+  font: inherit;
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+}
+.sch-week__nav button:hover:not(:disabled) {
+  background: var(--sch-tint-strong);
+}
+.sch-week__nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── Pestañas de día (modo compacto) ── */
+.sch-week__tabs {
+  display: flex;
+  gap: 2px;
+}
+.sch-week__tabs button {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--sch-tint);
+  color: var(--sch-muted);
+  font: inherit;
+  font-size: var(--font-size-xs, 0.75rem);
+  line-height: 1.3;
+  cursor: pointer;
+}
+.sch-week__tabs button span:last-child {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--sch-text);
+}
+.sch-week__tabs button[aria-selected="true"] {
+  background: var(--sch-text);
+  color: var(--color-surface, #111);
+}
+.sch-week__tabs button[aria-selected="true"] span:last-child {
+  color: inherit;
+}
+.sch-week__tabs button[data-today="true"]:not([aria-selected="true"]) span:last-child {
+  color: var(--sch-accent);
+}
+.sch-week__tabs button[data-has="false"] {
+  opacity: 0.65;
+}
+
+/* ── Parrilla ── */
+.sch-week__scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--sch-line);
+}
+
+.sch-week__grid {
+  display: grid;
+  grid-template-columns: var(--axis-w) repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: auto minmax(calc(var(--hours) * var(--row-h)), 1fr);
+  min-height: 100%;
+}
+
+.sch-week__corner,
+.sch-week__dayhead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--color-surface, hsl(0 0% 10%));
+  border-bottom: 1px solid var(--sch-line);
+}
+
+.sch-week__dayhead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 2px;
+  border-left: 1px solid var(--sch-line);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--sch-muted);
+}
+.sch-week__dh-short {
+  display: none;
+}
+.sch-week__daynum {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--sch-text);
+}
+.sch-week__dayhead[data-today="true"] {
+  color: var(--sch-text);
+}
+.sch-week__dayhead[data-today="true"] .sch-week__daynum {
+  background: var(--sch-accent);
+  color: hsl(0 0% 8%);
+}
+
+.sch-week__axis {
+  position: relative;
+}
+.sch-week__axis span {
+  position: absolute;
+  right: 6px;
+  transform: translateY(-50%);
+  font-size: 0.6875rem;
+  color: var(--sch-muted);
+}
+.sch-week__axis span:first-child {
+  transform: translateY(2px);
+}
+
+.sch-week__col {
+  position: relative;
+  border-left: 1px solid var(--sch-line);
+  /* líneas de hora: una por fila, usando el propio alto de la columna */
+  background-image: linear-gradient(to bottom, var(--sch-line) 1px, transparent 1px);
+  background-size: 100% calc(100% / var(--hours));
+}
+.sch-week__col[data-today="true"] {
+  background-color: color-mix(in srgb, var(--sch-accent) 7%, transparent);
+}
+.sch-week__col[data-off="true"] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    var(--sch-tint-strong) 6px 7px
+  );
+}
+
+.sch-week__holiday {
+  position: absolute;
+  inset: 0 2px auto;
+  padding-top: var(--spacing-2);
+  text-align: center;
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  color: var(--sch-muted);
+}
+
+/* Línea de "ahora" */
+.sch-week__now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 2px;
+  background: var(--sch-accent);
+  pointer-events: none;
+}
+.sch-week__now::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sch-accent);
+}
+
+/* ── Bloques ── */
+.sch-block {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 1.1rem;
+  padding: 3px 6px 3px 7px;
+  overflow: hidden;
+  border: 0;
+  border-left: 3px solid var(--c);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--c) 32%, var(--color-surface, hsl(0 0% 10%)));
+  color: var(--sch-text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  container-type: size; /* tamaño absoluto y definido → seguro aquí */
+}
+.sch-block:hover {
+  background: color-mix(in srgb, var(--c) 44%, var(--color-surface, hsl(0 0% 10%)));
+}
+.sch-block[aria-pressed="true"] {
+  z-index: 2;
+  box-shadow: 0 0 0 2px var(--sch-text);
+}
+.sch-block__name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 600;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.sch-block__meta {
+  display: none;
+  overflow: hidden;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  color: var(--sch-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@container (min-height: 2.6rem) {
+  .sch-block__meta {
+    display: block;
+  }
+}
+.sch-block__warn {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 0.85rem;
+  color: var(--sch-warn-text);
+}
+
+.sch-block[data-cancelled="true"] {
+  border-left-style: dashed;
+  background: transparent;
+  outline: 1px dashed color-mix(in srgb, var(--c) 70%, transparent);
+  outline-offset: -1px;
+}
+.sch-block[data-cancelled="true"] .sch-block__name {
+  text-decoration: line-through;
+  color: var(--sch-muted);
+}
+.sch-block[data-conflict="true"] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    color-mix(in srgb, var(--sch-warn) 22%, transparent) 5px 7px
+  );
+}
+
+/* ── Detalle ── */
+.sch-week__detail {
+  position: relative;
+  display: flex;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+.sch-week__detail-bar {
+  flex: none;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--c);
+}
+.sch-week__detail-body {
+  flex: 1;
+  min-width: 0;
+}
+.sch-week__detail-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+}
+.sch-week__detail-line {
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  line-height: 1.45;
+  color: var(--sch-muted);
+}
+.sch-week__detail-close {
+  align-self: flex-start;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sch-muted);
+  cursor: pointer;
+}
+.sch-week__detail-close:hover {
+  background: var(--sch-tint-strong);
+  color: var(--sch-text);
+}
+
+/* Columnas estrechas: inicial del día en vez del nombre */
+@container sch (max-width: 700px) {
+  .sch-week__dh-long {
+    display: none;
+  }
+  .sch-week__dh-short {
+    display: inline;
+  }
+  .sch-week__dayhead {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* Modo compacto: las pestañas ya dicen qué día es → la cabecera de la parrilla
+   se colapsa (sin display:none, para no descolocar las celdas del grid). */
+.sch-week__wrap[data-compact="true"] .sch-week__corner,
+.sch-week__wrap[data-compact="true"] .sch-week__dayhead {
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+}
+
+/* El icono de solape no debe pisar el nombre */
+.sch-block[data-conflict="true"]:not([data-cancelled="true"]) .sch-block__name {
+  padding-right: 1.1rem;
+}

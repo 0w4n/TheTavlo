@@ -10,12 +10,11 @@ import { Rise } from "#components/molecules/rise";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 import { useOnBoardingBootstrap } from "#features/onBoarding/presentation/hooks/useOnBoardingBootstrap";
-import { UserAvatar } from "#components/atoms/userAvatar/UserAvatar";
+import { buildUserMenuAction } from "#components/organisms/header/userMenuAction";
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import LoadingPage from "./LoadingPage";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
-
-import "./HomePage.css";
+import { PluginRuntimeProvider } from "#features/plugins/presentation/context/PluginRuntimeProvider";
 
 export default function HomePage() {
   useDocumentTitle("Inicio");
@@ -160,39 +159,16 @@ function HomePageComponent({ onOpenRise }: { onOpenRise: () => void }) {
               />
             ),
           },
-          {
-            type: "dropdown",
-            childrenTrigger: <UserAvatar name={state.state.user.userId} />,
-            className: "header__user-dropdown",
-            options: [
-              {
-                icon: "IconUser",
-                label: "Hola",
-                onClick: () => {
-                  console.log("Hola");
-                },
-              },
-              {
-                icon: "IconSettings",
-                label: "Ajustes",
-                onClick: () => {
-                  window.location.href = "/app/settings";
-                },
-              },
-              {
-                icon: "IconLogout",
-                label: "Cerrar Sesión",
-                danger: true,
-                onClick: () => {
-                  signOut();
-                },
-              },
-            ],
-          },
+          buildUserMenuAction({
+            userId: state.state.user.userId,
+            onSignOut: signOut,
+          }),
         ]}
         dateTimeItem={<DateTimeBadge onClick={onOpenRise} />}
       />
-      <Dashboard widgetState={widgetsState} />
+      {/* <PluginRuntimeProvider scope={{ ownerId, ownerAccountType, panelId }} readOnly={role === "viewer"} onToast={showToast}> */}
+        <Dashboard widgetState={widgetsState} />
+      {/* </PluginRuntimeProvider> */}
     </>
   );
 }

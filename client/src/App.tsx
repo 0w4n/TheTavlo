@@ -15,6 +15,9 @@ import {
   getPanelsCacheKey,
 } from '#features/panels/infrastructure/panelsCache';
 import { FirebaseWidgetRepository } from '#features/widgets/infrastructure/widgetRepository.firebase';
+import { FirebaseScheduleRepository } from '#features/schedule/infrastructure/scheduleRepository.firebase';
+import { ScheduleService } from '#features/schedule/app/schedule.service';
+import { ScheduleProvider } from '#features/schedule/presentation/context/scheduleContext';
 import { PanelsService } from '#features/panels/app/panels.service';
 import { WidgetService } from '#features/widgets/app/widget.service';
 import { RouterProvider, Navigate, Outlet } from 'react-router-dom';
@@ -36,6 +39,9 @@ import { DirtyNoteService } from '#features/dirtyNote/app/DirtyNote.service';
 import { DirtyNoteProvider } from '#features/dirtyNote/presentation/context/DirtyNoteContext';
 import type { User } from '#core/auth/domain/user.entity';
 import { AnnouncerProvider } from '#core/a11y/AnnouncerProvider';
+import { PluginRuntimeProvider } from '#features/plugins';
+import { resolvePanelOwner } from '#core/globalContext/resolvePanelOwner';
+import { usePanelRole } from '#features/invitations/presentation/hooks/usePanelRole';
 
 // import ComposeProviders from "#core/providers/composeProviders";
 
@@ -200,6 +206,14 @@ function ProviderApp() {
     return new DirtyNoteService(dirtyNoteRepository);
   }, [globalContext]);
 
+    const scheduleService = useMemo(() => {
+    const scheduleRepository = new FirebaseScheduleRepository(
+      firebaseService.firestore,
+      () => globalContext
+    );
+    return new ScheduleService(scheduleRepository);
+  }, [globalContext]);
+
   if (
     globalContext.state.status === 'loading' ||
     !globalContext.state.state.panel.panelId
@@ -210,18 +224,47 @@ function ProviderApp() {
   return (
     <>
       {/*<ExamsProvider> */}
-      <WidgetsProvider widgetService={widgetService}>
-        <EventsProvider eventsService={eventService}>
-          <InvitationProvider invitationService={invitationService}>
-            <TasksProvider tasksService={taskService}>
-              <DirtyNoteProvider dirtyNoteService={dirtyNoteService}>
-                <Outlet />
-              </DirtyNoteProvider>
-            </TasksProvider>
-          </InvitationProvider>
-        </EventsProvider>
-      </WidgetsProvider>
+      <ScheduleProvider scheduleService={scheduleService}>
+        <WidgetsProvider widgetService={widgetService}>
+          <EventsProvider eventsService={eventService}>
+            <InvitationProvider invitationService={invitationService}>
+              <TasksProvider tasksService={taskService}>
+                <DirtyNoteProvider dirtyNoteService={dirtyNoteService}>
+                  <PanelPluginRuntime>
+                    <Outlet />
+                  </PanelPluginRuntime>
+                </DirtyNoteProvider>
+              </TasksProvider>
+            </InvitationProvider>
+          </EventsProvider>
+        </WidgetsProvider>
+      </ScheduleProvider>
       {/* </ExamsProvider> */}
     </>
+  );
+}
+
+/**
+ * Resuelve los plugins instalados del panel activo y registra sus widgets en
+ * el widgetRegistry (así aparecen en "Añade un widget" y se pueden renderizar).
+ * Un VIEWER del panel compartido los ve en modo solo lectura.
+ */
+function PanelPluginRuntime({ children }: { children: React.ReactNode }) {
+  const globalContext = useGlobalContext();
+  const role = usePanelRole();
+
+  if (globalContext.state.status !== 'ready') return <>{children}</>;
+
+  const { accountType, ownerId } = resolvePanelOwner(globalContext);
+  const scope = {
+    ownerId,
+    ownerAccountType: accountType,
+    panelId: globalContext.state.state.panel.panelId,
+  };
+
+  return (
+    <PluginRuntimeProvider scope={scope} readOnly={role === 'viewer'}>
+      {children}
+    </PluginRuntimeProvider>
   );
 }

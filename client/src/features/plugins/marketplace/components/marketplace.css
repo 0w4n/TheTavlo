@@ -1,0 +1,33 @@
+.mkt { padding: var(--spacing-8, 2rem); max-width: 1280px; margin: 0 auto; color: var(--color-neutral-0, #fff); }
+.mkt-search { display: grid; gap: var(--spacing-2, .5rem); max-width: 420px; margin: var(--spacing-4, 1rem) 0; font-size: .875rem; }
+.mkt-search input { height: 2.75rem; padding: 0 var(--spacing-4, 1rem); border-radius: var(--radius-md, .625rem);
+  background: var(--color-neutral-900, #152419); border: 1px solid var(--color-neutral-600, #5c7568); color: inherit; }
+.mkt-grid { display: grid; gap: var(--spacing-6, 1.5rem); grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.mkt-card { display: flex; flex-direction: column; gap: var(--spacing-3, .75rem); padding: var(--spacing-6, 1.5rem);
+  background: var(--color-neutral-900, #152419); border: 1px solid var(--color-neutral-800, #2a3d34); border-radius: var(--radius-lg, .75rem); }
+.mkt-card header { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-2, .5rem); }
+.mkt-card h3 { margin: 0; font-size: 1.25rem; }
+.mkt-card p { margin: 0; color: var(--color-neutral-300, #c5d1cb); }
+.mkt-card footer { margin-top: auto; display: flex; gap: var(--spacing-2, .5rem); }
+.mkt button { min-height: 2.75rem; padding: 0 var(--spacing-4, 1rem); border: 0; border-radius: var(--radius-md, .625rem);
+  background: var(--color-accent-500, #6b7df6); color: #fff; font-weight: 500; cursor: pointer; }
+.mkt button:hover:not(:disabled) { background: var(--color-accent-400, #849aff); }
+.mkt button:disabled { opacity: .5; cursor: not-allowed; }
+.mkt button:focus-visible, .mkt input:focus-visible { outline: 3px solid var(--color-accent-500, #6b7df6); outline-offset: 2px; }
+.mkt .mkt-secondary { background: transparent; border: 1px solid var(--color-neutral-600, #5c7568); }
+.mkt-badge { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; padding: .125rem .5rem; border-radius: 9999px;
+  border: 1px solid var(--color-neutral-600, #5c7568); }
+.mkt-badge--verified { color: var(--color-primary-300, #4db894); border-color: var(--color-primary-500, #0d8f5f); }
+.mkt-error { color: #fca5a5; }
+.mkt-backdrop { position: fixed; inset: 0; z-index: calc(var(--z-modal, 1400) + 200); display: grid; place-items: center; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); }
+.mkt-dialog { width: min(90vw, 480px); padding: var(--spacing-6, 1.5rem); border-radius: var(--radius-xl, 1rem);
+  background: var(--color-neutral-800, #2a3d34); color: var(--color-neutral-0, #fff); }
+.mkt-actions { display: flex; justify-content: flex-end; gap: var(--spacing-3, .75rem); margin-top: var(--spacing-6, 1.5rem); }
+.mkt-note { color: var(--color-neutral-300, #c5d1cb); font-size: .875rem; }
+@media (prefers-reduced-motion: reduce) { .mkt * { transition: none !important; animation: none !important; } }
+
+/* Embebido en otro diálogo (AddWidget): sin padding ni ancho máximo propios. */
+.mkt.mkt--embedded { padding: 0; max-width: none; width: 100%; }
+.mkt--embedded .mkt-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--spacing-4, 1rem); }
+.mkt--embedded .mkt-card { padding: var(--spacing-4, 1rem); }
+.mkt--embedded .mkt-card h3 { font-size: 1.05rem; }

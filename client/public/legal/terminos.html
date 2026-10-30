@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos de Servicio — [NOMBRE DE TU PLATAFORMA]</title>
+    <meta name="description" content="Términos y condiciones de uso de [NOMBRE DE TU PLATAFORMA].">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #37352f;
+            --text-muted: #787774;
+            --border-color: #e6e4df;
+            --accent-color: #2383e2;
+            --bg-subtle: #fbfbfa;
+            --code-bg: #f4f3ef;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #191919;
+                --text-main: #dbd8d3;
+                --text-muted: #9b9a97;
+                --border-color: #2f2f2f;
+                --accent-color: #3898ff;
+                --bg-subtle: #202020;
+                --code-bg: #2c2c2c;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .logo {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-left: 1.5rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: var(--text-main);
+        }
+        main {
+            max-width: 780px;
+            margin: 3rem auto;
+            padding: 0 1.5rem 4rem 1.5rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .last-updated {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        p, ul {
+            margin-bottom: 1rem;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        strong {
+            font-weight: 600;
+        }
+        .callout {
+            background-color: var(--bg-subtle);
+            border-left: 3px solid var(--accent-color);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.95rem;
+        }
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: var(--bg-subtle);
+        }
+        footer a {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">[NOMBRE DE TU PLATAFORMA]</a>
+        <nav>
+            <a href="/terminos.html">Términos</a>
+            <a href="/privacidad.html">Privacidad</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Términos de Servicio</h1>
+        <div class="last-updated">Última actualización: 30 de octubre de 2026</div>
+
+        <p>Bienvenido a <strong>[NOMBRE DE TU PLATAFORMA]</strong> (en adelante, el "Servicio"). Al acceder o utilizar nuestra plataforma de espacio de trabajo digital, usted (el "Usuario") acepta cumplir y quedar vinculado por los presentes Términos de Servicio. Por favor, léalos atentamente antes de registrarse o utilizar el Servicio.</p>
+
+        <h2>1. Identificación y Objeto</h2>
+        <p>El presente Servicio es operado por <strong>[NOMBRE O RAZÓN SOCIAL DE LA EMPRESA]</strong>, con NIF/CIF <strong>[TU NIF/CIF]</strong> y domicilio fiscal en <strong>[DIRECCIÓN FISCAL COMPLETA]</strong> (en adelante, la "Plataforma" o "nosotros"). El objeto de estos Términos es regular el acceso y uso de nuestra plataforma SaaS de productividad y gestión de contenidos tipo workspace.</p>
+
+        <h2>2. Naturaleza del Servicio y Limitación de Garantías ("As-Is")</h2>
+        <p>El Software se suministra bajo la modalidad en la nube y bajo el principio <strong>"tal cual" (As-Is)</strong> y <strong>"según disponibilidad"</strong>. No garantizamos que el Servicio esté libre de errores, interrupciones o fallos de seguridad imprevistos.</p>
+        <div class="callout">
+            <strong>Exención de Responsabilidad:</strong> [NOMBRE DE TU PLATAFORMA] queda expresamente exenta de cualquier responsabilidad por caídas temporales del servicio, fallos de infraestructura o pérdidas imprevistas de datos que sean atribuibles a servicios de terceros subcontratados (como Firebase/Google Cloud) o causas de fuerza mayor.
+        </div>
+
+        <h2>3. Propiedad Intelectual de los Datos del Usuario</h2>
+        <p><strong>Usted conserva la propiedad del 100% de los contenidos</strong> (notas, bases de datos, documentos, archivos multimedia e información personal o profesional) que cree, cargue o almacene en [NOMBRE DE TU PLATAFORMA].</p>
+        <p>Para poder prestar el Servicio, usted otorga a la plataforma una licencia técnica, mundial, no exclusiva y limitada estrictamente a alojar, procesar, indexar y mostrar dichos contenidos en su nombre dentro de su cuenta personal.</p>
+
+        <h2>4. Autenticación Delegada (OAuth)</h2>
+        <p>El acceso a nuestra plataforma se gestiona exclusivamente mediante proveedores de autenticación de terceros autorizados mediante OAuth (<strong>"Continuar con Google"</strong> y <strong>"Continuar con Apple"</strong>). 
+        <ul>
+            <li>[NOMBRE DE TU PLATAFORMA] <strong>no almacena, procesa ni tiene acceso a su contraseña</strong> de Google o Apple en ningún momento.</li>
+            <li>El Usuario es el único responsable de mantener la seguridad y confidencialidad de sus cuentas de Google o Apple asociadas al acceso.</li>
+        </ul>
+        </p>
+
+        <h2>5. Condiciones del Modelo Freemium</h2>
+        <p>Actualmente, [NOMBRE DE TU PLATAFORMA] se ofrece bajo un modelo <strong>freemium gratuito</strong>.</p>
+        <ul>
+            <li>Nos reservamos el derecho de introducir en el futuro planes de pago, modalidades de suscripción o establecer límites de almacenamiento y uso (por ejemplo, cuotas de base de datos o transferencia).</li>
+            <li>Cualquier modificación sustancial de las condiciones o la introducción de tarifas de pago será debidamente comunicada a los usuarios con una antelación mínima de 30 días naturales a través de su correo electrónico registrado.</li>
+        </ul>
+
+        <h2>6. Normas de Conducta y Uso Aceptable</h2>
+        <p>Queda terminantemente prohibido utilizar el Servicio para fines ilícitos, fraudulentos o lesivos contra los derechos de terceros. Específicamente, el Usuario se compromete a no:</p>
+        <ul>
+            <li>Alojar o transmitir contenidos ilegales, malware, código malicioso, virus informáticos o herramientas diseñadas para comprometer la seguridad de la infraestructura.</li>
+            <li>Intentar realizar ingeniería inversa, descompilar, alterar o extraer el código fuente de la plataforma.</li>
+            <li>Saturar, realizar ataques de denegación de servicio (DoS/DDoS) o sobrecargar abusivamente la infraestructura de Firebase o las bases de datos del sistema.</li>
+            <li>Infringir derechos de propiedad intelectual o industrial de terceros.</li>
+        </ul>
+
+        <h2>7. Baja, Cancelación de Cuentas y Terminación</h2>
+        <p>El Usuario puede cancelar y dar de baja su cuenta en cualquier momento mediante la sección de configuración de perfil dentro de la aplicación o enviando una solicitud a <strong>[TU EMAIL DE SOPORTE]</strong>.</p>
+        <p>La baja de la cuenta conllevará la eliminación automatizada e irreversible de todos los datos y contenidos almacenados en los servidores de Firebase asociados a dicho usuario, salvo aquellos que deban conservarse por obligación legal.</p>
+
+        <h2>8. Modificaciones de los Términos</h2>
+        <p>Nos reservamos el derecho de modificar estos Términos de Servicio en cualquier momento. Las modificaciones entrarán en vigor a partir de su publicación en esta misma URL. El uso continuado de la plataforma tras dichas modificaciones implicará la aceptación expresa de los nuevos términos.</p>
+
+        <h2>9. Ley Aplicable y Jurisdicción</h2>
+        <p>Los presentes Términos se rigen e interpretan conforme a la legislación española. Para la resolución de cualquier controversia o litigio derivado de la interpretación o ejecución de los mismos, las partes se someten expresamente a los <strong>Juzgados y Tribunales de la ciudad de [TU CIUDAD / SEDE EN ESPAÑA]</strong>, renunciando a cualquier otro fuero que pudiera corresponderles.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 [NOMBRE DE TU PLATAFORMA]. Todos los derechos reservados. &bull; <a href="/privacidad.html">Política de Privacidad</a></p>
+    </footer>
+
+</body>
+</html>

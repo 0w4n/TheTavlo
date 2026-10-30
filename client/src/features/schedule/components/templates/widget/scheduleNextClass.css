@@ -1,0 +1,156 @@
+/* Widget "Próxima clase" — una sola cosa, bien grande */
+
+.sch-next__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sch-next__hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  box-shadow: inset 4px 0 0 var(--c);
+}
+.sch-next__hero[data-ongoing="true"] {
+  background: color-mix(in srgb, var(--c) 22%, transparent);
+}
+
+.sch-next__kicker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--sch-muted);
+}
+.sch-next__type {
+  margin-left: auto;
+  padding: 0 8px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--sch-tint-strong);
+  color: var(--sch-text);
+}
+
+.sch-next__name {
+  margin: 4px 0 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.sch-next__big {
+  margin: var(--spacing-2) 0 0;
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.sch-next__small {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--sch-muted);
+}
+
+.sch-next__progress {
+  height: 6px;
+  margin-top: var(--spacing-2);
+  overflow: hidden;
+  border-radius: var(--radius-full, 999px);
+  background: var(--sch-tint-strong);
+}
+.sch-next__progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c);
+  transition: width 1s linear;
+}
+
+.sch-next__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--spacing-3);
+  margin: var(--spacing-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--sch-muted);
+}
+.sch-next__facts li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.sch-next__facts li[data-tone="warn"] {
+  color: var(--sch-warn-text);
+}
+
+/* Segunda parte: solo si el widget es lo bastante alto */
+.sch-next__later {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  min-height: 0;
+}
+.sch-next__later-title {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--sch-muted);
+}
+.sch-next__later ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sch-next__later li {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-base);
+  background: var(--sch-tint);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+.sch-next__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+}
+.sch-next__later-when {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sch-next__later-name {
+  overflow: hidden;
+  color: var(--sch-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@container sch (max-width: 260px) {
+  .sch-next__hero {
+    padding: var(--spacing-3);
+  }
+  .sch-next__big {
+    font-size: var(--font-size-xl, 1.25rem);
+  }
+  .sch-next__type {
+    display: none;
+  }
+}

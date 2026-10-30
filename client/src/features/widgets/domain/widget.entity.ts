@@ -1,20 +1,20 @@
-import type { Timestamp } from "firebase/firestore";
-import type { Breakpoint, LayoutItem } from "react-grid-layout";
+import type { Timestamp } from 'firebase/firestore';
+import type { Breakpoint, LayoutItem } from 'react-grid-layout';
 
 export type ResponsiveLayout<B extends Breakpoint = Breakpoint> = Record<
   B,
-  Omit<LayoutItem, "i">
+  Omit<LayoutItem, 'i'>
 >;
 
 export type LayoutItemDTO = Omit<
   LayoutItem,
-  | "i"
-  | "isDraggable"
-  | "isResizable"
-  | "resizeHandles"
-  | "static"
-  | "isBounded"
-  | "constraints"
+  | 'i'
+  | 'isDraggable'
+  | 'isResizable'
+  | 'resizeHandles'
+  | 'static'
+  | 'isBounded'
+  | 'constraints'
 >;
 
 // A propósito NO es una unión de literales ("task-list" | "notes" | ...).
@@ -36,6 +36,6 @@ export interface Widget {
   updatedAt: Timestamp;
 }
 
-export type CreateWidgetDTO = Omit<Widget, "id">
+export type CreateWidgetDTO = Omit<Widget, 'id'>;
 
-export type UpdateWidgetDTO = Partial<Omit<CreateWidgetDTO, "createdAt">>;
+export type UpdateWidgetDTO = Partial<Omit<CreateWidgetDTO, 'createdAt'>>;

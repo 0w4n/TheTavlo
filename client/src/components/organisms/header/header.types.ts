@@ -56,9 +56,8 @@ export interface HeaderChildrenAction {
 ===================== */
 
 export interface HeaderProps extends HTMLAttributes<HTMLElement> {
-  logo?: ReactNode;
-  logoText?: string;
-  logoHref?: string;
+  /** Contenido de la zona izquierda (p. ej. el breadcrumb). Si se omite no se pinta nada. */
+  leftContent?: ReactNode;
   actions?: HeaderAction[];
   rightContent?: ReactNode;
   dateTimeItem?: ReactNode;

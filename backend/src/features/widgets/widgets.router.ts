@@ -41,7 +41,7 @@ function serialize(value: unknown): unknown {
   return value;
 }
 
-async function assertReadable(ctx: any, scope: WidgetScope, write = false): Promise<void> {
+export async function assertReadable(ctx: any, scope: WidgetScope, write = false): Promise<void> {
   if (ctx.user.uid === scope.ownerId) return;
   const index = await ctx.db.doc(`sharedPanelIndex/${ctx.user.uid}/panels/${scope.panelId}`).get();
   const role = index.exists ? index.data()?.role : undefined;
@@ -54,7 +54,7 @@ async function assertReadable(ctx: any, scope: WidgetScope, write = false): Prom
   }
 }
 
-function widgetsCollection(ctx: any, scope: WidgetScope) {
+export function widgetsCollection(ctx: any, scope: WidgetScope) {
   return ctx.db.collection(`${scope.ownerAccountType}/${scope.ownerId}/panels/${scope.panelId}/widgets`);
 }
 
