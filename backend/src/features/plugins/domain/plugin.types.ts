@@ -1,7 +1,8 @@
-import type { PluginManifest, PluginPermission } from "./manifest.schema.js";
+import type { PluginManifest, PluginPermission, PluginTier } from "./manifest.validator.js";
 
-export type PluginTier = "verified" | "community";
-export type ReleaseStatus = "pending" | "building" | "approved" | "rejected" | "revoked";
+export type { PluginTier };
+/** `pending` no lo produce el sync: queda reservado para moderación manual. */
+export type ReleaseStatus = "pending" | "approved" | "rejected" | "revoked";
 export type AccountType = "users" | "guests";
 
 /** pluginCatalog/{pluginId} — qué plugins existen (curado por registry). */
@@ -22,8 +23,9 @@ export interface PluginRelease {
   status: ReleaseStatus;
   manifest: PluginManifest | null;
   reason?: string;
-  bundleUrl?: string;
-  integrity?: string; // sha256-<base64> del index.html publicado
+  /** Orígenes de descarga en orden de preferencia (raw.githubusercontent.com, jsDelivr). */
+  bundleUrls?: string[];
+  integrity?: string; // sha256-<base64> de los BYTES de dist/index.html
   sizeBytes?: number;
   createdAt: string;
   updatedAt: string;
@@ -42,7 +44,7 @@ export interface ResolvedPlugin {
   pluginId: string;
   version: string;
   manifest: PluginManifest;
-  bundleUrl: string;
+  bundleUrls: string[];
   integrity: string;
   /** Intersección manifest.permissions ∩ concedidos: el manifest no puede escalar. */
   permissions: PluginPermission[];

@@ -1,5 +1,5 @@
 import {
-  METHOD_PERMISSION, WRITE_METHODS,
+  HostRpcError, METHOD_PERMISSION, WRITE_METHODS,
   type HostMethod, type RpcRequest, type RpcResponse,
 } from "../domain/hostProtocol";
 import type { PluginPermission } from "../domain/plugin.types";
@@ -49,8 +49,9 @@ export function attachBridge(port: MessagePort, deps: BridgeDeps): () => void {
 
     try {
       reply({ id: req.id, ok: true, result: await deps.handlers[method](req.params) });
-    } catch {
-      reply({ id: req.id, ok: false, error: "internal_error" }); // nunca filtrar detalles internos al plugin
+    } catch (e) {
+      // Solo códigos de la lista cerrada (HostRpcError); nunca detalles internos al plugin.
+      reply({ id: req.id, ok: false, error: e instanceof HostRpcError ? e.code : "internal_error" });
     }
   };
   port.start();

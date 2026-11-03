@@ -49,7 +49,7 @@ export function SandboxedPluginFrame(props: Props) {
       .then((html) => { if (!cancelled) setSrcDoc(buildSrcDoc(html)); })
       .catch((error) => { console.error("[plugins]", plugin.pluginId, error); if (!cancelled) setStatus("error"); });
     return () => { cancelled = true; };
-  }, [plugin.pluginId, plugin.version, plugin.integrity, plugin.bundleUrl, attempt]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [plugin.pluginId, plugin.version, plugin.integrity, plugin.bundleUrls.join("|"), attempt]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2) Handshake: el plugin envía "hello" (reintenta cada 250 ms); el host responde con "init" + puerto
   useEffect(() => {

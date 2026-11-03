@@ -143,10 +143,21 @@ service cloud.firestore {
       allow create, update, delete: if canWritePanelChild(userId, panelId);
     }
 
-    match /pluginCatalog/{id}  { allow read, write: if false; }
-    match /pluginReleases/{id} { allow read, write: if false; }
-    match /{type}/{uid}/installedPlugins/{id} { allow read, write: if false; }
-    match /{type}/{uid}/panels/{p}/widgets/{w}/pluginData/{d} { allow read, write: if false; }
+    // ─── Plugins ────────────────────────────────────
+    // Todo el acceso a estos datos va por el backend (Admin SDK, que IGNORA estas reglas).
+    // Aquí solo se cierra el acceso directo de clientes. `{x=**}` cubre documentos Y subcolecciones.
+    // Las reglas son aditivas (OR): ningún `allow` recursivo (`=**`) fuera de este bloque debe
+    // existir sobre /users, /guests ni sus subcolecciones, o anularía estas denegaciones.
+
+    match /pluginCatalog/{id=**}  { allow read, write: if false; }
+    match /pluginReleases/{id=**} { allow read, write: if false; }
+    match /{accountType}/{uid}/installedPlugins/{id=**} { allow read, write: if false; }
+
+    // pluginData (estado por instancia) y pluginDb (CRUD de plugins): bajo widgets…
+    match /{accountType}/{uid}/panels/{panelId}/widgets/{widgetId}/pluginData/{path=**} { allow read, write: if false; }
+    match /{accountType}/{uid}/panels/{panelId}/widgets/{widgetId}/pluginDb/{path=**}   { allow read, write: if false; }
+    // …y bajo paneles (target "panel": panels/{panelId}/pluginDb/{pluginId}/…)
+    match /{accountType}/{uid}/panels/{panelId}/pluginDb/{path=**}                      { allow read, write: if false; }
 
     // ─── Guest ──────────────────────────────────────
 

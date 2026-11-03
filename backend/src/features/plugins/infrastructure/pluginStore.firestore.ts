@@ -67,6 +67,10 @@ export class PluginStore {
   async removeInstall(type: AccountType, ownerId: string, pluginId: string) {
     await this.installs(type, ownerId).doc(pluginId).delete();
   }
+  async getInstall(type: AccountType, ownerId: string, pluginId: string) {
+    const s = await this.installs(type, ownerId).doc(pluginId).get();
+    return s.exists ? (s.data() as InstalledPlugin) : null;
+  }
   async listInstalled(type: AccountType, ownerId: string) {
     const s = await this.installs(type, ownerId).get();
     return s.docs.map((d) => d.data() as InstalledPlugin);

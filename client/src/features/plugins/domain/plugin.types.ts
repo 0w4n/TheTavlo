@@ -1,7 +1,7 @@
 // Espejo de backend/src/features/plugins/domain (hoy client y backend no comparten paquete).
 // Recomendado: extraer a un paquete de workspace `@thetavlo/plugin-contract`.
 
-export type PluginPermission = "instance.storage" | "notifications.toast";
+export type PluginPermission = "instance.storage" | "notifications.toast" | "db.read" | "db.write";
 
 export interface WidgetManifest {
   key: string;
@@ -32,7 +32,8 @@ export interface ResolvedPlugin {
   pluginId: string;
   version: string;
   manifest: PluginManifest;
-  bundleUrl: string;
+  /** Orígenes de descarga en orden de preferencia; todos se verifican contra `integrity`. */
+  bundleUrls: string[];
   integrity: string;
   permissions: PluginPermission[];
 }

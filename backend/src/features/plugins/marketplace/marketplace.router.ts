@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import { protectedProcedure, router } from "../../../trpc/trpc.js";
 import { syncCatalog } from "../app/sync.service.js";
-import { PERMISSIONS, pluginIdSchema, semverSchema } from "../domain/manifest.schema.js";
+import { PERMISSIONS, parsePermission, parsePluginId, parseSemver, type PluginPermission } from "../domain/manifest.validator.js";
+import { asArray, asObject, asOptional, asString } from "../domain/validators.js";
 import { compareSemver } from "../domain/plugin.rules.js";
 import type { MarketplaceListing } from "../domain/plugin.types.js";
 import { PluginStore } from "../infrastructure/pluginStore.firestore.js";
@@ -13,11 +13,31 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   return next();
 });
 
+/** Parsers-función de entrada (`.input(parser)`): rechazan claves desconocidas. */
+const parseListInput = (raw: unknown): { query?: string } => {
+  const o = asObject(raw, ["query"]);
+  const query = asOptional(o.query, (v) => asString(v, "query", { min: 0, max: 60 }));
+  return query === undefined ? {} : { query };
+};
+const parsePluginIdInput = (raw: unknown): { pluginId: string } => {
+  const o = asObject(raw, ["pluginId"]);
+  return { pluginId: parsePluginId(o.pluginId, "pluginId") };
+};
+const parseInstallInput = (raw: unknown): { pluginId: string; version?: string; grantedPermissions: PluginPermission[] } => {
+  const o = asObject(raw, ["pluginId", "version", "grantedPermissions"]);
+  const version = asOptional(o.version, (v) => parseSemver(v));
+  return {
+    pluginId: parsePluginId(o.pluginId, "pluginId"),
+    ...(version !== undefined ? { version } : {}),
+    grantedPermissions: asArray(o.grantedPermissions, "grantedPermissions", parsePermission, { max: PERMISSIONS.length }),
+  };
+};
+
 const notFound = () => new TRPCError({ code: "NOT_FOUND", message: "Plugin no disponible." });
 
 export const marketplaceRouter = router({
   list: protectedProcedure
-    .input(z.object({ query: z.string().max(60).optional() }))
+    .input(parseListInput)
     .query(async ({ ctx, input }): Promise<MarketplaceListing[]> => {
       const store = new PluginStore(ctx.db);
       const q = input.query?.trim().toLowerCase();
@@ -38,7 +58,7 @@ export const marketplaceRouter = router({
       });
     }),
 
-  get: protectedProcedure.input(z.object({ pluginId: pluginIdSchema })).query(async ({ ctx, input }) => {
+  get: protectedProcedure.input(parsePluginIdInput).query(async ({ ctx, input }) => {
     const store = new PluginStore(ctx.db);
     const entry = await store.getCatalog(input.pluginId);
     if (!entry?.listed) throw notFound();
@@ -52,11 +72,7 @@ export const marketplaceRouter = router({
   }),
 
   install: protectedProcedure
-    .input(z.object({
-      pluginId: pluginIdSchema,
-      version: semverSchema.optional(),
-      grantedPermissions: z.array(z.enum(PERMISSIONS)).max(PERMISSIONS.length),
-    }))
+    .input(parseInstallInput)
     .mutation(async ({ ctx, input }) => {
       if (ctx.user.isAnonymous) throw new TRPCError({ code: "FORBIDDEN", message: "Crea una cuenta para instalar plugins." });
       const store = new PluginStore(ctx.db);
@@ -75,7 +91,7 @@ export const marketplaceRouter = router({
       return { pluginId: input.pluginId, version: release.version };
     }),
 
-  uninstall: protectedProcedure.input(z.object({ pluginId: pluginIdSchema })).mutation(async ({ ctx, input }) => {
+  uninstall: protectedProcedure.input(parsePluginIdInput).mutation(async ({ ctx, input }) => {
     if (ctx.user.isAnonymous) throw new TRPCError({ code: "FORBIDDEN" });
     await new PluginStore(ctx.db).removeInstall("users", ctx.user.uid, input.pluginId);
     return { pluginId: input.pluginId };

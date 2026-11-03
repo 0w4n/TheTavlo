@@ -9,6 +9,7 @@ import { migrationRouter } from "../features/invitations/migration.router.js";
 import { dirtyNoteRouter } from "../features/dirtyNote/dirtyNote.router.js";
 import { scheduleRouter } from "../features/schedule/schedule.router.js";
 import { cookingBookRouter } from "../features/cookingBook/cookingBook.router.js";
+import { pluginsRouter } from "../features/plugins/plugins.router.js";
 
 export const appRouter = router({
   invitations: invitationsRouter,
@@ -20,7 +21,8 @@ export const appRouter = router({
   migration: migrationRouter,
   dirtyNote: dirtyNoteRouter,
   schedule: scheduleRouter,
-  cookingBook: cookingBookRouter
+  cookingBook: cookingBookRouter,
+  plugins: pluginsRouter,
 });
 
 // Tipo que el cliente necesita para tener autocompletado + type-safety end
