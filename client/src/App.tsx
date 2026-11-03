@@ -90,7 +90,7 @@ export default function App() {
   );
 }
 
-function AuthenticatedApp() {
+export function AuthenticatedApp() {
   const authRepository = useMemo(() => {
     return new FirebaseAuthRepository(firebaseService.auth);
   }, []);
