@@ -10,7 +10,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const app = express();
-const PORT = process.env.EXPRESS_PORT|| 8080;
+const PORT = process.env.PORT|| 8080;
+const HOST_NAME = process.env.HOST_NAME || "localhost";
 const allowedOrigins = (
   process.env.CLIENT_ORIGIN ??
   "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com,https://dev.thetavlo.com"
@@ -74,7 +75,7 @@ app.get("/terminos", (req, res) => {
 
 // export default serverless(app);
 
-app.listen(Number(PORT), (error) => {
-  console.log(`Server is running on port ${PORT}`);
-  console.error(error);
+app.listen(Number(PORT), HOST_NAME, () => {
+  console.log(`Server is running on ${HOST_NAME}:${PORT}`);
+
 });
