@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.EXPRESS_PORT|| 8080;
 const allowedOrigins = (
   process.env.CLIENT_ORIGIN ??
-  "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com"
+  "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com,https://dev.thetavlo.com"
 )
   .split(",")
   .map((origin) => origin.trim())
