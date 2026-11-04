@@ -26,6 +26,16 @@ export class WidgetRegistry {
     this.definitions.set(definition.type, definition);
   }
 
+  /**
+   * Elimina un widget del registro. Devuelve `true` si existía.
+   * Es idempotente: desregistrar un tipo inexistente no lanza error, lo que
+   * permite usarlo antes de `register` para sustituir una definición (upgrade
+   * de plugins).
+   */
+  unregister(type: WidgetType): boolean {
+    return this.definitions.delete(type);
+  }
+
   get(type: WidgetType): WidgetDefinition | undefined {
     return this.definitions.get(type);
   }

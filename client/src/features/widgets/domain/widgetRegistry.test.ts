@@ -85,4 +85,21 @@ describe("WidgetRegistry", () => {
     expect(registry.get("task-list")).toBe(original);
     expect(registry.getAll()).toHaveLength(1);
   });
+
+  it("unregister() elimina un widget y es idempotente", () => {
+    const registry = new WidgetRegistry();
+    registry.register(makeDefinition("notes"));
+
+    expect(registry.unregister("notes")).toBe(true);
+    expect(registry.has("notes")).toBe(false);
+    expect(registry.unregister("notes")).toBe(false);
+  });
+
+  it("permite volver a registrar un tipo tras unregister()", () => {
+    const registry = new WidgetRegistry();
+    registry.register(makeDefinition("notes"));
+    registry.unregister("notes");
+
+    expect(() => registry.register(makeDefinition("notes"))).not.toThrow();
+  });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { detectConflicts, resolveWeek as resolveWeekPure } from "../../domain/scheduleResolver";
 import { dateToWeekNumber } from "../../domain/weekMath";
-import { buildScheduleSeed } from "../__fixtures__/scheduleSeed";
+import { buildScheduleSeed } from "../../presentation/__fixtures__/scheduleSeed";
 import {
   buildAgenda,
   clipToSchedulePeriod,

@@ -1,79 +1,50 @@
-// Discovery — capa de infraestructura (aquí sí vivimos con Vite).
-//
-// Encuentra automáticamente todos los widgets de la app sin que este
-// archivo (ni ningún otro) tenga que importarlos uno por uno. La regla es
-// simple: cualquier Feature que cree un archivo
-//
-//   src/features/{feature}/components/templates/widget/*.widget.meta.ts
-//
-// aparece aquí solo, sin tocar este archivo ni ningún "switch" central.
-//
-// ── Por qué `eager: true` NO rompe el lazy-loading ──────────────────────
-// `import.meta.glob(..., { eager: true })` carga de inmediato el módulo
-// *.widget.meta.ts de cada widget — pero esos archivos son solo datos
-// (nombre, ícono, categoría, defaultConfig/Layout) más un `load: () =>
-// import("./XWidget")`. Ese `import()` es una llamada dinámica normal:
-// Vite/Rollup SIEMPRE la separa en su propio chunk, sin importar si el
-// archivo que la contiene se cargó eager o no. Mientras un `.widget.meta.ts`
-// jamás haga `import Algo from "./XWidget"` de forma estática (solo el
-// `load()` perezoso), el componente pesado nunca se descarga por
-// descubrir el widget — sólo al renderizarlo.
-import { WidgetRegistry } from "../domain/widgetRegistry";
-import type { WidgetDefinition } from "../domain/widgetDefinition.types";
+import type { WidgetDefinition, WidgetType } from "../domain/widgetDefinition.types";
 
-type WidgetMetaModule = { default: WidgetDefinition };
-
-// `**` (y no solo `*`) permite que un widget viva en su propia subcarpeta:
-//   .../templates/widget/Foo.widget.meta.ts          (plano, como hasta ahora)
-//   .../templates/widget/foo/Foo.widget.meta.ts      (una carpeta por widget)
-// Los widgets existentes siguen apareciendo exactamente igual.
-const metaModules = import.meta.glob<WidgetMetaModule>(
-  "/src/features/*/components/templates/widget/**/*.widget.meta.ts",
-  { eager: true },
-);
-
-// La carpeta de cookingBook usa "template" (singular) en vez de
-// "templates" — se busca aparte para no forzar un rename fuera de alcance.
-const legacyMetaModules = import.meta.glob<WidgetMetaModule>(
-  "/src/features/*/components/template/widget/*.widget.meta.ts",
-  { eager: true },
-);
-
-export function discoverWidgetDefinitions(): WidgetDefinition[] {
-  const definitions: WidgetDefinition[] = [];
-
-  for (const [path, mod] of Object.entries({
-    ...metaModules,
-    ...legacyMetaModules,
-  })) {
-    const definition = mod.default;
-    if (!definition || typeof definition.type !== "string" || !definition.type) {
-      console.warn(
-        `[widgets] "${path}" no exporta un WidgetDefinition válido (falta ` +
-          `"default" o "type") — se ignora.`,
-      );
-      continue;
-    }
-    definitions.push(definition);
+/** Se lanza cuando se intenta registrar dos widgets con el mismo `type`. */
+export class DuplicateWidgetTypeError extends Error {
+  constructor(type: WidgetType) {
+    super(
+      `El widget "${type}" ya está registrado. Cada "type" debe ser único ` +
+        `— revisa los archivos *.widget.meta.ts de las Features involucradas.`,
+    );
+    this.name = "DuplicateWidgetTypeError";
   }
-
-  return definitions;
 }
 
-function buildRegistry(): WidgetRegistry {
-  const registry = new WidgetRegistry();
+/**
+ * Registro de widgets. No conoce ningún widget concreto: solo guarda lo que
+ * alguien más (el discovery, o un test) le registre. Sin dependencias de
+ * React ni de Vite — 100% testeable en aislamiento.
+ */
+export class WidgetRegistry {
+  private readonly definitions = new Map<WidgetType, WidgetDefinition>();
 
-  for (const definition of discoverWidgetDefinitions()) {
-    try {
-      registry.register(definition);
-    } catch (error) {
-      // Un widget mal configurado no debe tumbar el resto de la app.
-      console.error(`[widgets] No se pudo registrar "${definition.type}":`, error);
+  register(definition: WidgetDefinition): void {
+    if (this.definitions.has(definition.type)) {
+      throw new DuplicateWidgetTypeError(definition.type);
     }
+    this.definitions.set(definition.type, definition);
   }
 
-  return registry;
-}
+  /**
+   * Elimina un widget del registro. Devuelve `true` si existía.
+   * Es idempotente: desregistrar un tipo inexistente no lanza error, lo que
+   * permite usarlo antes de `register` para sustituir una definición (upgrade
+   * de plugins).
+   */
+  unregister(type: WidgetType): boolean {
+    return this.definitions.delete(type);
+  }
 
-/** Instancia única, poblada automáticamente al importar este módulo. */
-export const widgetRegistry = buildRegistry();
+  get(type: WidgetType): WidgetDefinition | undefined {
+    return this.definitions.get(type);
+  }
+
+  has(type: WidgetType): boolean {
+    return this.definitions.has(type);
+  }
+
+  getAll(): WidgetDefinition[] {
+    return Array.from(this.definitions.values());
+  }
+}
