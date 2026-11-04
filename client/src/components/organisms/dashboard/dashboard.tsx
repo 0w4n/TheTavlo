@@ -22,8 +22,8 @@ export function Dashboard({ widgetState }: Props) {
   const widgets = widgetState.widgets;
   const { width, containerRef, mounted } = useContainerWidth();
 
-  const [isEditable, setIsEditable] = useState<boolean>(false);
-  const [tempLayouts, setTempLayouts] = useState<any>(null);
+  const [isEditable, _setIsEditable] = useState<boolean>(false);
+  const [_tempLayouts, setTempLayouts] = useState<any>(null);
   const [breakpoint, setBreakpoint] = useState<string>('lg');
   
   const [layouts, setLayouts] = useState<Record<string, LayoutItem[]>>({
