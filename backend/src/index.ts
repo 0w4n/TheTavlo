@@ -75,7 +75,7 @@ app.get("/terminos", (req, res) => {
 
 // export default serverless(app);
 
-app.listen(Number(PORT), HOST_NAME, () => {
+app.listen(Number(PORT), String(HOST_NAME), () => {
+  console.log(".env, host: " + process.env.HOST_NAME);
   console.log(`Server is running on ${HOST_NAME}:${PORT}`);
-
 });
