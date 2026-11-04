@@ -14,7 +14,6 @@ import { buildUserMenuAction } from "#components/organisms/header/userMenuAction
 import usePanels from "#features/panels/presentation/hooks/usePanels";
 import LoadingPage from "./LoadingPage";
 import useGlobalContext from "#core/globalContext/hooks/useGlobalContext";
-import { PluginRuntimeProvider } from "#features/plugins/presentation/context/PluginRuntimeProvider";
 
 export default function HomePage() {
   useDocumentTitle("Inicio");
