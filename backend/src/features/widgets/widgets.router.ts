@@ -46,6 +46,7 @@ export async function assertReadable(ctx: any, scope: WidgetScope, write = false
   const index = await ctx.db.doc(`sharedPanelIndex/${ctx.user.uid}/panels/${scope.panelId}`).get();
   const role = index.exists ? index.data()?.role : undefined;
   const status = index.exists ? index.data()?.status : undefined;
+  console.log("assertReadable", ctx.user.uid, scope.panelId, "exists:", index.exists, "role:", role, "status:", status);
   if (!index.exists || (status !== "accepted" && status !== "active")) {
     throw new TRPCError({ code: "FORBIDDEN", message: "No tienes acceso a este panel." });
   }

@@ -12,6 +12,7 @@ export class PluginStore {
   private catalog() { return this.db.collection("pluginCatalog"); }
   private releases() { return this.db.collection("pluginReleases"); }
   private installs(type: AccountType, ownerId: string) {
+    console.log("installs from Collection:", this.db.collection(`${type}/${ownerId}/installedPlugins`).get());
     return this.db.collection(`${type}/${ownerId}/installedPlugins`);
   }
 
@@ -27,10 +28,25 @@ export class PluginStore {
     const s = await this.catalog().doc(id).get();
     return s.exists ? (s.data() as PluginCatalogEntry) : null;
   }
+
   async listListed() {
     const s = await this.catalog().where("listed", "==", true).get();
+    console.log("listListed", s.docs.length, "listed plugins found");
     return s.docs.map((d) => d.data() as PluginCatalogEntry).filter((c) => c.latestVersion);
   }
+
+  async listAll() {
+    const s = await this.catalog().get();
+    console.log("listAll", s.docs.length, "plugins found");
+    return s.docs.map((d) => d.data() as PluginCatalogEntry);
+  }
+
+  async listWithLatest() {
+    const s = await this.catalog().where("latestVersion", "!=", null).get();
+    console.log("listWithLatest", s.docs.length, "plugins with latest version found");
+    return s.docs.map((d) => d.data() as PluginCatalogEntry).filter((c) => c.latestVersion);
+  }
+
   async setLatest(id: string, version: string) {
     await this.catalog().doc(id).update({ latestVersion: version, updatedAt: now() });
   }
@@ -73,6 +89,7 @@ export class PluginStore {
   }
   async listInstalled(type: AccountType, ownerId: string) {
     const s = await this.installs(type, ownerId).get();
+    console.log("listInstalled", type, ownerId, s.docs.length, "installed plugins found");
     return s.docs.map((d) => d.data() as InstalledPlugin);
   }
 }

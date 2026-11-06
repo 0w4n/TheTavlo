@@ -12,31 +12,18 @@ import { fileURLToPath } from "node:url";
 const app = express();
 const PORT = process.env.PORT|| 8080;
 const HOST_NAME = process.env.HOST_NAME || "0.0.0.0";
-const allowedOrigins = (
-  process.env.CLIENT_ORIGIN ??
-  "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com,https://dev.thetavlo.com"
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = new Set((process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com")
+  .split(",").map((o) => o.trim()).filter(Boolean)); 
 const __dirname = fileURLToPath(import.meta.url);
 
 app.use(helmet());
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error(`Origin not allowed by CORS: ${origin}`));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  }),
-);
+app.use(cors({
+  origin: (origin, cb) => cb(null, !origin || allowedOrigins.has(origin)), // rechazo limpio, sin lanzar Error (evita 500 en el preflight)
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  maxAge: 86400,                                                          // cachea el preflight 24 h
+}));
 app.use(express.json());
 
 // API REST "clásica" — reservada a superficie pública/legacy (ver sección C
