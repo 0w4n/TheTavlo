@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 
 const app = express();
 const PORT = process.env.PORT|| 8080;
-const HOST_NAME = process.env.HOST_NAME || "0.0.0.0";
+const HOST_NAME = process.env.HOST_NAME || "dev.thetavlo.com";
 const allowedOrigins = new Set((process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com,https://dev.thetavlo.com")
   .split(",").map((o) => o.trim()).filter(Boolean)); 
 const __dirname = fileURLToPath(import.meta.url);
