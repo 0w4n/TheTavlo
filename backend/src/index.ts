@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 const app = express();
 const PORT = process.env.PORT|| 8080;
 const HOST_NAME = process.env.HOST_NAME || "0.0.0.0";
-const allowedOrigins = new Set((process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com")
+const allowedOrigins = new Set((process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com,https://dev.thetavlo.com")
   .split(",").map((o) => o.trim()).filter(Boolean)); 
 const __dirname = fileURLToPath(import.meta.url);
 
@@ -62,7 +62,7 @@ app.get("/terminos", (req, res) => {
 
 // export default serverless(app);
 
-app.listen(Number(PORT), String(HOST_NAME), () => {
+app.listen(Number(PORT), HOST_NAME, () => {
   console.log(".env, host: " + process.env.HOST_NAME);
   console.log(`Server is running on ${HOST_NAME}:${PORT}`);
 });
