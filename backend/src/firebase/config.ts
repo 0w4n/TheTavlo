@@ -36,8 +36,6 @@ function buildApp(): App {
     );
   }
 
-  console.log("Firebase Service account: ", serviceAccount, ", cert:", cert(serviceAccount));
-
   return initializeApp({
     credential: cert(serviceAccount),
     databaseURL,
