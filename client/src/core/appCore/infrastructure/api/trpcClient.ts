@@ -9,6 +9,7 @@ export function resolveApiBaseUrl(env: Record<string, string | undefined> = impo
   }
 
   if (/^https?:\/\//i.test(value)) {
+    console.log("ApiBaseUrl: ", value);
     return value;
   }
 
