@@ -1,7 +1,7 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
-import { getAnalytics, type Analytics} from "firebase/analytics"
+import type { Analytics} from "firebase/analytics"
 
 const firebaseConfig = {
   apiKey: import.meta.env.CLIENT_FIREBASE_API_KEY,
@@ -13,18 +13,16 @@ const firebaseConfig = {
   measurementId: import.meta.env.CLIENT_FIREBASE_MEASUREMENT_ID,
 };
 
-console.log(firebaseConfig);
 
 class FirebaseService {
   private app: FirebaseApp;
   private _auth?: Auth;
   private _firestore: Firestore;
-  private _analytics: Analytics;
+  private _analytics?: Analytics;
 
   constructor() {
     this.app = initializeApp(firebaseConfig);
     this._firestore = getFirestore(this.app);
-    this._analytics = getAnalytics(this.app);
   }
 
   get auth(): Auth {
@@ -36,7 +34,12 @@ class FirebaseService {
     return this._firestore;
   }
 
-  get analytics(): Analytics {
+  /** Carga Analytics bajo demanda, fuera del camino crítico. */
+  async initAnalytics(): Promise<Analytics | undefined> {
+    if (this._analytics) return this._analytics;
+    const { getAnalytics, isSupported } = await import("firebase/analytics");
+    if (!(await isSupported())) return undefined;
+    this._analytics = getAnalytics(this.app);
     return this._analytics;
   }
 }
