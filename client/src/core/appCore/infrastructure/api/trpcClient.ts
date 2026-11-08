@@ -1,13 +1,20 @@
 import { firebaseService } from "#core/appCore/infrastructure/firebase/firebaseConfig";
 
 export function resolveApiBaseUrl(env: Record<string, string | undefined> = import.meta.env): string {
-  const candidate = env.CLIENT_API_BASE_URL ?? env.CLIENT_BACKEND_URI ?? "http://localhost:3080";
-  const value = String(candidate).trim().replace(/\/+$/, "");
-
-  if (!value) {
+  const candidate = env.CLIENT_API_BASE_URL ?? env.CLIENT_BACKEND_URI;
+  
+  console.log("Raw env candidates:", {
+    CLIENT_API_BASE_URL: env.CLIENT_API_BASE_URL,
+    CLIENT_BACKEND_URI: env.CLIENT_BACKEND_URI,
+  });
+  
+  if (!candidate) {
+    console.warn("⚠️ No API base URL found in environment variables! Falling back to localhost.");
     return "http://localhost:3080";
   }
-
+  
+  const value = String(candidate).trim().replace(/\/+$/, "");
+  
   if (/^https?:\/\//i.test(value)) {
     console.log("ApiBaseUrl: ", value);
     return value;

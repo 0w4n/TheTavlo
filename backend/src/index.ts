@@ -10,7 +10,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const app = express();
-const PORT = process.env.PORT|| 8080;
+const PORT = process.env.PORT || 8080;
 const HOST_NAME = process.env.HOST_NAME || "localhost";
 const allowedOrigins = new Set((process.env.CLIENT_ORIGIN ?? "http://localhost:5173,https://thetavlo.com,https://www.thetavlo.com,https://dev.thetavlo.com")
   .split(",").map((o) => o.trim()).filter(Boolean)); 
@@ -41,6 +41,7 @@ app.use(
 );
 
 app.use((req, res) => {
+  console.log("Serving SPA for path:", req.path);
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
