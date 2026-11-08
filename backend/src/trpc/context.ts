@@ -42,11 +42,8 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
     };
   } catch (error) {
     const verificationError = error as { code?: string; message?: string };
-    console.error("No se pudo verificar el token de Firebase", {
-      code: verificationError.code ?? "unknown",
-      message: verificationError.message ?? "unknown",
-      projectId: firebaseApp.options.projectId ?? "unknown",
-    });
-    return { user: null, db: adminDb, appCheckToken: req.headers["x-firebase-appcheck"] as string | null };
+    console.error("EXACT FIREBASE TOKEN VERIFICATION ERROR:", error, " as: ", verificationError);
+    throw error;
+    // return { user: null, db: adminDb, appCheckToken: req.headers["x-firebase-appcheck"] as string | null };
   }
 }
