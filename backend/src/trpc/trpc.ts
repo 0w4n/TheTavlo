@@ -19,7 +19,7 @@ export const publicProcedure = procedure;
 /** Exige sesión válida. Dentro del procedure, `ctx.user` ya no es nullable. */
 export const protectedProcedure = procedure.use(({ ctx, next }) => {
   if (!ctx.user) {
-    console.log("🚫 Petición rechazada: UNAUTHORIZED (no hay sesión)");
+    console.error("🚫 Petición rechazada: UNAUTHORIZED (no hay sesión)");
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Necesitas iniciar sesión." });
   }
   console.log("✅ Petición autorizada: userId =", ctx.user.uid, "email =", ctx.user.email);
