@@ -4,7 +4,7 @@ import type { Context } from "./context.js";
 const t = initTRPC.context<Context>().create();
 
 const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
-  console.log(`🚀 Petición entrante: [${type}] -> ${path}`); // <-- Verás esto siempre
+  console.debug(`🚀 Petición entrante: [${type}] -> ${path}`); // <-- Verás esto siempre
   return next();
 });
 
@@ -22,6 +22,6 @@ export const protectedProcedure = procedure.use(({ ctx, next }) => {
     console.error("🚫 Petición rechazada: UNAUTHORIZED (no hay sesión)");
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Necesitas iniciar sesión." });
   }
-  console.log("✅ Petición autorizada: userId =", ctx.user.uid, "email =", ctx.user.email);
+  console.debug("✅ Petición autorizada: userId =", ctx.user.uid, "email =", ctx.user.email);
   return next({ ctx: { ...ctx, user: ctx.user } });
 });

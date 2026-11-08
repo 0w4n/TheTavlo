@@ -36,12 +36,11 @@ app.use(
   createExpressMiddleware({
     router: appRouter,
     createContext,
-    onError: ({error, path, type}) => { console.log(`ERROR: ${error} on ${path}, with type ${type}`)}
+    onError: ({error, path, type}) => { console.error(`ERROR: ${error} on ${path}, with type ${type}`)}
   }),
 );
 
 app.use((req, res) => {
-  console.log("Serving SPA for path:", req.path);
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -64,6 +63,5 @@ app.get("/terminos", (req, res) => {
 // export default serverless(app);
 
 app.listen(Number(PORT), HOST_NAME, () => {
-  console.log(".env, host: " + process.env.HOST_NAME);
   console.log(`Server is running on ${HOST_NAME}:${PORT}`);
 });

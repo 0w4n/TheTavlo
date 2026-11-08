@@ -56,27 +56,13 @@ export const runtimeRouter = router({
         input.ownerAccountType,
         input.ownerId,
       );
-      console.log(
-        "forPanel: ",
-        input.ownerAccountType,
-        input.ownerId,
-        "installed:",
-        installed.length,
-      );
+
       if (!installed.length) return [];
-      console.log("Paso esto");
+      
       const releases = await store.getReleases(
         installed.map((i) => ({ id: i.pluginId, version: i.version })),
       );
-      console.log(
-        "forPanel: ",
-        input.ownerAccountType,
-        input.ownerId,
-        "installed:",
-        installed.length,
-        "releases:",
-        releases.length,
-      );
+
       return installed.flatMap((i, idx) => {
         const r = releases[idx];
         if (

@@ -30,7 +30,6 @@ export async function createContext({ req }: CreateExpressContextOptions): Promi
   if (!idToken) return { user: null, db: adminDb, appCheckToken: null };
   try {
     const decoded = await adminAuth.verifyIdToken(idToken);
-    console.log("User decoded: ", decoded)
     return {
       user: {
         uid: decoded.uid,

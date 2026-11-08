@@ -12,8 +12,6 @@ export interface EmojiInput {
 export function parseEmojiInput(raw: unknown): EmojiInput {
   const value = asObject(raw);
 
-  console.log("Value parsed:", value);
-
   const word = asString(value.word, "word").trim();
   const lang =
     value.lang === undefined ? "es_es" : asString(value.lang, "lang").trim();
@@ -44,7 +42,6 @@ export async function getEmojiSuggestions(input: EmojiInput): Promise<Record<str
 
 export const suggestionsRouter = router({
   emoji: publicProcedure.input(parseEmojiInput).query(async ({ input }) => {
-    console.log("Input:", input);
     return getEmojiSuggestions(input);
   }),
 

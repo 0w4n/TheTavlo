@@ -110,7 +110,6 @@ export function AuthenticatedApp() {
 
 export function ProtectedLayout() {
   const { state } = useAuth();
-  console.log(state, 'Auth state in ProtectedLayout');
 
   switch (state.status) {
     case 'initializing':
@@ -131,7 +130,6 @@ export function ProtectedLayout() {
 }
 
 function AuthenticatedLayout({ user }: { user: User }) {
-  console.log('User:', user);
   const cacheKey = getPanelsCacheKey(user);
 
   const panelsService = useMemo(() => {

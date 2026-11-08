@@ -96,7 +96,6 @@ function computeHuesSafely(emojis: string[]): EmojiWithHue[] {
   for (const emoji of emojis) {
     try {
       const hue = getEmojiHue(emoji);
-      console.log(`[computeHuesSafely] Emoji "${emoji}" tiene hue: ${hue}`);
       results.push({ emoji, hue });
     } catch (error) {
       if (error instanceof EmojiRenderError) {
@@ -117,7 +116,6 @@ function computeHuesSafely(emojis: string[]): EmojiWithHue[] {
 
 // Extractor seguro del texto en la estructura de respuesta de Interactions
 function extractInteractionText(response?: string): string {
-  console.log(`[extractInteractionText] response: "${response}"`);
   if (typeof response === "string") {
     return response;
   }
@@ -151,15 +149,10 @@ export async function fetchEmojisFromGemini(
     },
   ];
 
-  console.log(`[fetchEmojisFromGemini] word="${word}" lang="${lang}"`);
   
   let infraError: unknown = null;
 
   for (const prompt of prompts) {
-    console.log(
-      `[fetchEmojisFromGemini] → ${prompt.label}: llamando a ${prompt.model}`,
-    );
-
     try {
       // Formato correcto según la especificación de Interactions API
       const response = await ai.interactions.create({
@@ -171,25 +164,12 @@ export async function fetchEmojisFromGemini(
         },
       });
 
-      console.log("Response typeof:", typeof response, ", response:", response);
       response
       const rawTextBefore = extractInteractionText(response.output_text);
-      console.log(
-        `[fetchEmojisFromGemini][${prompt.label}] Respuesta cruda (${rawTextBefore.length} chars): "${rawTextBefore}"`,
-      );
 
       const rawText = stripMarkdownFences(rawTextBefore);
-      if (rawText !== rawTextBefore.trim()) {
-        console.log(
-          `[fetchEmojisFromGemini][${prompt.label}] Tras limpiar Markdown: "${rawText}"`,
-        );
-      }
 
       const emojiArray = sanitizeEmojiText(rawText);
-      console.log(
-        `[fetchEmojisFromGemini][${prompt.label}] Emojis detectados:`,
-        emojiArray,
-      );
 
       if (emojiArray.length === 0) {
         console.warn(
@@ -207,9 +187,6 @@ export async function fetchEmojisFromGemini(
         continue;
       }
 
-      console.log(
-        `[fetchEmojisFromGemini][${prompt.label}] Éxito. Total emojis válidos: ${withHues.length}`,
-      );
       return buildEmojiHueMap(withHues);
     } catch (error) {
       infraError = error;
