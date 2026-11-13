@@ -38,8 +38,8 @@ vi.mock("#components/atoms/datetimebadge", () => ({
   DateTimeBadge: () => <div>DateTimeBadge</div>,
 }));
 
-vi.mock("#components/molecules/rise", () => ({
-  Rise: () => <div data-testid="rise" />,
+vi.mock("#features/rise", () => ({
+  RiseStoriesHost: () => <div data-testid="rise" />,
 }));
 
 vi.mock("#components/molecules/modal", () => ({

@@ -17,6 +17,9 @@ importers:
       '@gsap/react':
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.15.0)(react@18.3.1)
+      '@tabler/icons-webfont':
+        specifier: ^3.50.0
+        version: 3.51.0
       '@types/react-resizable':
         specifier: ^3.0.8
         version: 3.0.8
@@ -1034,6 +1037,12 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@tabler/icons-webfont@3.51.0':
+    resolution: {integrity: sha512-ahE1MP7xMAUupt+BUee6dIComS6L6kba9o5OuJd2LiZhNMV6ulXO9Z/BcxNO2N2pPZw/y8cVx25ow68Gjas8yA==}
+
+  '@tabler/icons@3.51.0':
+    resolution: {integrity: sha512-0pinvPZz7YeX+OSfxuEAbnEPWbocVXW5iU8h5lh41pYG8sZuQfpWECC980lxOT0clGIcNGn8xsBr+zKaRGdA/g==}
 
   '@testing-library/dom@10.4.2':
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
@@ -3936,6 +3945,12 @@ snapshots:
   '@sinclair/typebox@0.34.52': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@tabler/icons-webfont@3.51.0':
+    dependencies:
+      '@tabler/icons': 3.51.0
+
+  '@tabler/icons@3.51.0': {}
 
   '@testing-library/dom@10.4.2':
     dependencies:

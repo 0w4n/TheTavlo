@@ -153,6 +153,9 @@ service cloud.firestore {
     match /pluginReleases/{id=**} { allow read, write: if false; }
     match /{accountType}/{uid}/installedPlugins/{id=**} { allow read, write: if false; }
 
+    // Rise: sesiones y decisiones del día. Solo las lee/escribe el backend (Admin SDK).
+    match /{accountType}/{uid}/riseSessions/{path=**} { allow read, write: if false; }
+
     // pluginData (estado por instancia) y pluginDb (CRUD de plugins): bajo widgets…
     match /{accountType}/{uid}/panels/{panelId}/widgets/{widgetId}/pluginData/{path=**} { allow read, write: if false; }
     match /{accountType}/{uid}/panels/{panelId}/widgets/{widgetId}/pluginDb/{path=**}   { allow read, write: if false; }

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { EditModeButton } from "#components/molecules/toolbar/toolBar";
 import useAuth from "#core/auth/presentation/hooks/useAuth";
-import { Rise } from "#components/molecules/rise";
+import { RiseStoriesHost } from "#features/rise";
 import { Modal, ModalHeader, ModalBody } from "#components/molecules/modal";
 import { useDocumentTitle } from "#core/routing/useDocumentTitle";
 import { useOnBoardingBootstrap } from "#features/onBoarding/presentation/hooks/useOnBoardingBootstrap";
@@ -34,31 +34,9 @@ export default function HomePage() {
     <>
       <NeedsPanelModal />
       <InvalidPanelNotice />
-      {riseOpen ? (
-        <Rise
-          onClose={() => setRiseOpen(false)}
-          sections={[
-            {
-              title: "Hola",
-              items: [
-                {
-                  type: "meeting",
-                  id: "1",
-                  title: "HolaHola",
-                },
-              ],
-              icon: "IconSpy",
-            },
-          ]}
-          onItemClick={(item) => console.log(item)}
-          onItemStatusChange={(id, status) =>
-            console.log("Status change", id, status)
-          }
-          isOpen={riseOpen}
-        />
-      ) : (
-        <HomePageComponent onOpenRise={() => setRiseOpen(true)} />
-      )}
+      <HomePageComponent onOpenRise={() => setRiseOpen(true)} />
+      {/* Overlay inmersivo: el dashboard sigue montado debajo (no se recarga al cerrar). */}
+      {riseOpen && <RiseStoriesHost onClose={() => setRiseOpen(false)} />}
     </>
   );
 }

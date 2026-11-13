@@ -4,6 +4,7 @@ import { buildPanelPath } from "#core/routing/panelPath";
 import Icon from "#shared/ui/atoms/icons";
 import { Dropdown } from "#components/molecules/dropdown";
 import "./breadcrumb.css";
+import { Button } from "#components/atoms/button";
 
 interface Crumb {
   id: string;
@@ -89,6 +90,7 @@ export default function Breadcrumb({
 
   return (
     <nav aria-label="Ruta de navegación" className="breadcrumb">
+      <Button variant="ghost" icon="IconArrowLeft" iconSize={14} />
       <ol className="breadcrumb__list">
         {visible.map((crumb, index) => (
           <li key={crumb.id} className="breadcrumb__item">
@@ -126,7 +128,6 @@ export default function Breadcrumb({
             )}
           </li>
         ))}
-
         <li
           className="breadcrumb__item breadcrumb__item--current"
           aria-current="page"

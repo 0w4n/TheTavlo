@@ -109,7 +109,6 @@ function PanelDashboard({ panel, panels }: { panel: Panel; panels: Panel[] }) {
           />
         }
       />
-      <PanelLocationBar panels={panels} />
       <Dashboard widgetState={widgetsState} />
     </>
   );
