@@ -13,7 +13,6 @@ const firebaseConfig = {
   measurementId: import.meta.env.CLIENT_FIREBASE_MEASUREMENT_ID,
 };
 
-
 class FirebaseService {
   private app: FirebaseApp;
   private _auth?: Auth;
@@ -33,8 +32,7 @@ class FirebaseService {
   get firestore(): Firestore {
     return this._firestore;
   }
-
-  /** Carga Analytics bajo demanda, fuera del camino crítico. */
+  
   async initAnalytics(): Promise<Analytics | undefined> {
     if (this._analytics) return this._analytics;
     const { getAnalytics, isSupported } = await import("firebase/analytics");
